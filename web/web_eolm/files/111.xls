@@ -1,0 +1,313 @@
+<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>RuxiferZ</Author>
+  <LastAuthor>RuxiferZ</LastAuthor>
+  <LastPrinted>2011-09-04T16:02:25Z</LastPrinted>
+  <Created>2011-09-04T15:04:20Z</Created>
+  <LastSaved>2011-09-04T22:49:07Z</LastSaved>
+  <Version>14.00</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>4935</WindowHeight>
+  <WindowWidth>14355</WindowWidth>
+  <WindowTopX>360</WindowTopX>
+  <WindowTopY>45</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s16" ss:Name="Comma">
+   <NumberFormat ss:Format="_(* #,##0.00_);_(* \(#,##0.00\);_(* &quot;-&quot;??_);_(@_)"/>
+  </Style>
+  <Style ss:ID="s17">
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="11"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s18">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s19">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s20">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s21">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s22">
+   <Alignment ss:Vertical="Bottom"/>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="20"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s23">
+   <Alignment ss:Vertical="Bottom"/>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="18"
+    ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s24">
+   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s25">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s26">
+   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s27">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s28" ss:Parent="s16">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s35">
+   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s36">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s37">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Top" ss:WrapText="1"/>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s38">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Bottom"/>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s39">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="20"
+    ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s40">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="18"
+    ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s41">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s42">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="TH SarabunPSK" x:Family="Swiss" ss:Size="16"
+    ss:Color="#000000" ss:Bold="1"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Sheet1">
+  <Table ss:ExpandedColumnCount="9" ss:ExpandedRowCount="19" x:FullColumns="1"
+   x:FullRows="1" ss:StyleID="s17" ss:DefaultRowHeight="15">
+   <Column ss:StyleID="s17" ss:AutoFitWidth="0" ss:Width="66.75"/>
+   <Column ss:StyleID="s17" ss:AutoFitWidth="0" ss:Width="231.75"/>
+   <Column ss:StyleID="s17" ss:AutoFitWidth="0" ss:Width="58.5" ss:Span="1"/>
+   <Row ss:Height="21">
+    <Cell ss:Index="4" ss:StyleID="s18"><Data ss:Type="String">แบบ  บก.-111</Data></Cell>
+   </Row>
+   <Row ss:Index="3" ss:Height="26.25">
+    <Cell ss:MergeAcross="3" ss:StyleID="s39"><Data ss:Type="String">ใบรับรองแทนใบเสร็จรับเงิน</Data></Cell>
+    <Cell ss:StyleID="s22"/>
+    <Cell ss:StyleID="s22"/>
+    <Cell ss:StyleID="s22"/>
+    <Cell ss:StyleID="s22"/>
+    <Cell ss:StyleID="s22"/>
+   </Row>
+   <Row ss:Height="24">
+    <Cell ss:MergeAcross="3" ss:StyleID="s40"><Data ss:Type="String">ส่วนราชการ   ภาควิชาวิทยาการคอมพิวเตอร์   คณะวิทยาศาสตร์</Data></Cell>
+    <Cell ss:StyleID="s23"/>
+    <Cell ss:StyleID="s23"/>
+    <Cell ss:StyleID="s23"/>
+    <Cell ss:StyleID="s23"/>
+    <Cell ss:StyleID="s23"/>
+   </Row>
+   <Row ss:Height="21.75">
+    <Cell ss:StyleID="s19"><Data ss:Type="String">วัน เดือน ปี</Data></Cell>
+    <Cell ss:StyleID="s20"><Data ss:Type="String">รายละเอียดรายจ่าย</Data></Cell>
+    <Cell ss:StyleID="s19"><Data ss:Type="String">จำนวนเงิน</Data></Cell>
+    <Cell ss:StyleID="s21"><Data ss:Type="String">หมายเหตุ</Data></Cell>
+   </Row>
+      <Row ss:Height="21.75" AutoFitHeight="ๅ">
+    <Cell ss:StyleID="s35"><Data ss:Type="String">11/3/2560</Data></Cell>
+    <Cell ss:StyleID="s36"><Data ss:Type="String">ค่าพาหนะรับจ้างในการเดินทางไปราชการจากบ้านพักเลขที่ 394/24 ถ.มิตรภาพ ต.ศิลา อ.เมือง จ.ขอนแก่น ไปยังสนามบินขอนแก่น จังหวัดขอนแก่น</Data></Cell>
+    <Cell ss:StyleID="s28"><Data ss:Type="String">200.00</Data></Cell>
+    <Cell ss:StyleID="s27"><Data ss:Type="String">มีสัมภาระ</Data></Cell>
+   </Row>   <Row ss:Height="21.75" AutoFitHeight="ๅ">
+    <Cell ss:StyleID="s35"><Data ss:Type="String">11/3/2560</Data></Cell>
+    <Cell ss:StyleID="s36"><Data ss:Type="String">ค่ายานพาหนะรับจ้างจากสนามบินดอนเมือง ไปยัง โรงแรมภัคดี โฮเต็ล จำกัด กรุงเทพมหานคร</Data></Cell>
+    <Cell ss:StyleID="s28"><Data ss:Type="String">330.00</Data></Cell>
+    <Cell ss:StyleID="s27"><Data ss:Type="String">มีสัมภาระ</Data></Cell>
+   </Row>   <Row ss:Height="21.75" AutoFitHeight="ๅ">
+    <Cell ss:StyleID="s35"><Data ss:Type="String">11/3/2560</Data></Cell>
+    <Cell ss:StyleID="s36"><Data ss:Type="String">ค่ายานพาหนะประจำทางปรับอากาศ เดินทางจากขอนแก่น ไปยัง สถานีขนส่งหมอชิต (487)</Data></Cell>
+    <Cell ss:StyleID="s28"><Data ss:Type="String">487.00</Data></Cell>
+    <Cell ss:StyleID="s27"><Data ss:Type="String">มีสัมภาระ</Data></Cell>
+   </Row>   <Row ss:Height="21.75" AutoFitHeight="ๅ">
+    <Cell ss:StyleID="s35"><Data ss:Type="String">13/3/2560</Data></Cell>
+    <Cell ss:StyleID="s36"><Data ss:Type="String">ค่ายานพาหนะรับจ้างจากโรงแรมภัคดี โฮเต็ล จำกัด กรุงเทพมหานคร ไปยัง สนามบินดอนเมือง</Data></Cell>
+    <Cell ss:StyleID="s28"><Data ss:Type="String">330.00</Data></Cell>
+    <Cell ss:StyleID="s27"><Data ss:Type="String">มีสัมภาระ</Data></Cell>
+   </Row>   <Row ss:Height="21.75" AutoFitHeight="ๅ">
+    <Cell ss:StyleID="s35"><Data ss:Type="String">13/3/2560</Data></Cell>
+    <Cell ss:StyleID="s36"><Data ss:Type="String">ค่าพาหนะรับจ้างในการเดินทางจากสนามบินขอนแก่น ไปยังบ้านพักเลขที่ 394/24 ถ.มิตรภาพ ต.ศิลา อ.เมือง จ.ขอนแก่น  
+</Data></Cell>
+    <Cell ss:StyleID="s28"><Data ss:Type="String">200.00</Data></Cell>
+    <Cell ss:StyleID="s27"><Data ss:Type="String">มีสัมภาระ</Data></Cell>
+   </Row>   <Row ss:Height="21.75" AutoFitHeight="ๅ">
+    <Cell ss:StyleID="s35"><Data ss:Type="String">13/3/2560</Data></Cell>
+    <Cell ss:StyleID="s36"><Data ss:Type="String">ค่ายานพาหนะประจำทางปรับอากาศ เดินทางจากสถานีขนส่งหมอชิต กรุงเทพมหานคร ไปยังจังหวัดขอนแก่น
+</Data></Cell>
+    <Cell ss:StyleID="s28"><Data ss:Type="String">487.00</Data></Cell>
+    <Cell ss:StyleID="s27"><Data ss:Type="String">มีสัมภาระ</Data></Cell>
+   </Row>
+   <Row ss:Height="21.75">
+    <Cell ss:StyleID="s24"/>
+    <Cell ss:StyleID="s25"><Data ss:Type="String">รวมทั้งสิ้น</Data></Cell>
+    <Cell ss:StyleID="s28"><Data ss:Type="String">2,034.00</Data></Cell>
+    <Cell ss:StyleID="s26"/>
+   </Row>
+   <Row ss:Height="21">
+    <Cell ss:MergeAcross="3" ss:StyleID="s41"><ss:Data ss:Type="String"
+      xmlns="http://www.w3.org/TR/REC-html40"><B><Font html:Color="#000000">รวมทั้งสิ้น  (ตัวอักษร)</Font></B><Font
+       html:Color="#000000">   (-สองพันสามสิบสี่-)</Font></ss:Data></Cell>
+   </Row>
+   <Row ss:Height="21">
+    <Cell ss:MergeAcross="3" ss:StyleID="s42"><ss:Data ss:Type="String"
+      xmlns="http://www.w3.org/TR/REC-html40"><B><Font html:Color="#000000">ข้าพเจ้า</Font></B><Font
+       html:Color="#000000">   อ.ดร.ชิตสุธา สุ่มเล็ก      </Font><B><Font html:Color="#000000">ตำแหน่ง</Font></B><Font
+       html:Color="#000000">   อ.ดร.</Font></ss:Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="48">
+    <Cell ss:MergeAcross="3" ss:StyleID="s37"><Data ss:Type="String">กอง คณะวิทยาศาสตร์ ขอรับรองว่า รายจ่ายข้างต้นนี้ไม่อาจเรียกใบเสร็จรับเงินจากผู้รับได้และข้าพเจ้าได้จ่ายไปในงานราชการโดยแท้</Data></Cell>
+   </Row>
+   <Row ss:Index="18" ss:AutoFitHeight="0">
+    <Cell ss:Index="2" ss:MergeAcross="2" ss:StyleID="s38"><Data ss:Type="String">(ลงชื่อ)…………………….....……………</Data></Cell>
+   </Row>
+   <Row ss:Height="21">
+    <Cell ss:Index="3" ss:MergeAcross="1" ss:StyleID="s38"><Data ss:Type="String">วันที่ 15 มีนาคม 2560</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0"/>
+    <Footer x:Margin="0"/>
+    <PageMargins x:Left="1.1000000000000001" x:Right="0.9"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>5</ActiveRow>
+     <RangeSelection>R6</RangeSelection>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

@@ -1,0 +1,74 @@
+
+.overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.3);
+    transition: opacity 500ms;
+    visibility: hidden;
+    opacity: 0;
+}
+.overlay:target {
+    visibility: visible;
+    opacity: 1;
+}
+.popup {
+    margin: 70px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    width: 20%;
+    position: relative;
+    transition: all 2s ease-in-out;
+}
+.popup .content {
+    height: 180px;
+    text-align: center;
+    max-height: 30%;
+}
+#close{
+    margin: 20px auto;
+    text-align: center;
+    width:70px;
+    display: block;
+}
+
+
+.svg-success {
+    stroke-width: 2px;
+    stroke: #8ec343;
+    fill: none;
+}
+.svg-success path {
+    stroke-dasharray: 17px, 17px;
+    stroke-dashoffset: 0px;
+    -webkit-animation: checkmark 0.25s ease-in-out 0.7s backwards;
+    animation: checkmark 0.25s ease-in-out 0.7s backwards;
+}
+.svg-success circle {
+    stroke-dasharray: 76px, 76px;
+    stroke-dashoffset: 0px;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    -webkit-animation: checkmark-circle 0.6s ease-in-out forwards;
+    animation: checkmark-circle 0.6s ease-in-out forwards;
+}
+
+@keyframes checkmark {
+    0% {
+        stroke-dashoffset: 17px;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+@keyframes checkmark-circle {
+    0% {
+        stroke-dashoffset: 76px;
+    }
+    100% {
+        stroke-dashoffset: 0px;
+    }
+}

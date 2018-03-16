@@ -1,0 +1,147 @@
+button.inside {
+    width: 50px;
+    margin-left: -50px;
+}
+
+.btn-sm {
+    height: 40px;
+    margin-bottom: 5px;
+    margin-top: 1px
+}
+
+input[type="text"].inside {
+    display: initial;
+    padding-right: 50px;
+}
+
+.tippy-tooltip-content {
+    margin-top: 4px;
+}
+
+a {
+    color: inherit;
+}
+
+a:hover {
+    color: inherit;
+}
+
+th, td {
+    text-align: center;
+}
+
+.scroll {
+    overflow: scroll;
+    overflow-x: auto;
+    max-height: 350px;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+/* C9 LUL */
+
+.ribbon {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    position: absolute;
+}
+
+.ribbon::before,
+.ribbon::after {
+    position: absolute;
+    z-index: -1;
+    content: '';
+    display: block;
+    border: 5px solid #79b53e;
+}
+
+.ribbon span {
+    position: absolute;
+    display: block;
+    width: 200px;
+    padding: 10px 0;
+    padding-right: 25px;
+    background-color: white;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .1);
+    color: #79b53e;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+    text-align: center;
+}
+
+.ribbon-top-right {
+    top: -10px;
+    right: -10px;
+}
+
+@media screen and (min-width: 768px) {
+    .calendar-xd {
+        width: 60%;
+        margin: 0 auto;
+    }
+}
+
+.ribbon-top-right::before,
+.ribbon-top-right::after {
+    border-top-color: transparent;
+    border-right-color: transparent;
+}
+
+.ribbon-top-right::before {
+    top: 0;
+    left: 0;
+}
+
+.ribbon-top-right::after {
+    bottom: 0;
+    right: 0;
+}
+
+.ribbon-top-right span {
+    left: -25px;
+    top: 30px;
+    transform: rotate(45deg);
+}
+
+.rrt-title {
+    width: 100% !important;
+}
+
+.top-center {
+    margin-left: -50% !important;
+    width: 100% !important;
+    z-index: 99999998 !important;
+}
+
+.rrt-text {
+    max-height: initial !important;
+}
+
+.close-toastr {
+    margin-right: 20px;
+    text-align: right;
+}
+
+.-noheader > .rt-table > .-header {
+    display: none;
+}
+
+.margin-15 {
+    margin: 15px;
+}

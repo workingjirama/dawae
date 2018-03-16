@@ -1,0 +1,26 @@
+{
+  "lang": "en",
+  "menu": {
+    "main": "E - GRADUATE STUDENT",
+    "home": "home",
+    "request": "Request"
+  },
+  "teacher": {
+    "teacher": "teacher",
+    "committee": "committee",
+    "advisor": "advisor",
+    "position": "position of "
+  },
+  "etc": {
+    "list": "list of ",
+    "add": "add ",
+    "data": "data",
+    "no": "no "
+  },
+  "error": {
+    "select": "no selection of "
+  },
+  "order": {
+    "select": "please select "
+  }
+}
