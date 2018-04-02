@@ -1,4 +1,4 @@
-import {TYPE} from "./../config"
+import {URL, TYPE} from "./../config"
 
 export function setHeader(header) {
     return function (dispatch) {
@@ -14,6 +14,21 @@ export function setContainer(container) {
         dispatch({
             type: TYPE.MAIN.SET_CONTAINER,
             payload: container
+        })
+    }
+}
+
+export function getCurrntUser() {
+    return function (dispatch) {
+        fetch(URL.MAIN.GET_CURRENT_USER, {
+            credentials: 'same-origin'
+        }).then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            dispatch({
+                type: TYPE.MAIN.SET_CURRENT_USER,
+                payload: json
+            })
         })
     }
 }

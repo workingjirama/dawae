@@ -13,6 +13,7 @@ use Yii;
  *
  * @property EgsBranchBinder[] $egsBranchBinders
  * @property EgsCommitteeFee[] $egsCommitteeFees
+ * @property EgsRequestFee[] $egsRequestFees
  */
 class EgsBranch extends \yii\db\ActiveRecord
 {
@@ -70,5 +71,13 @@ class EgsBranch extends \yii\db\ActiveRecord
     public function getEgsCommitteeFees()
     {
         return $this->hasMany(EgsCommitteeFee::className(), ['branch_id' => 'branch_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsRequestFees()
+    {
+        return $this->hasMany(EgsRequestFee::className(), ['branch_id' => 'branch_id']);
     }
 }

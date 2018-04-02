@@ -20,8 +20,7 @@ class LevelController extends Controller
 {
     public function actionAll()
     {
-        $format = new Format();
         $level = EgsLevel::find()->all();
-        return Json::encode($format->level($level));
+        return Json::encode(Format::level($level));
     }
 }

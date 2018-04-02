@@ -12,6 +12,7 @@ use Yii;
  * @property string $plan_type_name_en
  *
  * @property EgsCommitteeFee[] $egsCommitteeFees
+ * @property EgsLoad $egsLoad
  * @property EgsPlan[] $egsPlans
  */
 class EgsPlanType extends \yii\db\ActiveRecord
@@ -62,6 +63,14 @@ class EgsPlanType extends \yii\db\ActiveRecord
     public function getEgsCommitteeFees()
     {
         return $this->hasMany(EgsCommitteeFee::className(), ['plan_type_id' => 'plan_type_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsLoad()
+    {
+        return $this->hasOne(EgsLoad::className(), ['plan_type_id' => 'plan_type_id']);
     }
 
     /**

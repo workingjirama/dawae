@@ -8,7 +8,7 @@ export function getCalendarItemWithStatus(levelId) {
     return dispatch => {
         const data = new FormData()
         data.append('json', JSON.stringify(levelId))
-        fetch(_URL.GET_ALL_CALENDAR_ITEM_WITH_STATUS(levelId), {
+        fetch(_URL.GET_ALL_CALENDAR_ITEM_WITH_STATUS, {
             method: 'post',
             body: data,
             credentials: 'same-origin'

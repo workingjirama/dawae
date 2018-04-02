@@ -3,6 +3,7 @@
 namespace app\modules\egs\controllers\reset;
 
 use app\modules\egs\models\EgsActionItem;
+use app\modules\egs\models\EgsActionOnStatus;
 use app\modules\egs\models\EgsActionType;
 use app\modules\egs\models\EgsAdvisor;
 use app\modules\egs\models\EgsCalendar;
@@ -17,6 +18,7 @@ use app\modules\egs\models\EgsPositionType;
 use app\modules\egs\models\EgsRequestDefense;
 use app\modules\egs\models\EgsAction;
 use app\modules\egs\models\EgsRequestDocStatus;
+use app\modules\egs\models\EgsRequestDocument;
 use app\modules\egs\models\EgsRequestStatus;
 use app\modules\egs\models\EgsRequestStatusType;
 use app\modules\egs\models\EgsRoom;
@@ -31,6 +33,7 @@ class Request
 {
     public function delete()
     {
+        EgsRequestDocument::deleteAll();
         EgsCommittee::deleteAll();
         EgsDefense::deleteAll();
         EgsAdvisor::deleteAll();
@@ -38,9 +41,6 @@ class Request
         EgsPosition::deleteAll();
         EgsPositionType::deleteAll();
         EgsRoom::deleteAll();
-        EgsStatus::deleteAll();
-        EgsStatusType::deleteAll();
-        EgsStatusLabel::deleteAll();
     }
 
     public function insert()
@@ -48,128 +48,6 @@ class Request
         $this->position_type();
         $this->position();
         $this->room();
-        $this->status_type();
-        $this->status_label();
-        $this->request_status();
-    }
-
-    private function status_type()
-    {
-        $status_type = new EgsStatusType();
-        $status_type->status_type_id = 1;
-        $status_type->status_type_name = 'REQ_PET';
-        if (!$status_type->save()) return Json::encode($status_type->errors);
-        $status_type = new EgsStatusType();
-        $status_type->status_type_id = 2;
-        $status_type->status_type_name = 'REQ_DOC';
-        if (!$status_type->save()) return Json::encode($status_type->errors);
-        $status_type = new EgsStatusType();
-        $status_type->status_type_id = 3;
-        $status_type->status_type_name = 'DEF';
-        if (!$status_type->save()) return Json::encode($status_type->errors);
-    }
-
-    private function request_status()
-    {
-        $status = new EgsStatus();
-        $status->status_id = 4;
-        $status->status_name_th = 'ยังไม่ได้ส่งใบคำร้อง';
-        $status->status_name_en = 'YANG MAI DAI SONG PET';
-        $status->status_type_id = 1;
-        $status->status_label_id = 2;
-        if (!$status->save()) return Json::encode($status->errors);
-        $status = new EgsStatus();
-        $status->status_id = 5;
-        $status->status_name_th = 'ส่งใบคำร้องแล้ว';
-        $status->status_name_en = 'SONG PET LAEW';
-        $status->status_type_id = 1;
-        $status->status_label_id = 1;
-        if (!$status->save()) return Json::encode($status->errors);
-        $status = new EgsStatus();
-        $status->status_id = 6;
-        $status->status_name_th = 'ไม่ต้องส่งใบคำร้อง';
-        $status->status_name_en = 'MAI TONG SONG PET';
-        $status->status_type_id = 1;
-        $status->status_label_id = 1;
-        if (!$status->save()) return Json::encode($status->errors);
-
-        $status = new EgsStatus();
-        $status->status_id = 1;
-        $status->status_name_th = 'ยังไม่ได้อัพโหลดเอกสารสอบ';
-        $status->status_name_en = 'YANG MAI DAI UPLOAD DOC';
-        $status->status_type_id = 2;
-        $status->status_label_id = 2;
-        if (!$status->save()) return Json::encode($status->errors);
-        $status = new EgsStatus();
-        $status->status_id = 2;
-        $status->status_name_th = 'อัพโหลดเอกสารสอบแล้ว';
-        $status->status_name_en = 'UPLOAD DOC LAEW';
-        $status->status_type_id = 2;
-        $status->status_label_id = 1;
-        if (!$status->save()) return Json::encode($status->errors);
-        $status = new EgsStatus();
-        $status->status_id = 3;
-        $status->status_name_th = 'ไม่ต้องอัพโหลดเอกสาร';
-        $status->status_name_en = 'MAI TONG UPLOAD DOC';
-        $status->status_type_id = 2;
-        $status->status_label_id = 1;
-        if (!$status->save()) return Json::encode($status->errors);
-
-        $status = new EgsStatus();
-        $status->status_id = 7;
-        $status->status_name_th = 'ยังไม่พร้อมสอบ';
-        $status->status_name_en = 'YANG MAI PROM SORB';
-        $status->status_type_id = 3;
-        $status->status_label_id = 2;
-        if (!$status->save()) return Json::encode($status->errors);
-        $status = new EgsStatus();
-        $status->status_id = 8;
-        $status->status_name_th = 'ยังไม่มีผลสอบ';
-        $status->status_name_en = 'YANG MAI MEE PON SORB';
-        $status->status_type_id = 3;
-        $status->status_label_id = 4;
-        if (!$status->save()) return Json::encode($status->errors);
-        $status = new EgsStatus();
-        $status->status_id = 9;
-        $status->status_name_th = 'สอบผ่าน(ต้องส่งเอกสารหลังสอบ)';
-        $status->status_name_en = 'PASS WITH DOC';
-        $status->status_type_id = 3;
-        $status->status_label_id = 3;
-        if (!$status->save()) return Json::encode($status->errors);
-        $status = new EgsStatus();
-        $status->status_id = 10;
-        $status->status_name_th = 'สอบผ่าน';
-        $status->status_name_en = 'PASS';
-        $status->status_type_id = 3;
-        $status->status_label_id = 1;
-        if (!$status->save()) return Json::encode($status->errors);
-        $status = new EgsStatus();
-        $status->status_id = 11;
-        $status->status_name_th = 'สอบไม่ผ่าน';
-        $status->status_name_en = 'YOU SHALL NOT PASS';
-        $status->status_type_id = 3;
-        $status->status_label_id = 2;
-        if (!$status->save()) return Json::encode($status->errors);
-    }
-
-    private function status_label()
-    {
-        $status_label = new EgsStatusLabel();
-        $status_label->status_label_id = 1;
-        $status_label->status_label_name = 'success';
-        if (!$status_label->save()) return Json::encode($status_label->errors);
-        $status_label = new EgsStatusLabel();
-        $status_label->status_label_id = 2;
-        $status_label->status_label_name = 'danger';
-        if (!$status_label->save()) return Json::encode($status_label->errors);
-        $status_label = new EgsStatusLabel();
-        $status_label->status_label_id = 3;
-        $status_label->status_label_name = 'warning';
-        if (!$status_label->save()) return Json::encode($status_label->errors);
-        $status_label = new EgsStatusLabel();
-        $status_label->status_label_id = 4;
-        $status_label->status_label_name = 'info';
-        if (!$status_label->save()) return Json::encode($status_label->errors);
     }
 
     private function position_type()
@@ -190,6 +68,7 @@ class Request
         $position->position_id = 1;
         $position->position_name_th = 'อาจารย์ที่ปรึกษาหลัก';
         $position->position_name_en = 'main-advisor';
+        $position->position_minimum = 1;
         $position->position_maximum = 1;
         $position->position_type_id = 2;
         if (!$position->save()) return Json::encode($position->errors);
@@ -197,6 +76,7 @@ class Request
         $position->position_id = 2;
         $position->position_name_th = 'อาจารย์ที่ปรึกษาร่วม';
         $position->position_name_en = 'co-advisor';
+        $position->position_minimum = 0;
         $position->position_maximum = 2;
         $position->position_type_id = 2;
         if (!$position->save()) return Json::encode($position->errors);
@@ -204,6 +84,7 @@ class Request
         $position->position_id = 3;
         $position->position_name_th = 'ประธานกรรมการ';
         $position->position_name_en = 'main-committee';
+        $position->position_minimum = 1;
         $position->position_maximum = 1;
         $position->position_type_id = 1;
         if (!$position->save()) return Json::encode($position->errors);
@@ -211,6 +92,7 @@ class Request
         $position->position_id = 4;
         $position->position_name_th = 'กรรมการ';
         $position->position_name_en = 'committee';
+        $position->position_minimum = 0;
         $position->position_maximum = 3;
         $position->position_type_id = 1;
         if (!$position->save()) return Json::encode($position->errors);

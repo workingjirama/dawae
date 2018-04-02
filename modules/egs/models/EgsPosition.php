@@ -12,6 +12,7 @@ use Yii;
  * @property string $position_name_en
  * @property integer $position_maximum
  * @property integer $position_type_id
+ * @property integer $position_minimum
  *
  * @property EgsAdvisor[] $egsAdvisors
  * @property EgsCommittee[] $egsCommittees
@@ -41,8 +42,8 @@ class EgsPosition extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['position_id', 'position_name_th', 'position_name_en', 'position_maximum', 'position_type_id'], 'required'],
-            [['position_id', 'position_maximum', 'position_type_id'], 'integer'],
+            [['position_id', 'position_name_th', 'position_name_en', 'position_maximum', 'position_type_id', 'position_minimum'], 'required'],
+            [['position_id', 'position_maximum', 'position_type_id', 'position_minimum'], 'integer'],
             [['position_name_th', 'position_name_en'], 'string', 'max' => 255],
             [['position_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsPositionType::className(), 'targetAttribute' => ['position_type_id' => 'position_type_id']],
         ];
@@ -59,6 +60,7 @@ class EgsPosition extends \yii\db\ActiveRecord
             'position_name_en' => 'Position Name En',
             'position_maximum' => 'Position Maximum',
             'position_type_id' => 'Position Type ID',
+            'position_minimum' => 'Position Minimum',
         ];
     }
 

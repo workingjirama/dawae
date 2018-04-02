@@ -14,6 +14,7 @@ use Yii;
  *
  * @property EgsPlanType $planType
  * @property EgsPlanBinder[] $egsPlanBinders
+ * @property EgsRequestFee[] $egsRequestFees
  */
 class EgsPlan extends \yii\db\ActiveRecord
 {
@@ -73,5 +74,13 @@ class EgsPlan extends \yii\db\ActiveRecord
     public function getEgsPlanBinders()
     {
         return $this->hasMany(EgsPlanBinder::className(), ['plan_id' => 'plan_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsRequestFees()
+    {
+        return $this->hasMany(EgsRequestFee::className(), ['plan_id' => 'plan_id']);
     }
 }

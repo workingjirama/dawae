@@ -21,13 +21,9 @@ use yii\web\Controller;
 
 class StatusController extends Controller
 {
-
     public function actionFind($type_id)
     {
-        $status = EgsStatus::find()->where([
-            'status_type_id' => $type_id
-        ])->all();
-        $format = new Format();
-        return Json::encode($format->status($status));
+        $status = EgsStatus::find()->where(['status_type_id' => $type_id])->all();
+        return Json::encode(Format::status($status));
     }
 }

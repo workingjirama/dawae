@@ -13,19 +13,23 @@ use Yii;
  * @property string $action_detail_th
  * @property string $action_detail_en
  * @property integer $action_type_id
+ * @property integer $action_default
+ * @property integer $redo
  *
  * @property EgsActionType $actionType
  * @property EgsActionDocument[] $egsActionDocuments
  * @property EgsDocument[] $documents
+ * @property EgsActionFor[] $egsActionFors
  * @property EgsActionItem[] $egsActionItems
+ * @property EgsActionOnStatus[] $egsActionOnStatuses
  * @property EgsCommitteeFee[] $egsCommitteeFees
- * @property EgsCourse[] $courses
  * @property EgsDefense[] $egsDefenses
- * @property EgsUserRequest[] $students
+ * @property EgsUserRequest[] $calendars
  * @property EgsRequestDefense[] $egsRequestDefenses
  * @property EgsRequestDefense[] $egsRequestDefenses0
  * @property EgsAction[] $requestTypes
  * @property EgsAction[] $defenseTypes
+ * @property EgsRequestFee[] $egsRequestFees
  */
 class EgsAction extends \yii\db\ActiveRecord
 {
@@ -51,8 +55,8 @@ class EgsAction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['action_id', 'action_name_th', 'action_name_en', 'action_type_id'], 'required'],
-            [['action_id', 'action_type_id'], 'integer'],
+            [['action_id', 'action_name_th', 'action_name_en', 'action_type_id', 'action_default', 'redo'], 'required'],
+            [['action_id', 'action_type_id', 'action_default', 'redo'], 'integer'],
             [['action_name_th', 'action_name_en', 'action_detail_th', 'action_detail_en'], 'string', 'max' => 255],
             [['action_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsActionType::className(), 'targetAttribute' => ['action_type_id' => 'action_type_id']],
         ];
@@ -70,6 +74,8 @@ class EgsAction extends \yii\db\ActiveRecord
             'action_detail_th' => 'Action Detail Th',
             'action_detail_en' => 'Action Detail En',
             'action_type_id' => 'Action Type ID',
+            'action_default' => 'Action Default',
+            'redo' => 'Redo',
         ];
     }
 
@@ -100,9 +106,25 @@ class EgsAction extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getEgsActionFors()
+    {
+        return $this->hasMany(EgsActionFor::className(), ['action_id' => 'action_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getEgsActionItems()
     {
         return $this->hasMany(EgsActionItem::className(), ['action_id' => 'action_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsActionOnStatuses()
+    {
+        return $this->hasMany(EgsActionOnStatus::className(), ['action_id' => 'action_id']);
     }
 
     /**
@@ -116,14 +138,6 @@ class EgsAction extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCourses()
-    {
-        return $this->hasMany(EgsCourse::className(), ['course_id' => 'course_id'])->viaTable('egs_committee_fee', ['action_id' => 'action_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getEgsDefenses()
     {
         return $this->hasMany(EgsDefense::className(), ['defense_type_id' => 'action_id']);
@@ -132,9 +146,9 @@ class EgsAction extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getStudents()
+    public function getCalendars()
     {
-        return $this->hasMany(EgsUserRequest::className(), ['student_id' => 'student_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id'])->viaTable('egs_defense', ['defense_type_id' => 'action_id']);
+        return $this->hasMany(EgsUserRequest::className(), ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id'])->viaTable('egs_defense', ['defense_type_id' => 'action_id']);
     }
 
     /**
@@ -167,5 +181,13 @@ class EgsAction extends \yii\db\ActiveRecord
     public function getDefenseTypes()
     {
         return $this->hasMany(EgsAction::className(), ['action_id' => 'defense_type_id'])->viaTable('egs_request_defense', ['request_type_id' => 'action_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsRequestFees()
+    {
+        return $this->hasMany(EgsRequestFee::className(), ['action_id' => 'action_id']);
     }
 }

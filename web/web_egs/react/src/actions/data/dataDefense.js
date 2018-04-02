@@ -6,7 +6,9 @@ const _TYPE = TYPE.DATA.DATA_DEFENSE
 
 export function getAllDefense() {
     return dispatch => {
-        fetch(_URL.GET_ALL_DEFENSE).then(response => {
+        fetch(_URL.GET_ALL_DEFENSE, {
+            credentials: 'same-origin'
+        }).then(response => {
             return response.json()
         }).then(json => {
             dispatch({
@@ -19,7 +21,9 @@ export function getAllDefense() {
 
 export function getAllDefenseStatus() {
     return dispatch => {
-        fetch(_URL.GET_ALL_DEFENSE_STATUS).then(response => {
+        fetch(_URL.GET_ALL_DEFENSE_STATUS, {
+            credentials: 'same-origin'
+        }).then(response => {
             return response.json()
         }).then(json => {
             dispatch({
@@ -30,29 +34,11 @@ export function getAllDefenseStatus() {
     }
 }
 
-export function getDefenseDetail(index, defense) {
-    const calendarItem = defense.calendar_item
-    return dispatch => {
-        fetch(_URL.GET_DETAIL(calendarItem.calendar_id, calendarItem.action_id, calendarItem.level_id, calendarItem.semester_id, defense.defense_type.action_id)).then(response => {
-            return response.json()
-        }).then(json => {
-            const newDefense = Object.assign({}, defense, {
-                detail: json
-            })
-            dispatch({
-                type: _TYPE.UPDATE_DEFENSE,
-                payload: {
-                    index,
-                    defense: newDefense
-                }
-            })
-        })
-    }
-}
-
 export function getAllAction() {
     return dispatch => {
-        fetch(_URL.GET_ALL_ACTION).then(response => {
+        fetch(_URL.GET_ALL_ACTION, {
+            credentials: 'same-origin'
+        }).then(response => {
             return response.json()
         }).then(json => {
             dispatch({
@@ -70,3 +56,114 @@ export function resetDataDefense() {
         })
     }
 }
+
+export function updateResult(defense, post, callback) {
+    return dispatch => {
+        const data = new FormData()
+        data.append('json', JSON.stringify({
+            studentId: defense.student.id,
+            calendarId: defense.calendar_item.calendar_id,
+            actionId: defense.calendar_item.action_id,
+            levelId: defense.calendar_item.level_id,
+            semesterId: defense.calendar_item.semester_id,
+            ownerId: defense.calendar_item.owner_id,
+            defenseTypeId: defense.defense_type.action_id,
+            score: post.score,
+            credit: post.credit,
+            comment: post.comment
+        }))
+        fetch(_URL.UPDATE_RESULT, {
+            method: 'post',
+            body: data,
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            callback(json)
+        })
+    }
+}
+
+export function updateDefenseComment(defense, comment, callback) {
+    return dispatch => {
+        const data = new FormData()
+        data.append('json', JSON.stringify({
+            studentId: defense.student.id,
+            calendarId: defense.calendar_item.calendar_id,
+            actionId: defense.calendar_item.action_id,
+            levelId: defense.calendar_item.level_id,
+            semesterId: defense.calendar_item.semester_id,
+            defenseTypeId: defense.defense_type.action_id,
+            comment
+        }))
+        fetch(_URL.UPDATE_DEFENSE_COMMENT, {
+            method: 'post',
+            body: data,
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            callback(json)
+        })
+    }
+}
+
+export function updateDefenseScore(defense, score, callback) {
+    return dispatch => {
+        const data = new FormData()
+        data.append('json', JSON.stringify({
+            studentId: defense.student.id,
+            calendarId: defense.calendar_item.calendar_id,
+            actionId: defense.calendar_item.action_id,
+            levelId: defense.calendar_item.level_id,
+            semesterId: defense.calendar_item.semester_id,
+            defenseTypeId: defense.defense_type.action_id,
+            score
+        }))
+        fetch(_URL.UPDATE_DEFENSE_SCORE, {
+            method: 'post',
+            body: data,
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            callback(json)
+        })
+    }
+}
+
+export function updateDefenseCredit(defense, credit, callback) {
+    return dispatch => {
+        const data = new FormData()
+        data.append('json', JSON.stringify({
+            studentId: defense.student.id,
+            calendarId: defense.calendar_item.calendar_id,
+            actionId: defense.calendar_item.action_id,
+            levelId: defense.calendar_item.level_id,
+            semesterId: defense.calendar_item.semester_id,
+            defenseTypeId: defense.defense_type.action_id,
+            credit
+        }))
+        fetch(_URL.UPDATE_DEFENSE_CREDIT, {
+            method: 'post',
+            body: data,
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            callback(json)
+        })
+    }
+}
+
+export function updateDefense(index, defense) {
+    return dispatch => {
+        dispatch({
+            type: _TYPE.UPDATE_DEFENSE,
+            payload: {
+                index, defense
+            }
+        })
+    }
+}
+

@@ -1,26 +1,86 @@
 {
   "lang": "en",
-  "menu": {
-    "main": "E - GRADUATE STUDENT",
-    "home": "home",
-    "request": "Request"
+  "nodata": "No Data",
+  "showall": "Show All",
+  "calendarList": {
+    "head": "Calendar List",
+    "active": "active",
+    "add": "add"
   },
-  "teacher": {
-    "teacher": "teacher",
-    "committee": "committee",
-    "advisor": "advisor",
-    "position": "position of "
+  "calendar": {
+    "head": "Calendar Year",
+    "list": "List",
+    "input": "input data",
+    "to": "to",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "activate": "Activate",
+    "activated": "Activated"
   },
-  "etc": {
-    "list": "list of ",
-    "add": "add ",
-    "data": "data",
-    "no": "no "
+  "requestList": {
+    "head": "Request List",
+    "to": "to",
+    "list": "List",
+    "date": "Date",
+    "status": "Status",
+    "add": "Add request",
+    "edit": "Edit request",
+    "not": "Not in date range"
   },
-  "error": {
-    "select": "no selection of "
+  "requestAdd": {
+    "head": "Add Request",
+    "headEdit": "Edit Request",
+    "year": "Year",
+    "date": "Date",
+    "time": "Time",
+    "room": "Room",
+    "advisor": "Advisor",
+    "committee": "Committee",
+    "defense": "",
+    "add": "Click here to add/edit data",
+    "addAdvisor": "Add advisor data",
+    "addCommittee": "Add committee data",
+    "addDefense": "Add defense data",
+    "chooseRoom": "Choose room",
+    "teacherList": "Teacher list"
   },
-  "order": {
-    "select": "please select "
+  "dataRequest": {
+    "head": "Request List"
+  },
+  "dataDefense": {
+    "head": "Defense List"
+  },
+  "data": {
+    "student": "Student",
+    "request": "Request",
+    "studentId": "ID",
+    "studentFname": "First Name",
+    "studentLname": "Last Name",
+    "level": "Degree",
+    "requestName": "Request Name",
+    "semester": "Semester",
+    "petStatus": "Petition Status",
+    "paperStatus": "Paper Status",
+    "teacher": "Teacher Name",
+    "advisor": "Advisor",
+    "committee": "Committee",
+    "position": "Position",
+    "defense": "Defense",
+    "defenseName": "Defense Name",
+    "date": "Defense Date",
+    "defStatus": "Defense Status",
+    "from": "From",
+    "to": "to",
+    "at": "At",
+    "upload": "upload",
+    "reUpload": "reupload",
+    "edit": "edit",
+    "open": "open",
+    "noUpload": "no upload file",
+    "confirm": "confirm",
+    "cancel": "cancel",
+    "score": "Score",
+    "credit": "Credit",
+    "comment": "Comment"
   }
 }

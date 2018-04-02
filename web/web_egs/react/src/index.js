@@ -7,17 +7,17 @@ import ReduxToastr from 'react-redux-toastr'
 
 const app = document.getElementById('app')
 ReactDOM.render(
-	<Provider store={store}>
-		<div>
-			<Main/>
-			<ReduxToastr
-				timeOut={5000}
-				position="top-right"
-				// transitionIn="bounceIn"
-				// transitionOut="bounceOut"
-				preventDuplicates
-				progressBar/>
-		</div>
-	</Provider>
-	, app
+    <Provider store={store}>
+        <div>
+            <Main/>
+            <ReduxToastr
+                timeOut={5000}
+                position="top-right"
+                transitionIn="fadeIn"
+                transitionOut="fadeOut"
+                preventDuplicates
+                progressBar/>
+        </div>
+    </Provider>
+    , app
 )

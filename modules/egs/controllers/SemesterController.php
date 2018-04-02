@@ -18,18 +18,16 @@ class SemesterController extends Controller
 {
     public function actionAll()
     {
-        $format = new Format();
         $semesters = EgsSemester::find()->all();
-        return Json::encode($format->semester($semesters));
+        return Json::encode(Format::semester($semesters));
     }
 
     public function actionFind($calendar_level)
     {
-        $format = new Format();
         $semesters = EgsSemester::find()
             ->joinWith(['egsActionItems ai'])
             ->where(['ai.calendar_level_id' => $calendar_level])
             ->all();
-        return Json::encode($format->semesterWithActionItem($semesters));
+        return Json::encode(Format::semesterWithActionItem($semesters));
     }
 }

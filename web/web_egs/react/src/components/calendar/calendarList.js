@@ -12,15 +12,16 @@ import {showLoading, hideLoading} from 'react-redux-loading-bar'
 import is from 'is_js'
 import {toastr} from 'react-redux-toastr'
 import {Link} from 'react-router-dom'
-import {setHeader} from "../../actions/main";
-import {URL} from "../../config";
+import {setHeader} from '../../actions/main'
+import {URL} from '../../config'
 
 @connect((store) => {
     return {
         container: store.main.container,
         calendars: store.calendarList.all,
         post: store.calendarList.post,
-        active: store.calendarList.active
+        active: store.calendarList.active,
+        lang: store.language.data
     }
 })
 export default class CalendarList extends React.Component {
@@ -39,9 +40,9 @@ export default class CalendarList extends React.Component {
     }
 
     componentDidMount() {
-        const {dispatch} = this.props
+        const {dispatch, lang} = this.props
         // NOTE: fetch needed data
-        dispatch(setHeader("CALENDAR LIST"))
+        dispatch(setHeader(lang.calendarList.head))
         dispatch(showLoading())
         dispatch(getAllCalendar())
     }
@@ -57,7 +58,7 @@ export default class CalendarList extends React.Component {
     submitYear() {
         const {post, dispatch, active, container} = this.props
         const year = post.calendar.year
-        if (year === null || year === "")
+        if (year === null || year === '')
             toastr.error('YEAR NULL', 'PLS TRY AGAIN', {preventDuplicates: false})
         else if (year.length !== 4)
             toastr.error('YEAR 4 CHAR ', 'PLS TRY AGAIN', {preventDuplicates: false})
@@ -78,46 +79,49 @@ export default class CalendarList extends React.Component {
     }
 
     render() {
-        const {calendars, active} = this.props
+        const {calendars, active, lang} = this.props
         return (
-            <div class="bs-glyphicons">
-                <ul class="glyphicons-list list-unstyled clearfix">
+            <div class='bs-glyphicons'>
+                <ul class='glyphicons-list list-unstyled clearfix'>
                     <Tooltip
-                        trigger="click"
+                        trigger='click'
                         interactive
-                        size="big"
-                        position="right"
-                        theme="light"
-                        html={[
-                            <input key="input"
-                                   type="text"
-                                   style={{width: "150px"}}
-                                   class="form-control inside"
-                                   placeholder="Year"
-                                   maxLength={4}
-                                   onChange={(ev) => this.changeYear(ev)}/>,
-                            <button key="btn"
+                        size='big'
+                        position='right'
+                        theme='light'
+                        html={
+                            <div style={{display: 'flex'}}>
+                                <input
+                                    type='text'
+                                    style={{width: 100, marginRight: 10}}
+                                    class='form-control'
+                                    placeholder='Year'
+                                    maxLength={4}
+                                    onChange={(ev) => this.changeYear(ev)}/>
+                                <button
                                     disabled={!active.btnAddCalendar}
-                                    class="btn inside btn-sm btn-success"
+                                    style={{margin: 0}}
+                                    class='btn btn-sm btn-success'
                                     onClick={() => this.submitYear()}>
-                                Add
-                            </button>
-                        ]}>
-                        <li style={{backgroundColor: "#eaeaea"}}>
-                            <i style={{marginTop: "19.5px"}} class="glyphicon glyphicon-plus"/>
+                                    {lang.calendarList.add}
+                                </button>
+                            </div>
+                        }>
+                        <li style={{backgroundColor: '#eaeaea'}}>
+                            <i style={{marginTop: '19.5px'}} class='glyphicon glyphicon-plus'/>
                         </li>
                     </Tooltip>
                     {calendars === null ? null : calendars.map(calendar =>
                         <li key={calendar.calendar_id}
                             onClick={() => {
                                 window.location = URL.CALENDAR.CALENDAR.MAIN.LINK(calendar.calendar_id)
-                            }} style={{position: "relative", backgroundColor: "#eaeaea"}}>
+                            }} style={{position: 'relative', backgroundColor: '#eaeaea'}}>
                             {!calendar.calendar_active ? null :
-                                <div class="ribbon ribbon-top-right">
-                                    <span>เปิดใช้งาน</span>
+                                <div class='ribbon ribbon-top-right'>
+                                    <span>{lang.calendarList.active}</span>
                                 </div>
                             }
-                            <span style={{marginTop: "28.5px"}} class="glyphicon-class">
+                            <span style={{marginTop: 28}} class='glyphicon-class'>
                                 <strong>{calendar.calendar_id}</strong>
                             </span>
                         </li>

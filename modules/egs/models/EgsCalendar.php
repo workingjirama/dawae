@@ -11,7 +11,6 @@ use Yii;
  * @property integer $calendar_active
  *
  * @property EgsCalendarItem[] $egsCalendarItems
- * @property EgsActionItem[] $semesters
  */
 class EgsCalendar extends \yii\db\ActiveRecord
 {
@@ -59,13 +58,5 @@ class EgsCalendar extends \yii\db\ActiveRecord
     public function getEgsCalendarItems()
     {
         return $this->hasMany(EgsCalendarItem::className(), ['calendar_id' => 'calendar_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSemesters()
-    {
-        return $this->hasMany(EgsActionItem::className(), ['semester_id' => 'semester_id', 'action_id' => 'action_id', 'level_id' => 'level_id'])->viaTable('egs_calendar_item', ['calendar_id' => 'calendar_id']);
     }
 }

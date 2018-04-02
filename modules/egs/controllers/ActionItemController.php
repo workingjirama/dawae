@@ -15,24 +15,14 @@ use yii\web\Controller;
 
 class ActionItemController extends Controller
 {
-
-    private $ACTION_ITEM_ACTIVE = 1;
-
-    public function findAll()
-    {
-        return EgsActionItem::find()->all();
-    }
-
     public function actionFind()
     {
         $semester = EgsSemester::find()->one();
         $action_items = EgsActionItem::find()
             ->where([
-                'action_item_active' => $this->ACTION_ITEM_ACTIVE,
                 'semester_id' => $semester->semester_id
             ])
             ->all();
-        $format = new Format();
-        return Json::encode($format->actionItemActionOnly($action_items));
+        return Json::encode(Format::actionItemActionOnly($action_items));
     }
 }

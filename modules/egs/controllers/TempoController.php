@@ -22,9 +22,15 @@ class TempoController extends Controller
 
     public function actionIndex()
     {
-        $data['temp'] = Yii::$app->getDb()->createCommand('SELECT * FROM view_pis_user')->queryAll();
-        return $this->render('tempo', $data);
-//        return $this->render('tempo_offline');
+        $datas = [];
+        $persons = Yii::$app->getDb()->createCommand('SELECT * FROM view_pis_user')->queryAll();
+        foreach ($persons as $person) {
+            $person['program'] = Yii::$app->getDb()->createCommand(
+                'SELECT * FROM reg_program WHERE PROGRAMID LIKE "' . $person['program_id'] . '"'
+            )->queryOne()['PROGRAMNAME'];
+            array_push($datas, $person);
+        }
+        return $this->render('tempo', ['temp' => $datas]);
     }
 
     public function actionJson()

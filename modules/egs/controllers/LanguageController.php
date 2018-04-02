@@ -2,7 +2,6 @@
 
 namespace app\modules\egs\controllers;
 
-
 use app\modules\egs\models\EgsCalendar;
 use Yii;
 
@@ -13,11 +12,8 @@ use yii\web\Controller;
 
 class LanguageController extends Controller
 {
-
-
     public function actionGet()
     {
-        $lang = new Language();
-        return Json::encode($lang->getDbLang());
+        return Json::encode(Config::get_language());
     }
 }

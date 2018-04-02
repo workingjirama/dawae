@@ -13,6 +13,7 @@ use Yii;
  * @property integer $status_type_id
  * @property integer $status_label_id
  *
+ * @property EgsActionOnStatus[] $egsActionOnStatuses
  * @property EgsDefense[] $egsDefenses
  * @property EgsStatusLabel $statusLabel
  * @property EgsStatusType $statusType
@@ -68,6 +69,14 @@ class EgsStatus extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getEgsActionOnStatuses()
+    {
+        return $this->hasMany(EgsActionOnStatus::className(), ['status_id' => 'status_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getEgsDefenses()
     {
         return $this->hasMany(EgsDefense::className(), ['defense_status_id' => 'status_id']);
@@ -94,7 +103,7 @@ class EgsStatus extends \yii\db\ActiveRecord
      */
     public function getEgsUserRequests()
     {
-        return $this->hasMany(EgsUserRequest::className(), ['doc_status_id' => 'status_id']);
+        return $this->hasMany(EgsUserRequest::className(), ['paper_status_id' => 'status_id']);
     }
 
     /**
@@ -102,6 +111,6 @@ class EgsStatus extends \yii\db\ActiveRecord
      */
     public function getEgsUserRequests0()
     {
-        return $this->hasMany(EgsUserRequest::className(), ['pet_status_id' => 'status_id']);
+        return $this->hasMany(EgsUserRequest::className(), ['petition_status_id' => 'status_id']);
     }
 }

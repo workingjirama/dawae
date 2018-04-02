@@ -21,8 +21,7 @@ class RoomController extends Controller
 {
     public function actionAll()
     {
-        $format = new Format();
         $rooms = EgsRoom::find()->all();
-        return Json::encode($format->room($rooms));
+        return Json::encode(Format::room($rooms));
     }
 }

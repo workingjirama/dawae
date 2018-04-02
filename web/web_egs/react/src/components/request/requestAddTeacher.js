@@ -4,6 +4,7 @@ import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
 import {toastr} from 'react-redux-toastr'
 import {setPost} from "../../actions/request/requestAdd";
 import jquery from 'jquery'
+import {Tooltip} from 'react-tippy'
 
 const grid = 12
 
@@ -23,11 +24,15 @@ const getListStyle = (isDraggingOver) => ({
     minHeight: 50
 })
 
+const MAX_LOADED = 2
+
 @connect((store) => {
     return {
+        // calendarItem: store.requestAdd.calendarItem,
         teachers: store.requestAdd.teachers,
         positions: store.requestAdd.positions,
         post: store.requestAdd.post,
+        lang: store.language.data
     }
 })
 export default class RequestAddTeacher extends React.Component {
@@ -64,19 +69,28 @@ export default class RequestAddTeacher extends React.Component {
     }
 
     addTeacher() {
-        const {dispatch, post} = this.props
+        const {dispatch, post, positions} = this.props
         let newPost = Object.assign({}, post, {
             ...post,
             teachers: this.state.teachers
         })
-        dispatch(setPost(newPost))
-        jquery('.close-toastr').click()
-        // toastr.removeByType('message')
+        let minimum = false
+        positions.map(position => {
+            let size = this.state.teachers.filter(teacher => teacher.position === position.position_id).length
+            console.log(position.position_name, position.position_minimum, size)
+            if (position.position_minimum > size) {
+                toastr.error(`${position.position_name} minimum is ${position.position_minimum}`, 'PLS TRY AGAIN', {preventDuplicates: false})
+                minimum = true
+            }
+        })
+        if (!minimum) {
+            dispatch(setPost(newPost))
+            jquery('.close-toastr').click()
+        }
     }
 
-
     render() {
-        const {teachers, positions, post} = this.props
+        const {calendarItem, teachers, positions, post, lang} = this.props
         return (
             positions === null || teachers === null ? null :
                 <DragDropContext onDragEnd={this.onDragEnd}>
@@ -114,27 +128,59 @@ export default class RequestAddTeacher extends React.Component {
                                 )}
                             </div>
                             <div class="col-md-6">
-                                <div>รายการอาจารย์</div>
+                                <div>{lang.requestAdd.teacherList}</div>
                                 <Droppable droppableId="source">
                                     {(provided, snapshot) => (
                                         <div class="scroll" ref={provided.innerRef}
                                              style={getListStyle(snapshot.isDraggingOver)}>
                                             {teachers.filter((teacher) => {
                                                 return this.state.teachers.filter((teacher_) => teacher_.teacher === teacher.id).length === 0
-                                            }).map((teacher, idx) => (
-                                                <Draggable key={idx} draggableId={teacher.id}>
-                                                    {(provided, snapshot) => (
+                                            }).map((teacher, idx) =>
+                                                teacher.loaded >= MAX_LOADED && !calendarItem.action.is_defense ?
+                                                    <div style={{
+                                                        padding: 24,
+                                                        margin: '0px 0px 12px',
+                                                        backgroundColor: 'white'
+                                                    }}>
                                                         <div>
-                                                            <div ref={provided.innerRef}
-                                                                 style={getItemStyle(provided.draggableStyle, snapshot.isDragging)}
-                                                                 {...provided.dragHandleProps}>
-                                                                {`${teacher.prefix} ${teacher.person_fname} ${teacher.person_lname}`}
-                                                            </div>
-                                                            {provided.placeholder}
+                                                            {`${teacher.prefix} ${teacher.person_fname} ${teacher.person_lname}`}
                                                         </div>
-                                                    )}
-                                                </Draggable>
-                                            ))}
+                                                        <div style={{
+                                                            float: 'right',
+                                                            color: 'red'
+                                                        }}>
+                                                            {`${teacher.loaded}(+${teacher.pre_loaded})/${MAX_LOADED}`}
+                                                        </div>
+                                                    </div> :
+                                                    <Draggable key={idx} draggableId={teacher.id}>
+                                                        {(provided, snapshot) => (
+                                                            <div>
+                                                                <div ref={provided.innerRef}
+                                                                     style={getItemStyle(provided.draggableStyle, snapshot.isDragging)}
+                                                                     {...provided.dragHandleProps}>
+                                                                    <div>
+                                                                        {`${teacher.prefix} ${teacher.person_fname} ${teacher.person_lname}`}
+                                                                    </div>
+                                                                    {
+                                                                        calendarItem.action.is_defense ? null :
+                                                                            <div style={{float: 'right'}}>
+                                                                                <label style={{color: 'green'}}>
+                                                                                    {`${teacher.loaded}`}
+                                                                                </label>
+                                                                                <label style={{color: '#FFBA00'}}>
+                                                                                    {`(+${teacher.pre_loaded})`}
+                                                                                </label>
+                                                                                <label style={{color: 'green'}}>
+                                                                                    {`/${MAX_LOADED}`}
+                                                                                </label>
+                                                                            </div>
+                                                                    }
+                                                                </div>
+                                                                {provided.placeholder}
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                            )}
                                             {provided.placeholder}
                                         </div>
                                     )}
@@ -143,7 +189,7 @@ export default class RequestAddTeacher extends React.Component {
                             <div class="clearfix"/>
                         </div>
                         <button class=" btn btn-block btn-green" onClick={() => this.addTeacher()}>
-                            I HATE MYSELF
+                            {calendarItem.action.is_defense ? lang.requestAdd.addCommittee : lang.requestAdd.addAdvisor}
                         </button>
                     </div>
                 </DragDropContext>

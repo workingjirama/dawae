@@ -9,7 +9,7 @@ use yii\web\Controller;
 class ResetController extends Controller
 {
 
-    private $calendar, $request, $fee;
+    private $calendar, $request, $fee, $dummy, $printing, $binder;
 
     public function __construct($id, Module $module, array $config = [])
     {
@@ -17,6 +17,9 @@ class ResetController extends Controller
         $this->calendar = new Calendar();
         $this->request = new Request();
         $this->fee = new Fee();
+        $this->dummy = new Dummy();
+        $this->printing = new Printing();
+        $this->binder = new Binder();
     }
 
     public function actionIndex()
@@ -25,38 +28,41 @@ class ResetController extends Controller
         $this->insert();
         $this->quote();
     }
-
-    public function actionCalendar()
-    {
-        $this->calendar->delete();
-        $this->calendar->insert();
-    }
-
-
-    public function actionRequest()
-    {
-        $this->request->delete();
-        $this->request->insert();
-    }
-
-    public function actionFee()
-    {
-        $this->fee->delete();
-        $this->fee->insert();
-    }
-
+//    public function actionCalendar()
+//    {
+//        $this->calendar->delete();
+//        $this->calendar->insert();
+//    }
+//
+//
+//    public function actionRequest()
+//    {
+//        $this->request->delete();
+//        $this->request->insert();
+//    }
+//
+//    public function actionFee()
+//    {
+//        $this->fee->delete();
+//        $this->fee->insert();
+//    }
     private function delete()
     {
         $this->request->delete();
         $this->fee->delete();
         $this->calendar->delete();
+        $this->printing->delete();
+        $this->binder->delete();
     }
 
     private function insert()
     {
+        $this->binder->insert();
         $this->calendar->insert();
         $this->request->insert();
         $this->fee->insert();
+        $this->dummy->insert();
+        $this->printing->insert();
     }
 
     private function quote()

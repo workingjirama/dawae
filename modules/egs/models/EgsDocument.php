@@ -18,7 +18,7 @@ use Yii;
  * @property EgsDocumentType $documentType
  * @property EgsSubmitType $submitType
  * @property EgsRequestDocument[] $egsRequestDocuments
- * @property EgsUserRequest[] $students
+ * @property EgsUserRequest[] $calendars
  */
 class EgsDocument extends \yii\db\ActiveRecord
 {
@@ -109,8 +109,8 @@ class EgsDocument extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getStudents()
+    public function getCalendars()
     {
-        return $this->hasMany(EgsUserRequest::className(), ['student_id' => 'student_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id'])->viaTable('egs_request_document', ['document_id' => 'document_id']);
+        return $this->hasMany(EgsUserRequest::className(), ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'undo' => 'undo', 'student_id' => 'student_id'])->viaTable('egs_request_document', ['document_id' => 'document_id']);
     }
 }

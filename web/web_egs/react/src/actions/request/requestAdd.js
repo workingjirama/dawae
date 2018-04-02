@@ -4,9 +4,11 @@ import 'whatwg-fetch'
 const _URL = URL.REQUEST.REQUEST_ADD
 const _TYPE = TYPE.REQUEST.REQUEST_ADD
 
-export function getCalendarItem(calendarId, semesterId, actionId, callback) {
+export function getCalendarItem(ownerId, calendarId, semesterId, actionId, callback) {
     return dispatch => {
-        fetch(_URL.GET_CALENDAR_ITEM(calendarId, semesterId, actionId), {credentials: 'same-origin'}).then(response => {
+        fetch(_URL.GET_CALENDAR_ITEM(ownerId, calendarId, semesterId, actionId), {
+            credentials: 'same-origin'
+        }).then(response => {
             return response.json()
         }).then(json => {
             dispatch({
@@ -20,7 +22,9 @@ export function getCalendarItem(calendarId, semesterId, actionId, callback) {
 
 export function getAllTeacher() {
     return dispatch => {
-        fetch(_URL.GET_ALL_TEACHER).then(response => {
+        fetch(_URL.GET_ALL_TEACHER, {
+            credentials: 'same-origin'
+        }).then(response => {
             return response.json()
         }).then(json => {
             dispatch({
@@ -33,7 +37,9 @@ export function getAllTeacher() {
 
 export function getAllPosition(actionId) {
     return dispatch => {
-        fetch(_URL.GET_ALL_POSITION(actionId)).then(response => {
+        fetch(_URL.GET_ALL_POSITION(actionId), {
+            credentials: 'same-origin'
+        }).then(response => {
             return response.json()
         }).then(json => {
             dispatch({
@@ -46,7 +52,9 @@ export function getAllPosition(actionId) {
 
 export function getAllRoom() {
     return dispatch => {
-        fetch(_URL.GET_ALL_ROOM).then(resp => {
+        fetch(_URL.GET_ALL_ROOM, {
+            credentials: 'same-origin'
+        }).then(resp => {
             return resp.json()
         }).then(json => {
             dispatch({
@@ -66,17 +74,18 @@ export function setPost(post) {
     }
 }
 
-export function insertUserRequest(post, calendarItem) {
+export function insertUserRequest(init, post, calendarItem, callback) {
     return dispatch => {
         const data = new FormData()
         post = {
-            ...post,
+            ...post, init,
             isDefense: calendarItem.action.is_defense,
             calendarItem: {
                 calendarId: calendarItem.calendar.calendar_id,
                 actionId: calendarItem.action.action_id,
                 levelId: calendarItem.level.level_id,
                 semesterId: calendarItem.semester.semester_id,
+                owner_id: calendarItem.owner_id,
             }
         }
         data.append('json', JSON.stringify(post))
@@ -87,7 +96,31 @@ export function insertUserRequest(post, calendarItem) {
         }).then(response => {
             return response.json()
         }).then(json => {
-            console.log(json)
+            callback(json)
+        })
+    }
+}
+
+
+export function getDefenseEvent(calendarItem, defense, callback) {
+    return dispatch => {
+        const data = new FormData()
+        data.append('json', JSON.stringify({
+            calendarId: calendarItem.calendar.calendar_id,
+            ownerId: calendarItem.owner_id,
+            levelId: calendarItem.level.level_id,
+            semesterId: calendarItem.semester.semester_id,
+            roomId: defense.room,
+            defenseTypeId: defense.type
+        }))
+        fetch(_URL.GET_DEFENSE_EVENT, {
+            method: 'post',
+            body: data,
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            callback(json)
         })
     }
 }
@@ -97,6 +130,5 @@ export function resetRequestAdd() {
         dispatch({
             type: _TYPE.RESET
         })
-
     }
 }

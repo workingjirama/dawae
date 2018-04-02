@@ -24,9 +24,10 @@ class Module extends \yii\base\Module
         Yii::$app->request->enableCsrfValidation = false;
 
         Yii::setAlias('@here', __DIR__);
+        Yii::setAlias('@egsweb(dir)', __DIR__ . '/../../web/web_egs');
+        Yii::setAlias('@egsweb', __DIR__ . '/../../web/web_egs');
 
         $this->layout = '@here/views/layouts/main';
-//        $this->layout = '@here/views/layouts/main_offline';
 
         date_default_timezone_set('Asia/Bangkok');
     }

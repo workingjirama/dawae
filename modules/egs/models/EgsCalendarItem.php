@@ -11,6 +11,7 @@ use Yii;
  * @property integer $action_id
  * @property integer $level_id
  * @property integer $semester_id
+ * @property integer $owner_id
  * @property string $calendar_item_date_start
  * @property string $calendar_item_date_end
  *
@@ -42,8 +43,8 @@ class EgsCalendarItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['calendar_id', 'action_id', 'level_id', 'semester_id'], 'required'],
-            [['calendar_id', 'action_id', 'level_id', 'semester_id'], 'integer'],
+            [['calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id'], 'required'],
+            [['calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id'], 'integer'],
             [['calendar_item_date_start', 'calendar_item_date_end'], 'safe'],
             [['calendar_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsCalendar::className(), 'targetAttribute' => ['calendar_id' => 'calendar_id']],
             [['semester_id', 'action_id', 'level_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsActionItem::className(), 'targetAttribute' => ['semester_id' => 'semester_id', 'action_id' => 'action_id', 'level_id' => 'level_id']],
@@ -60,6 +61,7 @@ class EgsCalendarItem extends \yii\db\ActiveRecord
             'action_id' => 'Action ID',
             'level_id' => 'Level ID',
             'semester_id' => 'Semester ID',
+            'owner_id' => 'Owner ID',
             'calendar_item_date_start' => 'Calendar Item Date Start',
             'calendar_item_date_end' => 'Calendar Item Date End',
         ];
@@ -86,6 +88,6 @@ class EgsCalendarItem extends \yii\db\ActiveRecord
      */
     public function getEgsUserRequests()
     {
-        return $this->hasMany(EgsUserRequest::className(), ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id']);
+        return $this->hasMany(EgsUserRequest::className(), ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id']);
     }
 }

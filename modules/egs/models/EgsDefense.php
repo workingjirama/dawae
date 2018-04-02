@@ -7,11 +7,6 @@ use Yii;
 /**
  * This is the model class for table "egs_defense".
  *
- * @property integer $student_id
- * @property integer $calendar_id
- * @property integer $action_id
- * @property integer $level_id
- * @property integer $semester_id
  * @property integer $defense_type_id
  * @property string $defense_date
  * @property string $defense_time_start
@@ -21,12 +16,18 @@ use Yii;
  * @property integer $defense_score
  * @property integer $defense_credit
  * @property string $defense_comment
+ * @property integer $calendar_id
+ * @property integer $action_id
+ * @property integer $level_id
+ * @property integer $semester_id
+ * @property integer $owner_id
+ * @property integer $student_id
  *
  * @property EgsCommittee[] $egsCommittees
  * @property EgsAction $defenseType
  * @property EgsRoom $room
  * @property EgsStatus $defenseStatus
- * @property EgsUserRequest $student
+ * @property EgsUserRequest $calendar
  */
 class EgsDefense extends \yii\db\ActiveRecord
 {
@@ -52,14 +53,14 @@ class EgsDefense extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['student_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'defense_type_id', 'defense_date', 'defense_time_start', 'defense_time_end', 'room_id', 'defense_status_id'], 'required'],
-            [['student_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'defense_type_id', 'room_id', 'defense_status_id', 'defense_score', 'defense_credit'], 'integer'],
+            [['defense_type_id', 'defense_date', 'defense_time_start', 'defense_time_end', 'room_id', 'defense_status_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'required'],
+            [['defense_type_id', 'room_id', 'defense_status_id', 'defense_score', 'defense_credit', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'integer'],
             [['defense_date', 'defense_time_start', 'defense_time_end'], 'safe'],
             [['defense_comment'], 'string', 'max' => 2560],
             [['defense_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsAction::className(), 'targetAttribute' => ['defense_type_id' => 'action_id']],
             [['room_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsRoom::className(), 'targetAttribute' => ['room_id' => 'room_id']],
             [['defense_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['defense_status_id' => 'status_id']],
-            [['student_id', 'calendar_id', 'action_id', 'level_id', 'semester_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsUserRequest::className(), 'targetAttribute' => ['student_id' => 'student_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id']],
+            [['calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsUserRequest::className(), 'targetAttribute' => ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']],
         ];
     }
 
@@ -69,11 +70,6 @@ class EgsDefense extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'student_id' => 'Student ID',
-            'calendar_id' => 'Calendar ID',
-            'action_id' => 'Action ID',
-            'level_id' => 'Level ID',
-            'semester_id' => 'Semester ID',
             'defense_type_id' => 'Defense Type ID',
             'defense_date' => 'Defense Date',
             'defense_time_start' => 'Defense Time Start',
@@ -83,6 +79,12 @@ class EgsDefense extends \yii\db\ActiveRecord
             'defense_score' => 'Defense Score',
             'defense_credit' => 'Defense Credit',
             'defense_comment' => 'Defense Comment',
+            'calendar_id' => 'Calendar ID',
+            'action_id' => 'Action ID',
+            'level_id' => 'Level ID',
+            'semester_id' => 'Semester ID',
+            'owner_id' => 'Owner ID',
+            'student_id' => 'Student ID',
         ];
     }
 
@@ -91,7 +93,7 @@ class EgsDefense extends \yii\db\ActiveRecord
      */
     public function getEgsCommittees()
     {
-        return $this->hasMany(EgsCommittee::className(), ['student_id' => 'student_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'defense_type_id' => 'defense_type_id']);
+        return $this->hasMany(EgsCommittee::className(), ['defense_type_id' => 'defense_type_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
     }
 
     /**
@@ -121,8 +123,8 @@ class EgsDefense extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getStudent()
+    public function getCalendar()
     {
-        return $this->hasOne(EgsUserRequest::className(), ['student_id' => 'student_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id']);
+        return $this->hasOne(EgsUserRequest::className(), ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
     }
 }

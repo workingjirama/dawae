@@ -11,10 +11,10 @@ import {
     getAllPosition, getAllTeacher, getCalendarItem, getAllRoom,
     insertUserRequest, setPost, resetRequestAdd
 } from "../../actions/request/requestAdd";
-import 'whatwg-fetch'
 import CalendarList from "../calendar/calendarList";
 import RequestAddTeacher from "./requestAddTeacher";
 import RequestAddDefense from "./requestAddDefense";
+import moment from 'moment'
 
 @connect((store) => {
     return {
@@ -22,15 +22,17 @@ import RequestAddDefense from "./requestAddDefense";
         teachers: store.requestAdd.teachers,
         positions: store.requestAdd.positions,
         rooms: store.requestAdd.rooms,
-        post: store.requestAdd.post
+        post: store.requestAdd.post,
+        lang: store.language.data
     }
 })
 export default class RequestAdd extends React.Component {
 
-
     constructor(props) {
         super(props)
-        this.calendar = null
+        const {lang} = props
+        moment.locale(lang.lang)
+        this.edit
     }
 
     componentWillUpdate(props) {
@@ -43,15 +45,32 @@ export default class RequestAdd extends React.Component {
     }
 
     insert() {
-        const {dispatch, post, calendarItem} = this.props
-        dispatch(insertUserRequest(post, calendarItem))
+        const {dispatch, post, calendarItem, positions} = this.props
+        if (calendarItem.request_defense.length !== post.defenses.length) {
+            toastr.error('DEFENSE NULL', 'PLS TRY AGAIN', {preventDuplicates: false})
+            return
+        }
+        if (post.teachers.length === 0) {
+            toastr.error('TEACHER NULL', 'PLS TRY AGAIN', {preventDuplicates: false})
+            return
+        }
+        if (post.teachers.length === 0) {
+            return
+        }
+        dispatch(insertUserRequest(false, post, calendarItem, resp => {
+            window.location = URL.REQUEST.REQUEST_LIST.MAIN.LINK
+        }))
     }
 
     componentDidMount() {
-        const {dispatch, calendarId, semesterId, actionId} = this.props
+        const {dispatch, calendarId, semesterId, actionId, ownerId, lang} = this.props
         // NOTE: fetch needed data
-        dispatch(getCalendarItem(calendarId, semesterId, actionId, calendarItem =>
-            calendarItem.user_request === null ? null : this.initPost(calendarItem.user_request)
+        dispatch(getCalendarItem(ownerId, calendarId, semesterId, actionId, calendarItem => {
+                this.edit = calendarItem.user_request !== null && !calendarItem.action.action_default
+                dispatch(setHeader(this.edit ? lang.requestAdd.headEdit : lang.requestAdd.head))
+                if (calendarItem.user_request !== null)
+                    this.initPost(calendarItem.user_request)
+            }
         ))
         dispatch(getAllPosition(actionId))
         dispatch(getAllTeacher())
@@ -60,20 +79,22 @@ export default class RequestAdd extends React.Component {
 
     initPost(userRequest) {
         const {dispatch, post, calendarItem} = this.props
-        // const defense_ = userRequest.defenses
         let defenses = []
         userRequest.defenses === undefined ? null :
-            userRequest.defenses.map(defense => {
+            userRequest.defenses.map(
+                defense => {
                     const defense_ = {
                         date: defense.defense_date,
                         end: defense.defense_time_end,
                         room: defense.room.room_id,
-                        start: defense.defense_time_start
+                        start: defense.defense_time_start,
+                        type: defense.defense_type.action_id
                     }
                     defenses.push(defense_)
                 }
             )
-        const teachers_ = userRequest.advisors.length !== 0 ? userRequest.advisors : userRequest.defenses[0].committees
+        const teachers_ = userRequest.advisors.length !== 0 ? userRequest.advisors :
+            userRequest.defenses.length === 0 ? [] : userRequest.defenses[0].committees
         let teachers = []
         teachers_.map(teacher_ => {
             const teacher = {
@@ -89,55 +110,56 @@ export default class RequestAdd extends React.Component {
     }
 
     render() {
-        const {calendarItem, positions, teachers, post, rooms} = this.props
-        if (calendarItem !== null) console.log(calendarItem.request_defense)
+        const {calendarItem, positions, teachers, post, rooms, lang} = this.props
         return (
             calendarItem === null ? null :
-                <div class="margin-bottom-30">
-                    <div class="col-md-6">
-                        <div ref={elm => {
-                            this.calendar = elm
-                        }}/>
-                        <div class="margin-bottom-30">
-                            <h4 class="padding-bottom-20">
-                                {`${calendarItem.action.action_name} ${calendarItem.semester.semester_name} YEAR ${calendarItem.calendar.calendar_id}`}
+                <div class='margin-bottom-30'>
+                    <div class='col-md-6'>
+                        <div class='margin-bottom-30'>
+                            <h4 class='padding-bottom-20'>
+                                {`${calendarItem.action.action_name} ${calendarItem.semester.semester_name} ${lang.requestAdd.year} ${calendarItem.calendar.calendar_id}`}
                             </h4>
-                            <div class="padding-bottom-20">
+                            <div class='padding-bottom-20'>
                                 <small>{calendarItem.action.action_detail}</small>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <form class="validate margin-0">
+                    <div class='col-md-6'>
+                        <form class='validate margin-0'>
                             <fieldset>
-                                <div class="row">
-                                    <div class="form-group">
+                                <div class='row'>
+                                    <div class='form-group'>
                                         <div style={{paddingBottom: '10px'}}>
                                             <label style={{paddingRight: '10px'}}>
-                                                {calendarItem.action.is_defense ? 'comm' : 'advs'}
+                                                {calendarItem.action.is_defense ? lang.requestAdd.committee : lang.requestAdd.advisor}
                                             </label>
-                                            <button type="button" class="btn btn-default btn-xs"
-                                                    onClick={() => {
-                                                        toastr.removeByType('message')
-                                                        toastr.message('*-*', {
-                                                                timeOut: 0,
-                                                                position: "top-center",
-                                                                component: <RequestAddTeacher/>,
-                                                                attention: true,
-                                                                onAttentionClick: (id) => {
-                                                                }
-                                                            }
-                                                        )
-                                                    }}><i class="fa fa-edit white"/>CLICK ME XD
-                                            </button>
+                                            {
+                                                calendarItem.action.action_default ? null :
+                                                    <button type='button' class='btn btn-default btn-xs'
+                                                            onClick={() => {
+                                                                toastr.removeByType('message')
+                                                                toastr.message(calendarItem.action.is_defense ? lang.requestAdd.addCommittee : lang.requestAdd.addAdvisor, {
+                                                                        timeOut: 0,
+                                                                        position: 'top-center',
+                                                                        component: <RequestAddTeacher
+                                                                            calendarItem={calendarItem}/>,
+                                                                        attention: true,
+                                                                        onAttentionClick: (id) => {
+                                                                        }
+                                                                    }
+                                                                )
+                                                            }}><i class='fa fa-edit white'/>
+                                                        {lang.requestAdd.add}
+                                                    </button>
+                                            }
                                         </div>
-                                        <div class="table-responsive margin-bottom-20">
-                                            <table class="table table-bordered table-vertical-middle nomargin">
+                                        <div class='table-responsive margin-bottom-20'>
+                                            <table class='table table-bordered table-vertical-middle nomargin'>
                                                 <tbody>
                                                 {teachers === null || positions === null ? null :
                                                     post.teachers.length === 0 ?
                                                         <tr>
-                                                            <td>DATA LOL</td>
+                                                            <td>{lang.nodata}</td>
                                                         </tr> :
                                                         positions.map((position, idx1) =>
                                                             post.teachers.filter((val) => val.position === position.position_id).map((teacher, idx2) =>
@@ -154,45 +176,64 @@ export default class RequestAdd extends React.Component {
                                     </div>
                                     {rooms === null ? null :
                                         calendarItem.request_defense.map((defense, index) =>
-                                            <div key={index} class="form-group">
+                                            <div key={index} class='form-group'>
                                                 <div style={{paddingBottom: '10px'}}>
                                                     <label style={{paddingRight: '10px'}}>
-                                                        {'lol defense'}
+                                                        {`${lang.requestAdd.defense}${defense.action.action_name}`}
                                                     </label>
-                                                    <button type="button" class="btn btn-default btn-xs"
-                                                            onClick={() => {
-                                                                toastr.removeByType('message')
-                                                                toastr.message('*-*', {
-                                                                        timeOut: 0,
-                                                                        position: "top-center",
-                                                                        component: <RequestAddDefense index={index}/>,
-                                                                        attention: true,
-                                                                        onAttentionClick: (id) => {
+                                                    {calendarItem.action.action_default ? null :
+                                                        <button type='button'
+                                                                class='btn btn-default btn-xs'
+                                                                onClick={() => {
+                                                                    toastr.removeByType('message')
+                                                                    toastr.message(lang.requestAdd.addDefense, {
+                                                                            timeOut: 0,
+                                                                            position: 'top-center',
+                                                                            component: <RequestAddDefense
+                                                                                calendarItem={calendarItem}
+                                                                                index={index}/>,
+                                                                            attention: true,
+                                                                            onAttentionClick: (id) => {
+                                                                            }
                                                                         }
-                                                                    }
-                                                                )
-                                                            }}>
-                                                        <i class="fa fa-edit white"/>CLICK ME LUL
-                                                    </button>
+                                                                    )
+                                                                }}>
+                                                            <i class='fa fa-edit white'/>
+                                                            {lang.requestAdd.add}
+                                                        </button>
+                                                    }
                                                 </div>
-                                                <div class="table-responsive margin-bottom-20">
-                                                    <table class="table table-bordered table-vertical-middle nomargin">
+                                                <div class='table-responsive margin-bottom-20'>
+                                                    <table
+                                                        class='table table-bordered table-vertical-middle nomargin'>
                                                         <tbody>
                                                         {post.defenses[index] === undefined ?
                                                             <tr>
-                                                                <td>DATA LOL</td>
+                                                                <td>{lang.nodata}</td>
                                                             </tr> : [
-                                                                <tr key="date">
-                                                                    <td>DATE</td>
-                                                                    <td>{`${post.defenses[index].date}`}</td>
+                                                                <tr key='date'>
+                                                                    <td>
+                                                                        {lang.requestAdd.date}
+                                                                    </td>
+                                                                    <td>
+                                                                        {`${moment(new Date(post.defenses[index].date)).format('LL')}`}
+                                                                    </td>
                                                                 </tr>,
-                                                                <tr key="time">
-                                                                    <td>TIME</td>
-                                                                    <td>{`${post.defenses[index].start} ${post.defenses[index].end}`}</td>
+                                                                <tr key='time'>
+                                                                    <td>
+                                                                        {lang.requestAdd.time}
+                                                                    </td>
+                                                                    <td>
+                                                                        {`${moment(new Date(`1995-04-16T${post.defenses[index].start}`)).format('LT')} - ${moment(new Date(`1995-04-16T${post.defenses[index].end}`)).format('LT')}`}
+                                                                    </td>
                                                                 </tr>,
-                                                                <tr key="room">
-                                                                    <td>WHERE</td>
-                                                                    <td>{rooms.filter(room => room.room_id === post.defenses[index].room)[0].room_name}</td>
+                                                                <tr key='room'>
+                                                                    <td>
+                                                                        {lang.requestAdd.room}
+                                                                    </td>
+                                                                    <td>
+                                                                        {rooms.filter(room => room.room_id === post.defenses[index].room)[0].room_name}
+                                                                    </td>
                                                                 </tr>
                                                             ]
                                                         }
@@ -206,8 +247,9 @@ export default class RequestAdd extends React.Component {
                             </fieldset>
                         </form>
                     </div>
-                    <button onClick={() => this.insert()}
-                            class="btn btn-block btn-green">{`CLICK ME TO ADD XD`}</button>
+                    <button onClick={() => this.insert()} class={`btn btn-block btn-${this.edit ? 'info' : 'success'}`}>
+                        {this.edit ? lang.requestAdd.headEdit : lang.requestAdd.head}
+                    </button>
                 </div>
         )
     }

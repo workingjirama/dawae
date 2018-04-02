@@ -7,7 +7,9 @@ const ACTIVE_CALENDAR = 1
 
 export function getAllCalendarItem(calendarId) {
     return dispatch => {
-        fetch(_URL.GET_ALL_CALENDAR_ITEM(calendarId)).then(function (response) {
+        fetch(_URL.GET_ALL_CALENDAR_ITEM(calendarId), {
+            credentials: 'same-origin'
+        }).then(function (response) {
             return response.json()
         }).then(function (json) {
             dispatch({
@@ -20,7 +22,9 @@ export function getAllCalendarItem(calendarId) {
 
 export function getAllSemester() {
     return dispatch => {
-        fetch(_URL.GET_ALL_SEMESTER).then(function (response) {
+        fetch(_URL.GET_ALL_SEMESTER, {
+            credentials: 'same-origin'
+        }).then(function (response) {
             return response.json()
         }).then(function (json) {
             dispatch({
@@ -33,7 +37,9 @@ export function getAllSemester() {
 
 export function getActiveActionItem() {
     return dispatch => {
-        fetch(_URL.GET_ALL_ACTION_ITEM).then(function (response) {
+        fetch(_URL.GET_ALL_ACTION_ITEM, {
+            credentials: 'same-origin'
+        }).then(function (response) {
             return response.json()
         }).then(function (json) {
             dispatch({
@@ -50,7 +56,8 @@ export function updateCalendarItem(idx, calendarItem) {
         data.append('json', JSON.stringify(calendarItem))
         fetch(_URL.UPDATE_CALENDAR_ITEM, {
             method: 'post',
-            body: data
+            body: data,
+            credentials: 'same-origin'
         }).then(function (response) {
             return response.json()
         }).then(function (json) {
@@ -73,7 +80,9 @@ export function resetCalendarLevel() {
 
 export function getAllLevel() {
     return function (dispatch) {
-        fetch(_URL.GET_ALL_LEVEL).then(function (response) {
+        fetch(_URL.GET_ALL_LEVEL, {
+            credentials: 'same-origin'
+        }).then(function (response) {
             return response.json()
         }).then(function (json) {
             dispatch({
@@ -91,6 +100,7 @@ export function activateCalendar(calendar) {
         fetch(_URL.ACTIVATE_CALENDAR, {
             method: 'post',
             body: data,
+            credentials: 'same-origin'
         }).then(function (response) {
             return response.json()
         }).then(function (json) {
@@ -108,13 +118,31 @@ export function activateCalendar(calendar) {
 
 export function getCalendar(calendarId) {
     return function (dispatch) {
-        fetch(_URL.GET_CALENDAR(calendarId)).then(function (response) {
+        fetch(_URL.GET_CALENDAR(calendarId), {
+            credentials: 'same-origin'
+        }).then(function (response) {
             return response.json()
         }).then(function (json) {
             dispatch({
                 type: _TYPE.SET_CALENDAR,
                 payload: json
             })
+        })
+    }
+}
+
+export function getDefense(calendarItem, callback) {
+    return dispatch => {
+        const data = new FormData()
+        data.append('json', JSON.stringify(calendarItem))
+        fetch(_URL.GET_DEFENSE, {
+            method: 'post',
+            body: data,
+            credentials: 'same-origin'
+        }).then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            callback(json)
         })
     }
 }

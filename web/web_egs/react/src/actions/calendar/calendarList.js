@@ -6,7 +6,9 @@ const _TYPE = TYPE.CALENDAR.CALENDAR_LIST
 
 export function getAllCalendar(callback = null) {
     return function (dispatch) {
-        fetch(_URL.GET_ALL).then(function (response) {
+        fetch(_URL.GET_ALL, {
+            credentials: 'same-origin'
+        }).then(function (response) {
             return response.json()
         }).then(function (json) {
             dispatch({
@@ -21,7 +23,11 @@ export function insertCalendar(post, callback) {
     return function (dispatch) {
         const data = new FormData()
         data.append('json', JSON.stringify(post))
-        fetch(_URL.INSERT_CALENDAR, {method: 'post', body: data}).then(function (response) {
+        fetch(_URL.INSERT_CALENDAR, {
+            method: 'post',
+            body: data,
+            credentials: 'same-origin'
+        }).then(function (response) {
             return response.json()
         }).then(function (json) {
             callback(json)

@@ -10,13 +10,11 @@ use Yii;
  * @property integer $action_id
  * @property integer $level_id
  * @property integer $semester_id
- * @property integer $action_item_active
  *
  * @property EgsLevel $level
  * @property EgsAction $action
  * @property EgsSemester $semester
  * @property EgsCalendarItem[] $egsCalendarItems
- * @property EgsCalendar[] $calendars
  */
 class EgsActionItem extends \yii\db\ActiveRecord
 {
@@ -42,8 +40,8 @@ class EgsActionItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['action_id', 'level_id', 'semester_id', 'action_item_active'], 'required'],
-            [['action_id', 'level_id', 'semester_id', 'action_item_active'], 'integer'],
+            [['action_id', 'level_id', 'semester_id'], 'required'],
+            [['action_id', 'level_id', 'semester_id'], 'integer'],
             [['level_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsLevel::className(), 'targetAttribute' => ['level_id' => 'level_id']],
             [['action_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsAction::className(), 'targetAttribute' => ['action_id' => 'action_id']],
             [['semester_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsSemester::className(), 'targetAttribute' => ['semester_id' => 'semester_id']],
@@ -59,7 +57,6 @@ class EgsActionItem extends \yii\db\ActiveRecord
             'action_id' => 'Action ID',
             'level_id' => 'Level ID',
             'semester_id' => 'Semester ID',
-            'action_item_active' => 'Action Item Active',
         ];
     }
 
@@ -93,13 +90,5 @@ class EgsActionItem extends \yii\db\ActiveRecord
     public function getEgsCalendarItems()
     {
         return $this->hasMany(EgsCalendarItem::className(), ['semester_id' => 'semester_id', 'action_id' => 'action_id', 'level_id' => 'level_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCalendars()
-    {
-        return $this->hasMany(EgsCalendar::className(), ['calendar_id' => 'calendar_id'])->viaTable('egs_calendar_item', ['semester_id' => 'semester_id', 'action_id' => 'action_id', 'level_id' => 'level_id']);
     }
 }

@@ -1,6 +1,5 @@
-button.inside {
-    width: 50px;
-    margin-left: -50px;
+.input-xs {
+    height: 30px !important;
 }
 
 .btn-sm {
@@ -9,13 +8,9 @@ button.inside {
     margin-top: 1px
 }
 
-input[type="text"].inside {
-    display: initial;
-    padding-right: 50px;
-}
-
 .tippy-tooltip-content {
     margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 a {
@@ -38,6 +33,16 @@ th, td {
 
 .clickable {
     cursor: pointer;
+}
+
+.custom-close {
+    float: right;
+    font-size: 12px;
+    padding: 12px 10px 10px 10px;
+    display: table;
+    margin: -15px -10px 0 0;
+    margin-right: -10px;
+    padding-right: 10px;
 }
 
 /* C9 LUL */
@@ -91,7 +96,7 @@ th, td {
 }
 
 @media screen and (min-width: 768px) {
-    .calendar-xd {
+    .defense-add {
         width: 60%;
         margin: 0 auto;
     }
@@ -144,4 +149,22 @@ th, td {
 
 .margin-15 {
     margin: 15px;
+}
+
+.fc-helper {
+    background-color: #F19C65 !important;
+    border-color: #F19C65 !important;
+}
+
+.hourselect, .minuteselect {
+    height: initial;
+    padding: initial;
+}
+
+.daterangepicker {
+    z-index: 10000 !important;
+}
+
+.light-theme {
+    background-color: white !important;
 }
