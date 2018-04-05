@@ -7,8 +7,7 @@ use Yii;
 /**
  * This is the model class for table "egs_user_request".
  *
- * @property integer $petition_status_id
- * @property integer $paper_status_id
+ * @property integer $document_status_id
  * @property integer $calendar_id
  * @property integer $action_id
  * @property integer $level_id
@@ -18,6 +17,7 @@ use Yii;
  * @property integer $request_fee
  * @property integer $fee_status_id
  * @property integer $request_fee_paid
+ * @property integer $post_document_status_id
  *
  * @property EgsAdvisor[] $egsAdvisors
  * @property EgsDefense[] $egsDefenses
@@ -25,9 +25,9 @@ use Yii;
  * @property EgsRequestDocument[] $egsRequestDocuments
  * @property EgsDocument[] $documents
  * @property EgsCalendarItem $calendar
- * @property EgsStatus $paperStatus
  * @property EgsStatus $feeStatus
- * @property EgsStatus $petitionStatus
+ * @property EgsStatus $postDocumentStatus
+ * @property EgsStatus $documentStatus
  */
 class EgsUserRequest extends \yii\db\ActiveRecord
 {
@@ -53,12 +53,12 @@ class EgsUserRequest extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['petition_status_id', 'paper_status_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'request_fee', 'fee_status_id', 'request_fee_paid'], 'required'],
-            [['petition_status_id', 'paper_status_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'request_fee', 'fee_status_id', 'request_fee_paid'], 'integer'],
+            [['document_status_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'request_fee', 'fee_status_id', 'request_fee_paid', 'post_document_status_id'], 'required'],
+            [['document_status_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'request_fee', 'fee_status_id', 'request_fee_paid', 'post_document_status_id'], 'integer'],
             [['calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsCalendarItem::className(), 'targetAttribute' => ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id']],
-            [['paper_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['paper_status_id' => 'status_id']],
             [['fee_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['fee_status_id' => 'status_id']],
-            [['petition_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['petition_status_id' => 'status_id']],
+            [['post_document_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['post_document_status_id' => 'status_id']],
+            [['document_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['document_status_id' => 'status_id']],
         ];
     }
 
@@ -68,8 +68,7 @@ class EgsUserRequest extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'petition_status_id' => 'Petition Status ID',
-            'paper_status_id' => 'Paper Status ID',
+            'document_status_id' => 'Document Status ID',
             'calendar_id' => 'Calendar ID',
             'action_id' => 'Action ID',
             'level_id' => 'Level ID',
@@ -79,6 +78,7 @@ class EgsUserRequest extends \yii\db\ActiveRecord
             'request_fee' => 'Request Fee',
             'fee_status_id' => 'Fee Status ID',
             'request_fee_paid' => 'Request Fee Paid',
+            'post_document_status_id' => 'Post Document Status ID',
         ];
     }
 
@@ -133,14 +133,6 @@ class EgsUserRequest extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPaperStatus()
-    {
-        return $this->hasOne(EgsStatus::className(), ['status_id' => 'paper_status_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getFeeStatus()
     {
         return $this->hasOne(EgsStatus::className(), ['status_id' => 'fee_status_id']);
@@ -149,8 +141,16 @@ class EgsUserRequest extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPetitionStatus()
+    public function getPostDocumentStatus()
     {
-        return $this->hasOne(EgsStatus::className(), ['status_id' => 'petition_status_id']);
+        return $this->hasOne(EgsStatus::className(), ['status_id' => 'post_document_status_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDocumentStatus()
+    {
+        return $this->hasOne(EgsStatus::className(), ['status_id' => 'document_status_id']);
     }
 }

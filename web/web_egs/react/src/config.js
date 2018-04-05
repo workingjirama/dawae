@@ -81,11 +81,10 @@ export const URL = {
             },
             GET_ALL_USER_REQUEST: `${egs_base}/user-request/find-all`,
             GET_ALL_ACTION: `${egs_base}/action/find-all?is_defense=0`,
-            GET_ALL_PET_STATUS: `${egs_base}/status/find?type_id=1`,
-            GET_ALL_DOC_STATUS: `${egs_base}/status/find?type_id=2`,
+            GET_ALL_REQUEST_DOCUMENT_STATUS: `${egs_base}/status/find?type_id=1`,
+            GET_ALL_POST_REQUEST_DOCUMENT_STATUS: `${egs_base}/status/post-request-document-status`,
             GET_ALL_FEE_STATUS: `${egs_base}/status/find?type_id=4`,
-            UPDATE_REQUEST_PAPER: `${egs_base}/request-document/update-paper`,
-            UPDATE_REQUEST_PETITION: `${egs_base}/request-document/update-petition`,
+            UPDATE_REQUEST_DOCUMENT: `${egs_base}/request-document/update`,
             UPDATE_REQUEST_FEE: `${egs_base}/user-request/update-fee`
         },
         DATA_DEFENSE: {
@@ -96,10 +95,13 @@ export const URL = {
             GET_ALL_DEFENSE: `${egs_base}/defense/find-all`,
             GET_ALL_ACTION: `${egs_base}/action/find-all?is_defense=1`,
             GET_ALL_DEFENSE_STATUS: `${egs_base}/status/find?type_id=3`,
+            GET_ALL_POST_DEFENSE_DOCUMENT_STATUS: `${egs_base}/status/post-defense-document-status`,
             UPDATE_RESULT: `${egs_base}/defense/update-result`,
             UPDATE_DEFENSE_COMMENT: `${egs_base}/defense/update-comment`,
             UPDATE_DEFENSE_SCORE: `${egs_base}/defense/update-score`,
             UPDATE_DEFENSE_CREDIT: `${egs_base}/defense/update-credit`,
+            GET_ALL_DOC_STATUS: `${egs_base}/status/find?type_id=2`,
+            UPDATE_DEFENSE_DOCUMENT: `${egs_base}/defense-document/update`,
         }
     },
     PRINTING: {
@@ -171,8 +173,8 @@ export const TYPE = {
             UPDATE_USER_REQUEST: 'UPDATE_DATA_REQUEST_USER_REQUEST',
             RESET: 'RESET_DATA_REQUEST',
             SET_ALL_PET_STATUS: 'SET_DATA_REQUEST_ALL_PET_STATUS',
-            SET_ALL_DOC_STATUS: 'SET_DATA_REQUEST_ALL_DOC_STATUS',
             SET_ALL_FEE_STATUS: 'SET_DATA_REQUEST_ALL_FEE_STATUS',
+            SET_ALL_POST_REQUEST_DOCUMENT_STATUS: 'SET_DATA_REQUEST_ALL_REQUEST_DOCUMENT_STATUS'
         },
         DATA_DEFENSE: {
             SET_ALL_DEFENSE: 'SET_DATA_DEFENSE_ALL_DEFENSE',
@@ -180,6 +182,8 @@ export const TYPE = {
             RESET: 'RESET_CALENDAR',
             SET_ALL_DEFENSE_STATUS: 'SET_DATA_DEFENSE_ALL_DEFENSE_STATUS',
             UPDATE_DEFENSE: 'UPDATE_DATA_DEFENSE_DEFENSE',
+            SET_ALL_DOC_STATUS: 'SET_DATA_REQUEST_ALL_DOC_STATUS',
+            SET_ALL_POST_DEFENSE_DOCUMENT_STATUS: 'SET_DATA_DEFENSE_ALL_DEFENSE_DOCUMENT_STATUS'
         }
     },
     PRINTING: {

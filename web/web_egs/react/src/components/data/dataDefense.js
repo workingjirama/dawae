@@ -3,19 +3,15 @@ import {connect} from 'react-redux'
 import ReactTable from 'react-table'
 import {getAllLevel, getAllSemester} from '../../actions/calendar/calendar'
 import {
-    getAllDefense, getAllAction, getDefenseDetail, resetDataDefense,
-    getAllDefenseStatus
+    getAllDefense, getAllAction, resetDataDefense,
+    getAllDefenseStatus, getAllDocStatus, getAllPostDefDocStatus
 } from '../../actions/data/dataDefense'
 import {toastr} from 'react-redux-toastr'
 import {Tooltip} from 'react-tippy'
 import DataDefenseResult from './dataDefenseResult'
 import moment from 'moment'
 import {setHeader} from "../../actions/main"
-
-const notReady = 7
-const student_type = 0
-const teacher_type = 1
-const staff_type = 2
+import DataRequestUpload from "./dataRequestUpload";
 
 @connect((store) => {
     return {
@@ -24,7 +20,9 @@ const staff_type = 2
         actions: store.dataDefense.actions,
         semesters: store.calendar.semesters,
         levels: store.calendar.levels,
+        docStatuses: store.dataDefense.docStatuses,
         defenseStatuses: store.dataDefense.defenseStatuses,
+        postDefDocStatuses: store.dataDefense.postDefDocStatuses,
         lang: store.language.data,
         currentUser: store.main.currentUser
     }
@@ -35,9 +33,6 @@ export default class DataDefense extends React.Component {
         super(props)
         const {currentUser, lang} = props
         moment.locale(lang.lang)
-        this.isStaff = currentUser.user_type_id === staff_type
-        this.isSudent = currentUser.user_type_id === student_type
-        this.isTeacher = currentUser.user_type_id === teacher_type
     }
 
     componentWillUpdate(props) {
@@ -55,16 +50,19 @@ export default class DataDefense extends React.Component {
         dispatch(setHeader(lang.dataDefense.head))
         dispatch(getAllDefense())
         dispatch(getAllDefenseStatus())
+        dispatch(getAllPostDefDocStatus())
+        dispatch(getAllDocStatus())
         dispatch(getAllAction())
         dispatch(getAllSemester())
         dispatch(getAllLevel())
     }
 
     render() {
-        const {defenses, actions, semesters, levels, defenseStatuses, container, lang} = this.props
+        const {defenses, actions, semesters, levels, defenseStatuses, docStatuses, container, lang, currentUser, postDefDocStatuses} = this.props
         return (
             <div>
-                {levels === null || semesters === null || actions === null || defenses === null || defenseStatuses === null ? null :
+                {levels === null || semesters === null || actions === null ||
+                defenses === null || defenseStatuses === null || docStatuses === null || postDefDocStatuses === null ? null :
                     <ReactTable
                         noDataText={lang.nodata}
                         data={defenses}
@@ -174,7 +172,7 @@ export default class DataDefense extends React.Component {
                                 columns: [
                                     {
                                         Header: lang.data.defenseName,
-                                        accessor: 'defense_type.action_id',
+                                        accessor: 'defense_type_id',
                                         Cell: row => {
                                             return actions.filter(action => action.action_id === row.value)[0].action_name
                                         },
@@ -207,8 +205,50 @@ export default class DataDefense extends React.Component {
                                             </select>
                                     },
                                     {
+                                        Header: lang.data.paperStatus,
+                                        accessor: 'document_status',
+                                        Cell: row =>
+                                            <Tooltip
+                                                useContext={true} trigger='click' interactive size='big'
+                                                arrow={true} position='left' theme='light' html={
+                                                <div>
+                                                    {
+                                                        row.original.defense_document.length === 0 ? lang.nodata : row.original.defense_document.map((defenseDocument, index) =>
+                                                            <div key={index}>
+                                                                <DataRequestUpload
+                                                                    editor={row.value.editable}
+                                                                    originalIndex={row.index}
+                                                                    defenseDocument={defenseDocument}
+                                                                    index={index}/>
+                                                                {
+                                                                    index === row.original.defense_document.length - 1 ? null :
+                                                                        <hr style={{marginTop: 8, marginBottom: 8}}/>
+                                                                }
+                                                            </div>
+                                                        )
+                                                    }
+                                                </div>
+                                            }>
+                                                <label
+                                                    class={`clickable label label-${docStatuses.filter(docStatus => docStatus.status_id === row.value.document_status_id)[0].status_label}`}>
+                                                    {docStatuses.filter(docStatus => docStatus.status_id === row.value.document_status_id)[0].status_name}
+                                                </label>
+                                            </Tooltip>,
+                                        Filter: ({filter, onChange}) =>
+                                            <select onChange={event => onChange(event.target.value)}
+                                                    style={{width: '100%', maxHeight: 31}}>
+                                                <option value=''>{lang.showall}</option>
+                                                {docStatuses.map(docStatus =>
+                                                    <option key={docStatus.status_id}
+                                                            value={docStatus.status_id}>
+                                                        {docStatus.status_name}
+                                                    </option>
+                                                )}
+                                            </select>
+                                    },
+                                    {
                                         Header: lang.data.defStatus,
-                                        accessor: 'defense_status_id',
+                                        accessor: 'defense_status',
                                         Cell: row => (
                                             <div>
                                                 <Tooltip
@@ -217,13 +257,13 @@ export default class DataDefense extends React.Component {
                                                     position='left' theme='light'
                                                     html={
                                                         <DataDefenseResult
-                                                            editor={(this.isStaff || this.isTeacher) && notReady !== row.value}
+                                                            editor={row.value.editable && row.value.ready}
                                                             index={row.index}
                                                             defense={row.original}/>
                                                     }>
                                                     <label
-                                                        class={`clickable label label-${defenseStatuses.filter(defenseStatus => defenseStatus.status_id === row.value)[0].status_label}`}>
-                                                        {defenseStatuses.filter(defenseStatus => defenseStatus.status_id === row.value)[0].status_name}
+                                                        class={`clickable label label-${defenseStatuses.filter(defenseStatus => defenseStatus.status_id === row.value.defense_status_id)[0].status_label}`}>
+                                                        {defenseStatuses.filter(defenseStatus => defenseStatus.status_id === row.value.defense_status_id)[0].status_name}
                                                     </label>
                                                 </Tooltip>
                                             </div>
@@ -239,7 +279,50 @@ export default class DataDefense extends React.Component {
                                                     </option>
                                                 )}
                                             </select>
-                                    }
+                                    },
+                                    {
+                                        Header: lang.data.paperStatusAfter,
+                                        accessor: 'post_document_status',
+                                        Cell: row =>
+                                            <Tooltip
+                                                useContext={true} trigger='click' interactive size='big'
+                                                arrow={true} position='left' theme='light' html={
+                                                <div>
+                                                    {
+                                                        row.original.post_defense_document.length === 0 ? lang.nodata : row.original.post_defense_document.map((defenseDocument, index) =>
+                                                            <div key={index}>
+                                                                <DataRequestUpload
+                                                                    editor={row.value.editable && row.value.ready}
+                                                                    ready={row.value.ready}
+                                                                    originalIndex={row.index}
+                                                                    defenseDocument={defenseDocument}
+                                                                    index={index}/>
+                                                                {
+                                                                    index === row.original.post_defense_document.length - 1 ? null :
+                                                                        <hr style={{marginTop: 8, marginBottom: 8}}/>
+                                                                }
+                                                            </div>
+                                                        )
+                                                    }
+                                                </div>
+                                            }>
+                                                <label
+                                                    class={`clickable label label-${postDefDocStatuses.filter(postDefDocStatus => postDefDocStatus.status_id === row.value.post_document_status_id)[0].status_label}`}>
+                                                    {postDefDocStatuses.filter(postDefDocStatus => postDefDocStatus.status_id === row.value.post_document_status_id)[0].status_name}
+                                                </label>
+                                            </Tooltip>,
+                                        Filter: ({filter, onChange}) =>
+                                            <select onChange={event => onChange(event.target.value)}
+                                                    style={{width: '100%', maxHeight: 31}}>
+                                                <option value=''>{lang.showall}</option>
+                                                {postDefDocStatuses.map(postDefDocStatus =>
+                                                    <option key={postDefDocStatus.status_id}
+                                                            value={postDefDocStatus.status_id}>
+                                                        {postDefDocStatus.status_name}
+                                                    </option>
+                                                )}
+                                            </select>
+                                    },
                                 ]
                             }
                         ]}

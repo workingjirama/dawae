@@ -24,8 +24,8 @@ class Module extends \yii\base\Module
         Yii::$app->request->enableCsrfValidation = false;
 
         Yii::setAlias('@here', __DIR__);
-        Yii::setAlias('@egsweb(dir)', __DIR__ . '/../../web/web_egs');
-        Yii::setAlias('@egsweb', __DIR__ . '/../../web/web_egs');
+        Yii::setAlias('@egswebdir', __DIR__ . '/../../web/web_egs');
+        Yii::setAlias('@egsweb', '/web_egs');
 
         $this->layout = '@here/views/layouts/main';
 

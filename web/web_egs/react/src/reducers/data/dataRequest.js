@@ -6,8 +6,8 @@ const init = {
     userRequests: null,
     actions: null,
     petStatuses: null,
-    docStatuses: null,
-    feeStatuses: null
+    feeStatuses: null,
+    postReqDocStatuses: null
 }
 
 export default function reducer(state = init, action) {
@@ -22,10 +22,10 @@ export default function reducer(state = init, action) {
                 ...state,
                 actions: action.payload
             }
-        case _TYPE.SET_ALL_DOC_STATUS:
+        case _TYPE.SET_ALL_POST_REQUEST_DOCUMENT_STATUS:
             return {
                 ...state,
-                docStatuses: action.payload
+                postReqDocStatuses: action.payload
             }
         case _TYPE.SET_ALL_PET_STATUS:
             return {

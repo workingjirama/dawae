@@ -103,11 +103,11 @@ class Dummy
                 $user_request->level_id = $calendar_item->level_id;
                 $user_request->semester_id = $calendar_item->semester_id;
                 $user_request->owner_id = $calendar_item->owner_id;
-                $user_request->petition_status_id = 1;
-                $user_request->paper_status_id = 1;
+                $user_request->document_status_id = 1;
                 $user_request->fee_status_id = 1;
                 $user_request->request_fee = 0;
                 $user_request->request_fee_paid = 0;
+                $user_request->post_document_status_id = 1;
                 if (!$user_request->save()) {
                     echo Json::encode($user_request->errors);
                     exit();
@@ -125,6 +125,8 @@ class Dummy
                 $defense->defense_time_end = '14:00';
                 $defense->room_id = 1;
                 $defense->defense_status_id = 1;
+                $defense->document_status_id = 1;
+                $defense->post_document_status_id = 1;
                 if (!$defense->save()) {
                     echo Json::encode($defense->errors);
                     exit();

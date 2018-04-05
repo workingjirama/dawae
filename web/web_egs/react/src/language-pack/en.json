@@ -60,7 +60,9 @@
     "requestName": "Request Name",
     "semester": "Semester",
     "petStatus": "Petition Status",
+    "petStatusAfter": "Petition Status (Post Defense)",
     "paperStatus": "Paper Status",
+    "paperStatusAfter": "Paper Status (Post Defense)",
     "teacher": "Teacher Name",
     "advisor": "Advisor",
     "committee": "Committee",
@@ -81,6 +83,7 @@
     "cancel": "cancel",
     "score": "Score",
     "credit": "Credit",
-    "comment": "Comment"
+    "comment": "Comment",
+    "cond": "Submit Corrected Paper (Pass Case)"
   }
 }

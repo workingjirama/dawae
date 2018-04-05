@@ -29,4 +29,8 @@ phpunit.phar
 tests/_output/*
 tests/_support/_generated
 
+web/web_egs/react/uploads
+
+web/web_egs/react/docx
+
 web/web_egs/react/node_modules

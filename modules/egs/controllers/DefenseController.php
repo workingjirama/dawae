@@ -17,13 +17,17 @@ use yii\base\Module;
 use yii\helpers\Json;
 use yii\web\Controller;
 
-
 class DefenseController extends Controller
 {
+    private $PASS_DEFENSE_SCORE = 50;
+    private $FINAL_REQUEST_PLUS_DATE = 365;
+    private $FINAL_DEFENSE_PLUS_DATE = 730;
+
     public function actionFindAll()
     {
+        $user = Config::get_current_user();
         $defense = EgsDefense::find()->where(['!=', 'student_id', Config::$SYSTEM_ID])->all();
-        return Json::encode(Format::defenseForListing($defense));
+        return Json::encode(Format::defenseForListing($defense, $user));
     }
 
     public function actionEvent()
@@ -61,7 +65,9 @@ class DefenseController extends Controller
 
     public function actionUpdateResult()
     {
+        $user = Config::get_current_user();
         $post = Json::decode(Yii::$app->request->post('json'));
+        $pass_con = $post['passCon'];
         $comment = preg_replace('/[\n\r]/', '<br/>', $post['comment']);
         $defense = EgsDefense::findOne([
             'student_id' => $post['studentId'],
@@ -75,14 +81,37 @@ class DefenseController extends Controller
         $defense->defense_score = $post['score'];
         $defense->defense_credit = $post['credit'];
         $defense->defense_comment = $post['comment'];
-        $defense_pass = $defense->defense_score >= Config::$PASS_DEFENSE_SCORE;
+        $defense_pass = $defense->defense_score >= $this->PASS_DEFENSE_SCORE;
         $defense->defense_status_id = EgsActionOnStatus::find()
             ->joinWith(['status s'])
             ->where([
                 'action_id' => $defense->defense_type_id,
-                'on_status_id' => $defense_pass ? Config::$ON_SUCCESS : Config::$ON_FAIL,
+                'on_status_id' => $defense_pass ? $pass_con ? Config::$ON_PASS_CONDITIONALLY : Config::$ON_SUCCESS : Config::$ON_FAIL,
                 's.status_type_id' => Config::$STATUS_DEFENSE_TYPE
             ])->one()->status_id;
+
+        $post_defense_document_status = EgsActionOnStatus::find()
+            ->joinWith(['status s'])
+            ->where([
+                'action_id' => $defense->defense_type_id,
+                'on_status_id' => $defense_pass ? $pass_con ? Config::$ON_READY : Config::$ON_NOT_ANYMORE : Config::$ON_NOT_ANYMORE,
+                's.status_type_id' => Config::$STATUS_POST_DEFENSE_DOCUMENT_TYPE
+            ])->one();
+        if (!empty($post_defense_document_status)) {
+            $defense->post_document_status_id = $post_defense_document_status->status_id;
+        }
+        $post_request_document_status = EgsActionOnStatus::find()
+            ->joinWith(['status s'])
+            ->where([
+                'action_id' => $defense->action_id,
+                'on_status_id' => $defense_pass ? Config::$ON_READY : Config::$ON_NOT_ANYMORE,
+                's.status_type_id' => Config::$STATUS_POST_REQUEST_DOCUMENT_TYPE
+            ])->one();
+        $user_request = $defense->calendar;
+        if (!empty($post_request_document_status)) {
+            $user_request->post_document_status_id = $post_request_document_status->status_id;
+            $user_request->save();
+        }
         $redo = $defense->defenseType->redo;
         if (!$defense_pass && $redo && $defense->owner_id === Config::$SYSTEM_ID) {
             $calendar_item = EgsCalendarItem::findOne([
@@ -100,7 +129,7 @@ class DefenseController extends Controller
                 $calendar_item->semester_id = $defense->semester_id;
                 $calendar_item->owner_id = $defense->student_id;
                 $calendar_item->calendar_item_date_start = $defense->defense_date;
-                $calendar_item->calendar_item_date_end = date('Y-m-d', strtotime($defense->defense_date . ' + ' . Config::$FINAL_REQUEST_PLUS_DATE . ' days'));
+                $calendar_item->calendar_item_date_end = date('Y-m-d', strtotime($defense->defense_date . ' + ' . $this->FINAL_REQUEST_PLUS_DATE . ' days'));
                 if (!$calendar_item->save()) return Json::encode($calendar_item->errors);
             } else {
                 foreach ($defense->calendar->calendar->semester->action->egsRequestDefenses0 as $request_defense) {
@@ -124,11 +153,11 @@ class DefenseController extends Controller
                 $calendar_item_->semester_id = $defense->semester_id;
                 $calendar_item_->owner_id = $defense->student_id;
                 $calendar_item_->calendar_item_date_start = $defense->defense_date;
-                $calendar_item_->calendar_item_date_end = date('Y-m-d', strtotime($defense->defense_date . ' + ' . Config::$FINAL_DEFENSE_PLUS_DATE . ' days'));
+                $calendar_item_->calendar_item_date_end = date('Y-m-d', strtotime($defense->defense_date . ' + ' . $this->FINAL_DEFENSE_PLUS_DATE . ' days'));
                 if (!$calendar_item_->save()) return Json::encode($calendar_item_->errors);
             }
         }
         $defense->save();
-        return Json::encode(Format::defenseForListing($defense));
+        return Json::encode(Format::defenseForListing($defense, $user));
     }
 }

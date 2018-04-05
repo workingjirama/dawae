@@ -22,7 +22,8 @@ export default class DataDefenseResult extends React.Component {
             post: {
                 score: defense.defense_score,
                 credit: defense.defense_credit,
-                comment: defense.defense_comment
+                comment: defense.defense_comment,
+                cond: defense.defense_pass_con
             },
             open: {
                 score: false,
@@ -62,15 +63,6 @@ export default class DataDefenseResult extends React.Component {
                 comment: ev.target.value
             }
         })
-    }
-
-    update() {
-        const {dispatch, defense, defenses, index, container} = this.props
-        const {post} = this.state
-        dispatch(updateResult(defense, post, response => {
-            dispatch(updateDefense(index, response))
-            container.click()
-        }))
     }
 
     openScore() {
@@ -124,6 +116,32 @@ export default class DataDefenseResult extends React.Component {
         })
     }
 
+    update() {
+        const {dispatch, defense, defenses, index, container} = this.props
+        const {post} = this.state
+        if (post.score === null) {
+            alert('SCORE NOPE')
+        }
+        else if (defense.defense_credit && post.credit === null) {
+            alert('CREDIT NOPE')
+        }
+        else {
+            dispatch(updateResult(defense, post, response => {
+                dispatch(updateDefense(index, response))
+                container.click()
+            }))
+        }
+    }
+
+    toggleCon(ev) {
+        this.setState({
+            post: {
+                ...this.state.post,
+                cond: ev.target.checked
+            }
+        })
+    }
+
     render() {
         const {defense, editor, lang} = this.props
         const {open, post} = this.state
@@ -138,72 +156,80 @@ export default class DataDefenseResult extends React.Component {
                             <label>
                                 {post.score === null ? lang.nodata : post.score}
                             </label>
-                            {!editor ? null :
-                                <Tooltip
-                                    open={open.score}
-                                    trigger='click' interactive
-                                    position='left' theme='light' html={
-                                    <div style={{display: 'flex'}}>
-                                        <input class='form-control'
-                                               defaultValue={post.score === null ? 0 : post.score}
-                                               min={0}
-                                               max={100}
-                                               onChange={(ev) => this.scoreChange(ev)}
-                                               style={{
-                                                   width: 60,
-                                                   padding: 6,
-                                                   marginRight: 5
-                                               }}
-                                               type='number'/>
-                                        <div onClick={() => this.closeScore()} class='custom-close clickable'>X</div>
-                                    </div>
-                                }>
-                                    <button
-                                        class='btn btn-default btn-xs'
-                                        onClick={() => this.openScore()}>
-                                        <i class='fa fa-edit'/>
-                                        {lang.data.edit}
-                                    </button>
-                                </Tooltip>
+                            {
+                                !editor ? null :
+                                    <Tooltip
+                                        open={open.score}
+                                        trigger='click' interactive
+                                        position='left' theme='light' html={
+                                        <div style={{display: 'flex'}}>
+                                            <input class='form-control'
+                                                   defaultValue={post.score === null ? 0 : post.score}
+                                                   min={0}
+                                                   max={100}
+                                                   onChange={(ev) => this.scoreChange(ev)}
+                                                   style={{
+                                                       width: 60,
+                                                       padding: 6,
+                                                       marginRight: 5
+                                                   }}
+                                                   type='number'/>
+                                            <div onClick={() => this.closeScore()} class='custom-close clickable'>X
+                                            </div>
+                                        </div>
+                                    }>
+                                        <button
+                                            class='btn btn-default btn-xs'
+                                            onClick={() => this.openScore()}>
+                                            <i class='fa fa-edit'/>
+                                            {lang.data.edit}
+                                        </button>
+                                    </Tooltip>
                             }
                         </td>
                     </tr>
-                    <tr>
-                        <td>{lang.data.credit}</td>
-                        <td>
-                            <label>
-                                {post.credit === null ? lang.nodata : post.credit}
-                            </label>
-                            {!editor ? null :
-                                <Tooltip
-                                    open={open.credit}
-                                    trigger='click' interactive
-                                    position='left' theme='light' html={
-                                    <div style={{display: 'flex'}}>
-                                        <input class='form-control'
-                                               defaultValue={post.credit === null ? 0 : post.credit}
-                                               min={0}
-                                               max={12}
-                                               onChange={(ev) => this.creditChange(ev)}
-                                               style={{
-                                                   width: 60,
-                                                   padding: 6,
-                                                   margin: 5
-                                               }}
-                                               type='number'/>
-                                        <div onClick={() => this.closeCredit()} class='custom-close clickable'>X</div>
-                                    </div>
-                                }>
-                                    <div
-                                        class='btn btn-default btn-xs'
-                                        onClick={() => this.openCredit()}>
-                                        <i class='fa fa-edit'/>
-                                        {lang.data.edit}
-                                    </div>
-                                </Tooltip>
-                            }
-                        </td>
-                    </tr>
+                    {
+                        !defense.defense_credit ? null :
+                            <tr>
+                                <td>{lang.data.credit}</td>
+                                <td>
+                                    <label>
+                                        {post.credit === null ? lang.nodata : post.credit}
+                                    </label>
+                                    {
+                                        !editor ? null :
+                                            <Tooltip
+                                                open={open.credit}
+                                                trigger='click' interactive
+                                                position='left' theme='light' html={
+                                                <div style={{display: 'flex'}}>
+                                                    <input class='form-control'
+                                                           defaultValue={post.credit === null ? 0 : post.credit}
+                                                           min={0}
+                                                           max={12}
+                                                           onChange={(ev) => this.creditChange(ev)}
+                                                           style={{
+                                                               width: 60,
+                                                               padding: 6,
+                                                               margin: 5
+                                                           }}
+                                                           type='number'/>
+                                                    <div onClick={() => this.closeCredit()}
+                                                         class='custom-close clickable'>X
+                                                    </div>
+                                                </div>
+                                            }>
+                                                <div
+                                                    class='btn btn-default btn-xs'
+                                                    onClick={() => this.openCredit()}>
+                                                    <i class='fa fa-edit'/>
+                                                    {lang.data.edit}
+                                                </div>
+                                            </Tooltip>
+                                    }
+                                </td>
+                            </tr>
+                    }
                     <tr>
                         <td>{lang.data.comment}</td>
                         <td>
@@ -214,12 +240,13 @@ export default class DataDefenseResult extends React.Component {
                                     </div>
                                 }
                             </label>
-                            {!editor ? null :
-                                <Tooltip
-                                    open={open.comment}
-                                    trigger='click' interactive
-                                    position='left' theme='light' html={
-                                    <div style={{display: 'flex'}}>
+                            {
+                                !editor ? null :
+                                    <Tooltip
+                                        open={open.comment}
+                                        trigger='click' interactive
+                                        position='left' theme='light' html={
+                                        <div style={{display: 'flex'}}>
                                     <textarea
                                         onChange={(ev) => {
                                             this.commentChange(ev)
@@ -230,22 +257,39 @@ export default class DataDefenseResult extends React.Component {
                                             margin: 5
                                         }}
                                         class='form-control' rows={4} cols={50}/>
-                                        <div onClick={() => this.closeComment()} class='custom-close clickable'>X</div>
-                                    </div>
-                                }>
-                                    <button
-                                        class='btn btn-default btn-xs'
-                                        onClick={() => this.openComment()}>
-                                        <i class='fa fa-edit'/>
-                                        {lang.data.edit}
-                                    </button>
-                                </Tooltip>
+                                            <div onClick={() => this.closeComment()} class='custom-close clickable'>
+                                                X
+                                            </div>
+                                        </div>
+                                    }>
+                                        <button
+                                            class='btn btn-default btn-xs'
+                                            onClick={() => this.openComment()}>
+                                            <i class='fa fa-edit'/>
+                                            {lang.data.edit}
+                                        </button>
+                                    </Tooltip>
                             }
                         </td>
                     </tr>
                     </tbody>
                 </table>
-                <button class='btn btn-success btn-block' onClick={() => this.update()}>xQc</button>
+                {
+                    defense.defense_pass_con === null ? null :
+                        <div style={{
+                            textAlign: 'left',
+                            margin: '8px 8px 8px 2px'
+                        }}>
+                            <label>
+                                <input defaultChecked={post.cond} onChange={(ev) => this.toggleCon(ev)} type='checkbox'/>
+                                {lang.data.cond}
+                            </label>
+                        </div>
+                }
+                {
+                    !editor ? null :
+                        <button class='btn btn-success btn-block' onClick={() => this.update()}>xQc</button>
+                }
             </div>
         )
     }

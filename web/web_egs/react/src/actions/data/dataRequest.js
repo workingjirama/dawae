@@ -19,30 +19,31 @@ export function getAllUserRequest() {
     }
 }
 
-export function getAllPetStatus() {
+export function getAllPostReqDocStatus() {
     return dispatch => {
-        fetch(_URL.GET_ALL_PET_STATUS, {
+        fetch(_URL.GET_ALL_POST_REQUEST_DOCUMENT_STATUS, {
             credentials: 'same-origin'
         }).then(response => {
             return response.json()
         }).then(json => {
             dispatch({
-                type: _TYPE.SET_ALL_PET_STATUS,
+                type: _TYPE.SET_ALL_POST_REQUEST_DOCUMENT_STATUS,
                 payload: json
             })
         })
     }
 }
 
-export function getAllDocStatus() {
+
+export function getAllPetStatus() {
     return dispatch => {
-        fetch(_URL.GET_ALL_DOC_STATUS, {
+        fetch(_URL.GET_ALL_REQUEST_DOCUMENT_STATUS, {
             credentials: 'same-origin'
         }).then(response => {
             return response.json()
         }).then(json => {
             dispatch({
-                type: _TYPE.SET_ALL_DOC_STATUS,
+                type: _TYPE.SET_ALL_PET_STATUS,
                 payload: json
             })
         })
@@ -115,7 +116,6 @@ export function toggleFee(checked, userRequest, callback) {
     }
 }
 
-
 export function togglePetition(checked, userRequest, requestDocument, callback) {
     return dispatch => {
         const data = new FormData()
@@ -126,35 +126,10 @@ export function togglePetition(checked, userRequest, requestDocument, callback) 
             levelId: userRequest.calendar_item.level_id,
             semesterId: userRequest.calendar_item.semester_id,
             documentId: requestDocument.document.document_id,
-            owner_id: userRequest.calendar_item.owner_id,
+            ownerId: userRequest.calendar_item.owner_id,
             requestDocumentId: checked ? 1 : null
         }))
-        fetch(_URL.UPDATE_REQUEST_PETITION, {
-            method: 'post',
-            body: data,
-            credentials: 'same-origin'
-        }).then(function (response) {
-            return response.json()
-        }).then(function (response) {
-            callback(response)
-        })
-    }
-}
-
-export function upload(file, requestDocument, userRequest, callback) {
-    return dispatch => {
-        const data = new FormData()
-        data.append('json', JSON.stringify({
-            studentId: userRequest.student.id,
-            calendarId: userRequest.calendar_item.calendar_id,
-            actionId: userRequest.calendar_item.action_id,
-            levelId: userRequest.calendar_item.level_id,
-            semesterId: userRequest.calendar_item.semester_id,
-            documentId: requestDocument.document.document_id,
-            owner_id: userRequest.calendar_item.owner_id
-        }))
-        data.append('paper', file)
-        fetch(_URL.UPDATE_REQUEST_PAPER, {
+        fetch(_URL.UPDATE_REQUEST_DOCUMENT, {
             method: 'post',
             body: data,
             credentials: 'same-origin'

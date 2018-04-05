@@ -2,10 +2,10 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {
     getAllAction,
-    getAllDocStatus, getAllFeeStatus,
+    getAllFeeStatus,
     getAllPetStatus,
     getAllUserRequest,
-    resetDataRequest, toggleFee, togglePetition, updateUserRequest
+    resetDataRequest, toggleFee, togglePetition, updateUserRequest, getAllPostReqDocStatus
 } from '../../actions/data/dataRequest'
 import ReactTable from 'react-table'
 import {getAllLevel, getAllSemester} from '../../actions/calendar/calendar'
@@ -15,10 +15,7 @@ import {URL} from './../../config'
 import DataRequestUpload from './dataRequestUpload'
 import {setHeader} from '../../actions/main'
 import moment from 'moment'
-
-const student_type = 0
-const teacher_type = 1
-const staff_type = 2
+import {getAllDocStatus} from "../../actions/data/dataDefense";
 
 @connect((store) => {
     return {
@@ -27,8 +24,9 @@ const staff_type = 2
         semesters: store.calendar.semesters,
         levels: store.calendar.levels,
         petStatuses: store.dataRequest.petStatuses,
-        docStatuses: store.dataRequest.docStatuses,
+        docStatuses: store.dataDefense.docStatuses,
         feeStatuses: store.dataRequest.feeStatuses,
+        postReqDocStatuses: store.dataRequest.postReqDocStatuses,
         currentUser: store.main.currentUser,
         lang: store.language.data
     }
@@ -39,9 +37,6 @@ export default class DataRequest extends React.Component {
         super(props)
         const {lang, currentUser} = props
         moment.locale(lang.lang)
-        this.isStaff = currentUser.user_type_id === staff_type
-        this.isSudent = currentUser.user_type_id === student_type
-        this.isTeacher = currentUser.user_type_id === teacher_type
     }
 
     componentWillUpdate(props) {
@@ -61,6 +56,7 @@ export default class DataRequest extends React.Component {
         dispatch(getAllPetStatus())
         dispatch(getAllDocStatus())
         dispatch(getAllFeeStatus())
+        dispatch(getAllPostReqDocStatus())
         dispatch(getAllAction())
         dispatch(getAllSemester())
         dispatch(getAllLevel())
@@ -70,25 +66,23 @@ export default class DataRequest extends React.Component {
         const {dispatch} = this.props
         const userRequest = row.original
         dispatch(togglePetition(ev.target.checked, userRequest, requestDocument, response => {
+            // return
             dispatch(updateUserRequest(row.index, response))
         }))
     }
 
     toggleFee(ev, row) {
         const {dispatch} = this.props
-        // console.log(ev.target.checked, row.original, row.index)
         dispatch(toggleFee(ev.target.checked, row.original, response => {
-            // console.log(response)
-            // return
             dispatch(updateUserRequest(row.index, response))
         }))
     }
 
     render() {
-        const {currentUser, userRequests, actions, semesters, levels, petStatuses, docStatuses, feeStatuses, dispatch, lang} = this.props
+        const {currentUser, userRequests, actions, semesters, levels, petStatuses, docStatuses, feeStatuses, dispatch, lang, postReqDocStatuses} = this.props
         return (
             levels === null || semesters === null || actions === null || userRequests === null ||
-            petStatuses === null || docStatuses === null || feeStatuses === null ? null :
+            petStatuses === null || docStatuses === null || feeStatuses === null || postReqDocStatuses === null ? null :
                 <ReactTable
                     noDataText={lang.nodata}
                     data={userRequests}
@@ -123,101 +117,120 @@ export default class DataRequest extends React.Component {
                                         ]}
                                     />
                                 }
-                                {row.original.defenses.length === 0 ? null :
-                                    <div>
-                                        <ReactTable
-                                            data={row.original.defenses}
-                                            showPaginationBottom={false}
-                                            defaultPageSize={row.original.defenses.length}
-                                            className='margin-15'
-                                            style={{backgroundColor: 'white'}}
-                                            columns={[
-                                                {
-                                                    Header: lang.data.defenseName,
-                                                    accessor: 'defense_type.action_name',
-                                                    Cell: row => (
-                                                        <div style={{
-                                                            width: '100%', height: '100%', display: 'table'
-                                                        }}>
+                                {
+                                    row.original.defenses.length === 0 ? null :
+                                        <div>
+                                            <ReactTable
+                                                data={row.original.defenses}
+                                                showPaginationBottom={false}
+                                                defaultPageSize={row.original.defenses.length}
+                                                className='margin-15'
+                                                style={{backgroundColor: 'white'}}
+                                                columns={[
+                                                    {
+                                                        Header: lang.data.defenseName,
+                                                        accessor: 'defense_type.action_name',
+                                                        Cell: row => (
                                                             <div style={{
-                                                                display: 'table-cell',
-                                                                verticalAlign: 'middle'
+                                                                width: '100%', height: '100%', display: 'table'
                                                             }}>
-                                                                {row.value}
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                },
-                                                {
-                                                    Header: lang.data.date,
-                                                    accessor: '',
-                                                    Cell: row => (
-                                                        <div style={{
-                                                            width: '100%', height: '100%', display: 'table'
-                                                        }}>
-                                                            <div style={{
-                                                                display: 'table-cell',
-                                                                verticalAlign: 'middle'
-                                                            }}>
-                                                                <div>
-                                                                    {moment(new Date(row.value.defense_date)).format('LL')}
-                                                                </div>
-                                                                <div>
-                                                                    {`${lang.data.from} ${moment(new Date(`1995-04-16T${row.value.defense_time_start}`)).format('LT')} ${lang.data.to} ${moment(new Date(`1995-04-16T${row.value.defense_time_end}`)).format('LT')}`}
-                                                                </div>
-                                                                <div>
-                                                                    {`${lang.data.at} ${row.value.room.room_name}`}
+                                                                <div style={{
+                                                                    display: 'table-cell',
+                                                                    verticalAlign: 'middle'
+                                                                }}>
+                                                                    {row.value}
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    )
-                                                },
-                                                {
-                                                    Header: lang.data.committee,
-                                                    accessor: 'committees',
-                                                    Cell: row => (
-                                                        <ReactTable
-                                                            data={row.value}
-                                                            showPaginationBottom={false}
-                                                            defaultPageSize={row.value.length}
-                                                            columns={[
-                                                                {
-                                                                    Header: lang.data.teacher,
-                                                                    accessor: 'teacher',
-                                                                    Cell: row => (
-                                                                        `${row.value.prefix}${row.value.person_fname} ${row.value.person_lname}`
-                                                                    )
-                                                                },
-                                                                {
-                                                                    Header: lang.data.position,
-                                                                    accessor: 'position.position_name',
-                                                                },
-                                                            ]}
-                                                        />
-                                                    )
-                                                },
-                                                {
-                                                    Header: lang.data.defStatus,
-                                                    accessor: 'defense_status',
-                                                    Cell: row => (
-                                                        <div style={{
-                                                            width: '100%', height: '100%', display: 'table'
-                                                        }}>
+                                                        )
+                                                    },
+                                                    {
+                                                        Header: lang.data.date,
+                                                        accessor: '',
+                                                        Cell: row => (
                                                             <div style={{
-                                                                display: 'table-cell',
-                                                                verticalAlign: 'middle'
+                                                                width: '100%', height: '100%', display: 'table'
                                                             }}>
-                                                                <label
-                                                                    class={`label label-${row.value.status_label}`}>
-                                                                    {row.value.status_name}
-                                                                </label>
+                                                                <div style={{
+                                                                    display: 'table-cell',
+                                                                    verticalAlign: 'middle'
+                                                                }}>
+                                                                    <div>
+                                                                        {moment(new Date(row.value.defense_date)).format('LL')}
+                                                                    </div>
+                                                                    <div>
+                                                                        {`${lang.data.from} ${moment(new Date(`1995-04-16T${row.value.defense_time_start}`)).format('LT')} ${lang.data.to} ${moment(new Date(`1995-04-16T${row.value.defense_time_end}`)).format('LT')}`}
+                                                                    </div>
+                                                                    <div>
+                                                                        {`${lang.data.at} ${row.value.room.room_name}`}
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    )
-                                                }
-                                            ]}
-                                        />
-                                    </div>
+                                                        )
+                                                    },
+                                                    {
+                                                        Header: lang.data.committee,
+                                                        accessor: 'committees',
+                                                        Cell: row => (
+                                                            <ReactTable
+                                                                data={row.value}
+                                                                showPaginationBottom={false}
+                                                                defaultPageSize={row.value.length}
+                                                                columns={[
+                                                                    {
+                                                                        Header: lang.data.teacher,
+                                                                        accessor: 'teacher',
+                                                                        Cell: row => (
+                                                                            `${row.value.prefix}${row.value.person_fname} ${row.value.person_lname}`
+                                                                        )
+                                                                    },
+                                                                    {
+                                                                        Header: lang.data.position,
+                                                                        accessor: 'position.position_name',
+                                                                    },
+                                                                ]}
+                                                            />
+                                                        )
+                                                    },
+                                                    {
+                                                        Header: lang.data.defStatus,
+                                                        accessor: 'defense_status',
+                                                        Cell: row => (
+                                                            <div style={{
+                                                                width: '100%', height: '100%', display: 'table'
+                                                            }}>
+                                                                <div style={{
+                                                                    display: 'table-cell',
+                                                                    verticalAlign: 'middle'
+                                                                }}>
+                                                                    <label
+                                                                        class={`label label-${row.value.status_label}`}>
+                                                                        {row.value.status_name}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    },
+                                                    {
+                                                        Header: lang.data.paperStatus,
+                                                        accessor: 'document_status_id',
+                                                        Cell: row =>
+                                                            <div style={{
+                                                                width: '100%', height: '100%', display: 'table'
+                                                            }}>
+                                                                <div style={{
+                                                                    display: 'table-cell',
+                                                                    verticalAlign: 'middle'
+                                                                }}>
+                                                                    <label
+                                                                        class={`label label-${docStatuses.filter(docStatus => docStatus.status_id === row.value)[0].status_label}`}>
+                                                                        {docStatuses.filter(docStatus => docStatus.status_id === row.value)[0].status_name}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                    }
+                                                ]}
+                                            />
+                                        </div>
                                 }
                             </div>
                         );
@@ -241,9 +254,8 @@ export default class DataRequest extends React.Component {
                                 {
                                     Header: lang.data.level,
                                     accessor: 'calendar_item.level_id',
-                                    Cell: row => {
-                                        return levels.filter(level => level.level_id === row.value)[0].level_name
-                                    },
+                                    Cell: row =>
+                                        levels.filter(level => level.level_id === row.value)[0].level_name,
                                     Filter: ({filter, onChange}) =>
                                         <select onChange={event => onChange(event.target.value)}
                                                 style={{width: '100%', maxHeight: 31}}>
@@ -263,9 +275,8 @@ export default class DataRequest extends React.Component {
                                 {
                                     Header: lang.data.requestName,
                                     accessor: 'calendar_item.action_id',
-                                    Cell: row => {
-                                        return actions.filter(action => action.action_id === row.value)[0].action_name
-                                    },
+                                    Cell: row =>
+                                        actions.filter(action => action.action_id === row.value)[0].action_name,
                                     Filter: ({filter, onChange}) =>
                                         <select onChange={event => onChange(event.target.value)}
                                                 style={{width: '100%', maxHeight: 31}}>
@@ -280,9 +291,8 @@ export default class DataRequest extends React.Component {
                                 {
                                     Header: lang.data.semester,
                                     accessor: 'calendar_item.semester_id',
-                                    Cell: row => {
-                                        return semesters.filter(semester => semester.semester_id === row.value)[0].semester_name
-                                    },
+                                    Cell: row =>
+                                        semesters.filter(semester => semester.semester_id === row.value)[0].semester_name,
                                     Filter: ({filter, onChange}) =>
                                         <select onChange={event => onChange(event.target.value)}
                                                 style={{width: '100%', maxHeight: 31}}>
@@ -296,8 +306,8 @@ export default class DataRequest extends React.Component {
                                 },
                                 {
                                     Header: 'FEE_STATUS',
-                                    accessor: 'fee_status_id',
-                                    Cell: row => (
+                                    accessor: 'fee_status',
+                                    Cell: row =>
                                         <div>
                                             <Tooltip
                                                 trigger='click' interactive size='big' arrow={true}
@@ -308,7 +318,7 @@ export default class DataRequest extends React.Component {
                                                             {`ค่าสอบ ${row.original.request_fee} บาท`}
                                                         </div>
                                                         {
-                                                            !this.isStaff ? null :
+                                                            !row.value.editable ? null :
                                                                 <label
                                                                     style={{
                                                                         marginRight: 0,
@@ -325,12 +335,11 @@ export default class DataRequest extends React.Component {
                                                     </div>
                                             }>
                                                 <label
-                                                    class={`clickable label label-${feeStatuses[feeStatuses.findIndex(feeStatus => feeStatus.status_id === row.value)].status_label}`}>
-                                                    {feeStatuses[feeStatuses.findIndex(feeStatus => feeStatus.status_id === row.value)].status_name}
+                                                    class={`clickable label label-${feeStatuses[feeStatuses.findIndex(feeStatus => feeStatus.status_id === row.value.fee_status_id)].status_label}`}>
+                                                    {feeStatuses[feeStatuses.findIndex(feeStatus => feeStatus.status_id === row.value.fee_status_id)].status_name}
                                                 </label>
                                             </Tooltip>
-                                        </div>
-                                    ),
+                                        </div>,
                                     Filter: ({filter, onChange}) =>
                                         <select onChange={event => onChange(event.target.value)}
                                                 style={{width: '100%', maxHeight: 31}}>
@@ -344,22 +353,93 @@ export default class DataRequest extends React.Component {
                                         </select>
                                 },
                                 {
-                                    /* TODO : COMFIRM BOX */
                                     Header: lang.data.petStatus,
-                                    accessor: 'petition_status_id',
-                                    Cell: row => (
-                                        <div>
-                                            <Tooltip
-                                                trigger='click' interactive size='big' arrow={true}
-                                                position='left' theme='light' html={
-                                                <div>
-                                                    {row.original.petitions.length === 0 ? lang.nodata : row.original.petitions.map((requestDocument, index) =>
-                                                        <div key={index}>
-                                                            <div style={{display: 'flex'}}>
-                                                                <div style={{marginRight: 10}}>
-                                                                    {requestDocument.document.document_name}
+                                    accessor: 'document_status',
+                                    Cell: row =>
+                                        <Tooltip
+                                            trigger='click' interactive size='big' arrow={true}
+                                            position='left' theme='light' html={
+                                            <div>
+                                                {row.original.request_document.length === 0 ? lang.nodata : row.original.request_document.map((requestDocument, index) =>
+                                                    <div key={index}>
+                                                        <div style={{display: 'flex'}}>
+                                                            <div style={{marginRight: 10}}>
+                                                                {requestDocument.document.document_name}
+                                                            </div>
+                                                            {row.value.editable ?
+                                                                <label
+                                                                    style={{
+                                                                        marginRight: 0,
+                                                                        paddingLeft: 19,
+                                                                        marginTop: -5
+                                                                    }}
+                                                                    class='checkbox'>
+                                                                    <input type='checkbox'
+                                                                           onChange={ev => this.togglePettion(ev, row, requestDocument)}
+                                                                           defaultChecked={requestDocument.request_document_id !== null}/>
+                                                                    <i/>
+                                                                </label> :
+                                                                <div>
+                                                                    {
+                                                                        requestDocument.request_document_id !== null ?
+                                                                            <i style={{
+                                                                                padding: 5,
+                                                                                backgroundColor: '#5cb85c',
+                                                                                color: 'white'
+                                                                            }}
+                                                                               class='fa fa-check'/>
+                                                                            : <i style={{
+                                                                                padding: 5,
+                                                                                backgroundColor: '#d9534f',
+                                                                                color: 'white'
+                                                                            }}
+                                                                                 class='fa fa-close'/>
+                                                                    }
                                                                 </div>
-                                                                {this.isStaff ?
+                                                            }
+                                                        </div>
+                                                        {
+                                                            index === row.original.request_document.length - 1 ? null :
+                                                                <hr key={`hr${index}`}
+                                                                    style={{marginTop: 8, marginBottom: 8}}/>
+                                                        }
+                                                    </div>
+                                                )}
+                                            </div>
+                                        }>
+                                            <label
+                                                class={`clickable label label-${petStatuses.filter(petStatus => petStatus.status_id === row.value.document_status_id)[0].status_label}`}>
+                                                {petStatuses.filter(petStatus => petStatus.status_id === row.value.document_status_id)[0].status_name}
+                                            </label>
+                                        </Tooltip>,
+                                    Filter: ({filter, onChange}) =>
+                                        <select onChange={event => onChange(event.target.value)}
+                                                style={{width: '100%', maxHeight: 31}}>
+                                            <option value=''>{lang.showall}</option>
+                                            {petStatuses.map(petStatus =>
+                                                <option key={petStatus.status_id}
+                                                        value={petStatus.status_id}>
+                                                    {petStatus.status_name}
+                                                </option>
+                                            )}
+                                        </select>
+                                },
+                                {
+                                    Header: lang.data.petStatusAfter,
+                                    accessor: 'post_document_status',
+                                    Cell: row =>
+                                        <Tooltip
+                                            trigger='click' interactive size='big' arrow={true}
+                                            position='left' theme='light' html={
+                                            <div>
+                                                {row.original.post_request_document.length === 0 ? lang.nodata : row.original.post_request_document.map((postReqDoc, index) =>
+                                                    <div key={index}>
+                                                        <div style={{display: 'flex'}}>
+                                                            <div style={{marginRight: 10}}>
+                                                                {postReqDoc.document.document_name}
+                                                            </div>
+                                                            {
+                                                                !row.value.ready ? null : row.value.editable ?
                                                                     <label
                                                                         style={{
                                                                             marginRight: 0,
@@ -368,13 +448,13 @@ export default class DataRequest extends React.Component {
                                                                         }}
                                                                         class='checkbox'>
                                                                         <input type='checkbox'
-                                                                               onChange={ev => this.togglePettion(ev, row, requestDocument)}
-                                                                               defaultChecked={requestDocument.request_document_id !== null}/>
+                                                                               onChange={ev => this.togglePettion(ev, row, postReqDoc)}
+                                                                               defaultChecked={postReqDoc.request_document_id !== null}/>
                                                                         <i/>
                                                                     </label> :
                                                                     <div>
                                                                         {
-                                                                            requestDocument.request_document_id !== null ?
+                                                                            postReqDoc.request_document_id !== null ?
                                                                                 <i style={{
                                                                                     padding: 5,
                                                                                     backgroundColor: '#5cb85c',
@@ -389,76 +469,30 @@ export default class DataRequest extends React.Component {
                                                                                      class='fa fa-close'/>
                                                                         }
                                                                     </div>
-                                                                }
-                                                            </div>
-                                                            {
-                                                                index === row.original.petitions.length - 1 ? null :
-                                                                    <hr key={`hr${index}`}
-                                                                        style={{marginTop: 8, marginBottom: 8}}/>
                                                             }
                                                         </div>
-                                                    )}
-                                                </div>
-                                            }>
-                                                <label
-                                                    class={`clickable label label-${petStatuses.filter(petStatus => petStatus.status_id === row.value)[0].status_label}`}>
-                                                    {petStatuses.filter(petStatus => petStatus.status_id === row.value)[0].status_name}
-                                                </label>
-                                            </Tooltip>
-                                        </div>
-                                    ),
-                                    Filter: ({filter, onChange}) =>
-                                        <select onChange={event => onChange(event.target.value)}
-                                                style={{width: '100%', maxHeight: 31}}>
-                                            <option value=''>{lang.showall}</option>
-                                            {petStatuses.map(petStatus =>
-                                                <option key={petStatus.status_id}
-                                                        value={petStatus.status_id}>
-                                                    {petStatus.status_name}
-                                                </option>
-                                            )}
-                                        </select>
-                                },
-                                {
-                                    Header: lang.data.paperStatus,
-                                    accessor: 'paper_status_id',
-                                    Cell: row => (
-                                        <Tooltip
-                                            useContext={true} trigger='click' interactive size='big'
-                                            arrow={true} position='left' theme='light' html={
-                                            <div>
-                                                {
-                                                    row.original.papers.length === 0 ? lang.nodata : row.original.papers.map((requestDocument, index) =>
-                                                        <div key={index}>
-                                                            <DataRequestUpload
-                                                                editor={row.original.student.id === currentUser.id || this.isStaff}
-                                                                userRequest={row.original}
-                                                                originalIndex={row.index}
-                                                                requestDocument={requestDocument}
-                                                                index={index}/>
-                                                            {
-                                                                index === row.original.papers.length - 1 ? null :
-                                                                    <hr style={{marginTop: 8, marginBottom: 8}}/>
-                                                            }
-                                                        </div>
-                                                    )
-                                                }
+                                                        {
+                                                            index === row.original.post_request_document.length - 1 ? null :
+                                                                <hr key={`hr${index}`}
+                                                                    style={{marginTop: 8, marginBottom: 8}}/>
+                                                        }
+                                                    </div>
+                                                )}
                                             </div>
                                         }>
                                             <label
-                                                class={`clickable label label-${docStatuses.filter(docStatus => docStatus.status_id === row.value)[0].status_label}`}>
-                                                {docStatuses.filter(docStatus => docStatus.status_id === row.value)[0].status_name}
+                                                class={`clickable label label-${postReqDocStatuses.filter(postReqDocStatus => postReqDocStatus.status_id === row.value.post_document_status_id)[0].status_label}`}>
+                                                {postReqDocStatuses.filter(postReqDocStatus => postReqDocStatus.status_id === row.value.post_document_status_id)[0].status_name}
                                             </label>
-                                        </Tooltip>
-                                    ),
+                                        </Tooltip>,
                                     Filter: ({filter, onChange}) =>
                                         <select onChange={event => onChange(event.target.value)}
                                                 style={{width: '100%', maxHeight: 31}}>
                                             <option value=''>{lang.showall}</option>
-                                            {docStatuses.map(docStatus =>
-                                                <option key={docStatus.status_id}
-                                                        value={docStatus.status_id}>
-                                                    {docStatus.status_name}
+                                            {postReqDocStatuses.map(postReqDocStatus =>
+                                                <option key={postReqDocStatus.status_id}
+                                                        value={postReqDocStatus.status_id}>
+                                                    {postReqDocStatus.status_name}
                                                 </option>
                                             )}
                                         </select>
@@ -467,7 +501,6 @@ export default class DataRequest extends React.Component {
                         }
                     ]}
                 />
-
         )
     }
 }

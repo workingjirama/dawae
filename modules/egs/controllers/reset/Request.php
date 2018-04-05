@@ -11,6 +11,7 @@ use app\modules\egs\models\EgsCalendarItem;
 use app\modules\egs\models\EgsCalendarLevel;
 use app\modules\egs\models\EgsCommittee;
 use app\modules\egs\models\EgsDefense;
+use app\modules\egs\models\EgsDefenseDocument;
 use app\modules\egs\models\EgsDefenseStatus;
 use app\modules\egs\models\EgsLevel;
 use app\modules\egs\models\EgsPosition;
@@ -34,6 +35,7 @@ class Request
     public function delete()
     {
         EgsRequestDocument::deleteAll();
+        EgsDefenseDocument::deleteAll();
         EgsCommittee::deleteAll();
         EgsDefense::deleteAll();
         EgsAdvisor::deleteAll();

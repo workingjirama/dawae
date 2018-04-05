@@ -5,7 +5,9 @@ const _TYPE = TYPE.DATA.DATA_DEFENSE
 const init = {
     defenses: null,
     actions: null,
-    defenseStatuses: null
+    defenseStatuses: null,
+    docStatuses: null,
+    postDefDocStatuses: null
 }
 
 export default function reducer(state = init, action) {
@@ -20,10 +22,20 @@ export default function reducer(state = init, action) {
                 ...state,
                 actions: action.payload
             }
+        case _TYPE.SET_ALL_DOC_STATUS:
+            return {
+                ...state,
+                docStatuses: action.payload
+            }
         case _TYPE.SET_ALL_DEFENSE_STATUS:
             return {
                 ...state,
                 defenseStatuses: action.payload
+            }
+        case _TYPE.SET_ALL_POST_DEFENSE_DOCUMENT_STATUS:
+            return {
+                ...state,
+                postDefDocStatuses: action.payload
             }
         case _TYPE.UPDATE_DEFENSE:
             return {

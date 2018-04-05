@@ -72,9 +72,15 @@
                         /* THIS IS TEACHER */
                         case 1: ?>
                             <li>
-                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs') ?>'>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/request') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>Teacher</span>
+                                    <span>คำร้อง</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/defense') ?>'>
+                                    <i class='main-icon fa fa-slack'></i>
+                                    <span>การสอบ</span>
                                 </a>
                             </li>
                             <?php break;

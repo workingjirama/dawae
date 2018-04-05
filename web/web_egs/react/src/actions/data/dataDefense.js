@@ -19,6 +19,63 @@ export function getAllDefense() {
     }
 }
 
+export function getAllPostDefDocStatus() {
+    return dispatch => {
+        fetch(_URL.GET_ALL_POST_DEFENSE_DOCUMENT_STATUS, {
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            dispatch({
+                type: _TYPE.SET_ALL_POST_DEFENSE_DOCUMENT_STATUS,
+                payload: json
+            })
+        })
+    }
+}
+
+export function getAllDocStatus() {
+    return dispatch => {
+        fetch(_URL.GET_ALL_DOC_STATUS, {
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            dispatch({
+                type: _TYPE.SET_ALL_DOC_STATUS,
+                payload: json
+            })
+        })
+    }
+}
+
+export function upload(file, requestDocument, defense, callback) {
+    return dispatch => {
+        const data = new FormData()
+        data.append('json', JSON.stringify({
+            studentId: defense.student.id,
+            calendarId: defense.calendar_item.calendar_id,
+            actionId: defense.calendar_item.action_id,
+            levelId: defense.calendar_item.level_id,
+            semesterId: defense.calendar_item.semester_id,
+            documentId: requestDocument.document.document_id,
+            ownerId: defense.calendar_item.owner_id,
+            defenseTypeId: defense.defense_type_id
+        }))
+        data.append('paper', file)
+        fetch(_URL.UPDATE_DEFENSE_DOCUMENT, {
+            method: 'post',
+            body: data,
+            credentials: 'same-origin'
+        }).then(function (response) {
+            return response.json()
+        }).then(function (response) {
+            callback(response)
+        })
+    }
+}
+
+
 export function getAllDefenseStatus() {
     return dispatch => {
         fetch(_URL.GET_ALL_DEFENSE_STATUS, {
@@ -67,7 +124,8 @@ export function updateResult(defense, post, callback) {
             levelId: defense.calendar_item.level_id,
             semesterId: defense.calendar_item.semester_id,
             ownerId: defense.calendar_item.owner_id,
-            defenseTypeId: defense.defense_type.action_id,
+            defenseTypeId: defense.defense_type_id,
+            passCon: post.cond,
             score: post.score,
             credit: post.credit,
             comment: post.comment

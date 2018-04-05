@@ -135,20 +135,24 @@ export default class RequestAdd extends React.Component {
                                             </label>
                                             {
                                                 calendarItem.action.action_default ? null :
-                                                    <button type='button' class='btn btn-default btn-xs'
-                                                            onClick={() => {
-                                                                toastr.removeByType('message')
-                                                                toastr.message(calendarItem.action.is_defense ? lang.requestAdd.addCommittee : lang.requestAdd.addAdvisor, {
-                                                                        timeOut: 0,
-                                                                        position: 'top-center',
-                                                                        component: <RequestAddTeacher
-                                                                            calendarItem={calendarItem}/>,
-                                                                        attention: true,
-                                                                        onAttentionClick: (id) => {
-                                                                        }
+                                                    <button
+                                                        type='button'
+                                                        class='btn btn-default btn-xs'
+                                                        onClick={() => {
+                                                            toastr.removeByType('message')
+                                                            toastr.message(calendarItem.action.is_defense ? lang.requestAdd.addCommittee : lang.requestAdd.addAdvisor,
+                                                                {
+                                                                    timeOut: 0,
+                                                                    position: 'top-center',
+                                                                    component: <RequestAddTeacher
+                                                                        calendarItem={calendarItem}/>,
+                                                                    attention: true,
+                                                                    onAttentionClick: (id) => {
                                                                     }
-                                                                )
-                                                            }}><i class='fa fa-edit white'/>
+                                                                }
+                                                            )
+                                                        }}>
+                                                        <i class='fa fa-edit white'/>
                                                         {lang.requestAdd.add}
                                                     </button>
                                             }
@@ -156,19 +160,20 @@ export default class RequestAdd extends React.Component {
                                         <div class='table-responsive margin-bottom-20'>
                                             <table class='table table-bordered table-vertical-middle nomargin'>
                                                 <tbody>
-                                                {teachers === null || positions === null ? null :
-                                                    post.teachers.length === 0 ?
-                                                        <tr>
-                                                            <td>{lang.nodata}</td>
-                                                        </tr> :
-                                                        positions.map((position, idx1) =>
-                                                            post.teachers.filter((val) => val.position === position.position_id).map((teacher, idx2) =>
-                                                                <tr key={idx2}>
-                                                                    <td>{teachers.filter(teacher_ => teacher_.id === teacher.teacher)[0].person_fname + ' ' + teachers.filter(teacher_ => teacher_.id === teacher.teacher)[0].person_lname}</td>
-                                                                    <td>{positions.filter(position_ => position_.position_id === teacher.position)[0].position_name}</td>
-                                                                </tr>
+                                                {
+                                                    teachers === null || positions === null ? null :
+                                                        post.teachers.length === 0 ?
+                                                            <tr>
+                                                                <td>{lang.nodata}</td>
+                                                            </tr> :
+                                                            positions.map((position, idx1) =>
+                                                                post.teachers.filter((val) => val.position === position.position_id).map((teacher, idx2) =>
+                                                                    <tr key={idx2}>
+                                                                        <td>{teachers.filter(teacher_ => teacher_.id === teacher.teacher)[0].person_fname + ' ' + teachers.filter(teacher_ => teacher_.id === teacher.teacher)[0].person_lname}</td>
+                                                                        <td>{positions.filter(position_ => position_.position_id === teacher.position)[0].position_name}</td>
+                                                                    </tr>
+                                                                )
                                                             )
-                                                        )
                                                 }
                                                 </tbody>
                                             </table>

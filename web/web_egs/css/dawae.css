@@ -2,6 +2,10 @@
     height: 30px !important;
 }
 
+.label-blue {
+    background-color: #1265A8 !important;
+}
+
 .btn-sm {
     height: 40px;
     margin-bottom: 5px;

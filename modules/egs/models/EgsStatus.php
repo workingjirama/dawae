@@ -15,10 +15,13 @@ use Yii;
  *
  * @property EgsActionOnStatus[] $egsActionOnStatuses
  * @property EgsDefense[] $egsDefenses
+ * @property EgsDefense[] $egsDefenses0
+ * @property EgsDefense[] $egsDefenses1
  * @property EgsStatusLabel $statusLabel
  * @property EgsStatusType $statusType
  * @property EgsUserRequest[] $egsUserRequests
  * @property EgsUserRequest[] $egsUserRequests0
+ * @property EgsUserRequest[] $egsUserRequests1
  */
 class EgsStatus extends \yii\db\ActiveRecord
 {
@@ -85,6 +88,22 @@ class EgsStatus extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getEgsDefenses0()
+    {
+        return $this->hasMany(EgsDefense::className(), ['document_status_id' => 'status_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsDefenses1()
+    {
+        return $this->hasMany(EgsDefense::className(), ['post_document_status_id' => 'status_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getStatusLabel()
     {
         return $this->hasOne(EgsStatusLabel::className(), ['status_label_id' => 'status_label_id']);
@@ -103,7 +122,7 @@ class EgsStatus extends \yii\db\ActiveRecord
      */
     public function getEgsUserRequests()
     {
-        return $this->hasMany(EgsUserRequest::className(), ['paper_status_id' => 'status_id']);
+        return $this->hasMany(EgsUserRequest::className(), ['fee_status_id' => 'status_id']);
     }
 
     /**
@@ -111,6 +130,14 @@ class EgsStatus extends \yii\db\ActiveRecord
      */
     public function getEgsUserRequests0()
     {
-        return $this->hasMany(EgsUserRequest::className(), ['petition_status_id' => 'status_id']);
+        return $this->hasMany(EgsUserRequest::className(), ['post_document_status_id' => 'status_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsUserRequests1()
+    {
+        return $this->hasMany(EgsUserRequest::className(), ['document_status_id' => 'status_id']);
     }
 }

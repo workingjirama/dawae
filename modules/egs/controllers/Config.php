@@ -20,15 +20,15 @@ class Config
     static public $DOCUMENT_PETITION_TYPE = 1;
     static public $DOCUMENT_PAPER_TYPE = 2;
 
-    static public $STATUS_PETITION_TYPE = 1;
-    static public $STATUS_PAPER_TYPE = 2;
+    static public $STATUS_REQUEST_DOCUMENT_TYPE = 1;
+    static public $STATUS_DEFENSE_DOCUMENT_TYPE = 2;
     static public $STATUS_DEFENSE_TYPE = 3;
     static public $STATUS_FEE_TYPE = 4;
+    static public $STATUS_POST_REQUEST_DOCUMENT_TYPE = 5;
+    static public $STATUS_POST_DEFENSE_DOCUMENT_TYPE = 6;
 
     static public $COMMITTEE_MAIN_POSITION = 3;
     static public $COMMITTEE_CO_POSITION = 4;
-    static public $COMMITTEE_MAIN_FEE_PERCENTAGE = .4;
-    static public $COMMITTEE_CO_FEE_PERCENTAGE = .6;
 
     static public $SUBMIT_TYPE_BEFORE = 1;
     static public $SUBMIT_TYPE_AFTER = 2;
@@ -37,9 +37,10 @@ class Config
     static public $ON_SUCCESS = 2;
     static public $ON_FAIL = 3;
     static public $ON_READY = 4;
-    static public $PASS_DEFENSE_SCORE = 50;
-    static public $FINAL_REQUEST_PLUS_DATE = 365;
-    static public $FINAL_DEFENSE_PLUS_DATE = 730;
+    static public $ON_PASS_CONDITIONALLY = 5;
+    static public $ON_TIME_OUT = 6;
+    static public $ON_NOT_ANYMORE = 7;
+
 
     static public $PERSON_STUDENT_TYPE = 0;
     static public $PERSON_TEACHER_TYPE = 1;

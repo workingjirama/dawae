@@ -10,12 +10,12 @@ use Yii;
  * @property integer $document_id
  * @property string $document_name_th
  * @property string $document_name_en
- * @property integer $document_type_id
  * @property integer $submit_type_id
  *
  * @property EgsActionDocument[] $egsActionDocuments
  * @property EgsAction[] $actions
- * @property EgsDocumentType $documentType
+ * @property EgsDefenseDocument[] $egsDefenseDocuments
+ * @property EgsDefense[] $defenseTypes
  * @property EgsSubmitType $submitType
  * @property EgsRequestDocument[] $egsRequestDocuments
  * @property EgsUserRequest[] $calendars
@@ -44,10 +44,9 @@ class EgsDocument extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['document_id', 'document_name_th', 'document_name_en', 'document_type_id', 'submit_type_id'], 'required'],
-            [['document_id', 'document_type_id', 'submit_type_id'], 'integer'],
+            [['document_id', 'document_name_th', 'document_name_en', 'submit_type_id'], 'required'],
+            [['document_id', 'submit_type_id'], 'integer'],
             [['document_name_th', 'document_name_en'], 'string', 'max' => 255],
-            [['document_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsDocumentType::className(), 'targetAttribute' => ['document_type_id' => 'document_type_id']],
             [['submit_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsSubmitType::className(), 'targetAttribute' => ['submit_type_id' => 'submit_type_id']],
         ];
     }
@@ -61,7 +60,6 @@ class EgsDocument extends \yii\db\ActiveRecord
             'document_id' => 'Document ID',
             'document_name_th' => 'Document Name Th',
             'document_name_en' => 'Document Name En',
-            'document_type_id' => 'Document Type ID',
             'submit_type_id' => 'Submit Type ID',
         ];
     }
@@ -85,9 +83,17 @@ class EgsDocument extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getDocumentType()
+    public function getEgsDefenseDocuments()
     {
-        return $this->hasOne(EgsDocumentType::className(), ['document_type_id' => 'document_type_id']);
+        return $this->hasMany(EgsDefenseDocument::className(), ['document_id' => 'document_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDefenseTypes()
+    {
+        return $this->hasMany(EgsDefense::className(), ['defense_type_id' => 'defense_type_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id'])->viaTable('egs_defense_document', ['document_id' => 'document_id']);
     }
 
     /**
@@ -111,6 +117,6 @@ class EgsDocument extends \yii\db\ActiveRecord
      */
     public function getCalendars()
     {
-        return $this->hasMany(EgsUserRequest::className(), ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'undo' => 'undo', 'student_id' => 'student_id'])->viaTable('egs_request_document', ['document_id' => 'document_id']);
+        return $this->hasMany(EgsUserRequest::className(), ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id'])->viaTable('egs_request_document', ['document_id' => 'document_id']);
     }
 }

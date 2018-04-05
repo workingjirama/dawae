@@ -8,7 +8,6 @@ use Yii;
  * This is the model class for table "egs_request_document".
  *
  * @property integer $document_id
- * @property string $request_document_path
  * @property integer $request_document_id
  * @property integer $calendar_id
  * @property integer $action_id
@@ -46,7 +45,6 @@ class EgsRequestDocument extends \yii\db\ActiveRecord
         return [
             [['document_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'required'],
             [['document_id', 'request_document_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'integer'],
-            [['request_document_path'], 'string', 'max' => 255],
             [['document_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsDocument::className(), 'targetAttribute' => ['document_id' => 'document_id']],
             [['calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsUserRequest::className(), 'targetAttribute' => ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']],
         ];
@@ -59,7 +57,6 @@ class EgsRequestDocument extends \yii\db\ActiveRecord
     {
         return [
             'document_id' => 'Document ID',
-            'request_document_path' => 'Request Document Path',
             'request_document_id' => 'Request Document ID',
             'calendar_id' => 'Calendar ID',
             'action_id' => 'Action ID',

@@ -3,7 +3,9 @@
 namespace app\modules\egs\controllers;
 
 use app\modules\egs\models\EgsActionFor;
+use app\modules\egs\models\EgsActionOnStatus;
 use app\modules\egs\models\EgsCommittee;
+use app\modules\egs\models\EgsDefenseDocument;
 use app\modules\egs\models\EgsDocument;
 use app\modules\egs\models\EgsDocumentType;
 use app\modules\egs\models\EgsPrinting;
@@ -28,6 +30,9 @@ use yii\helpers\Json;
 
 class Format
 {
+    static private $user_id;
+    static private $user_type_id;
+
     static public function defenseEvent($defenses)
     {
         /* @var $defense EgsDefense */
@@ -83,7 +88,7 @@ class Format
             $loaded = 0;
             $pre_loaded = 0;
             foreach ($advisors as $advisor) {
-                $loaded = $advisor->calendar->petition_status_id === Config::$COMPLETE_PETITION_STATUS
+                $loaded = $advisor->calendar->document_status_id === Config::$COMPLETE_PETITION_STATUS
                     ? $loaded += $advisor->load->load_amount : $pre_loaded += $advisor->load->load_amount;
             }
             $person_['pre_loaded'] = $pre_loaded;
@@ -263,10 +268,10 @@ class Format
                 /* @var $document EgsDocument */
                 return $document['document_name_' . Config::get_language()];
             },
-            'document_type' => function ($document) {
-                /* @var $document EgsDocument */
-                return Format::document_type($document->documentType);
-            },
+//            'document_type' => function ($document) {
+//                /* @var $document EgsDocument */
+//                return Format::document_type($document->documentType);
+//            },
             'submit' => function ($document) {
                 /* @var $document EgsDocument */
                 return Format::submit_type($document->submitType);
@@ -288,7 +293,6 @@ class Format
             }
         ]]);
     }
-
 
     static public function printing($printings)
     {
@@ -312,6 +316,17 @@ class Format
         ]]);
     }
 
+    static public function defense_document($defense_documents)
+    {
+        return ArrayHelper::toArray($defense_documents, ['app\modules\egs\models\EgsDefenseDocument' => [
+            'document' => function ($defense_document) {
+                /* @var $request_document EgsDefenseDocument */
+                return Format::document($defense_document->document);
+            },
+            'defense_document_path'
+        ]]);
+    }
+
     static public function request_document($request_documents)
     {
         return ArrayHelper::toArray($request_documents, ['app\modules\egs\models\EgsRequestDocument' => [
@@ -319,13 +334,13 @@ class Format
                 /* @var $request_document EgsRequestDocument */
                 return Format::document($request_document->document);
             },
-            'request_document_path',
-            'request_document_id',
+            'request_document_id'
         ]]);
     }
 
-    static public function userRequestForListing($user_requests)
+    static public function userRequestForListing($user_requests, $user_type_id)
     {
+        Format::$user_type_id = (int)$user_type_id;
         return ArrayHelper::toArray($user_requests, ['app\modules\egs\models\EgsUserRequest' => [
             'student' => function ($user_request) {
                 /* @var $user_request EgsUserRequest */
@@ -343,34 +358,62 @@ class Format
                 /* @var $user_request EgsUserRequest */
                 return Format::defenseDetail($user_request->egsDefenses);
             },
-            'paper_status_id',
-            'petition_status_id',
-            'fee_status_id',
+            'document_status' => function ($user_request) {
+                /* @var $user_request EgsUserRequest */
+                $data['document_status_id'] = $user_request->document_status_id;
+                $data['editable'] = Format::$user_type_id === Config::$PERSON_STAFF_TYPE;
+                return $data;
+            },
+            'post_document_status' => function ($user_request) {
+                /* @var $user_request EgsUserRequest */
+                $data['post_document_status_id'] = $user_request->post_document_status_id;
+                $data['editable'] = Format::$user_type_id === Config::$PERSON_STAFF_TYPE;
+                $ready = true;
+                $post_document_status = EgsActionOnStatus::find()->joinWith(['status s'])->where([
+                    'action_id' => $user_request->action_id,
+                    'on_status_id' => Config::$ON_NOT_ANYMORE,
+                    's.status_type_id' => Config::$STATUS_POST_REQUEST_DOCUMENT_TYPE
+                ])->one();
+                if ($post_document_status !== null)
+                    if ($post_document_status->status_id === $user_request->post_document_status_id)
+                        $ready = false;
+                foreach ($user_request->egsDefenses as $defense)
+                    if ($defense->defense_score === null)
+                        $ready = false;
+                $data['ready'] = $ready;
+                return $data;
+            },
+            'fee_status' => function ($user_request) {
+                /* @var $user_request EgsUserRequest */
+                $data['fee_status_id'] = $user_request->fee_status_id;
+                $data['editable'] = Format::$user_type_id === Config::$PERSON_STAFF_TYPE;
+                return $data;
+            },
             'request_fee',
             'request_fee_paid',
-            'papers' => function ($user_request) {
+            'request_document' => function ($user_request) {
                 /* @var $user_request EgsUserRequest */
-                $papers = [];
-                foreach ($user_request->egsRequestDocuments as $requestDocument) {
-                    if ($requestDocument->document->document_type_id === Config::$DOCUMENT_PAPER_TYPE)
-                        array_push($papers, $requestDocument);
-                }
-                return Format::request_document($papers);
+                $request_documents = [];
+                foreach ($user_request->egsRequestDocuments as $request_document)
+                    if ($request_document->document->submit_type_id === Config::$SUBMIT_TYPE_BEFORE)
+                        array_push($request_documents, $request_document);
+                return Format::request_document($request_documents);
             },
-            'petitions' => function ($user_request) {
+            'post_request_document' => function ($user_request) {
                 /* @var $user_request EgsUserRequest */
-                $petitions = [];
-                foreach ($user_request->egsRequestDocuments as $requestDocument) {
-                    if ($requestDocument->document->document_type_id === Config::$DOCUMENT_PETITION_TYPE)
-                        array_push($petitions, $requestDocument);
-                }
-                return Format::request_document($petitions);
+                $request_documents = [];
+                foreach ($user_request->egsRequestDocuments as $request_document)
+                    if ($request_document->document->submit_type_id === Config::$SUBMIT_TYPE_AFTER)
+                        array_push($request_documents, $request_document);
+                return Format::request_document($request_documents);
             }
         ]]);
     }
 
-    static public function defenseForListing($defenses)
+    static public function defenseForListing($defenses, $user)
     {
+        Format::$user_type_id = (int)$user['user_type_id'];
+        Format::$user_id = (int)$user['id'];
         return ArrayHelper::toArray($defenses, ['app\modules\egs\models\EgsDefense' => [
             'student' => function ($defenses) {
                 /* @var $user_request EgsDefense */
@@ -382,6 +425,63 @@ class Format
             'defense_date',
             'defense_time_start',
             'defense_time_end',
+            'defense_document' => function ($defense) {
+                /* @var $defense EgsDefense */
+                $defense_documents = [];
+                foreach ($defense->egsDefenseDocuments as $defense_document)
+                    if ($defense_document->document->submit_type_id === Config::$SUBMIT_TYPE_BEFORE)
+                        array_push($defense_documents, $defense_document);
+                return Format::defense_document($defense_documents);
+            },
+            'post_defense_document' => function ($defense) {
+                /* @var $defense EgsDefense */
+                $defense_documents = [];
+                foreach ($defense->egsDefenseDocuments as $defense_document)
+                    if ($defense_document->document->submit_type_id === Config::$SUBMIT_TYPE_AFTER)
+                        array_push($defense_documents, $defense_document);
+                return Format::defense_document($defense_documents);
+            },
+            'document_status' => function ($defense) {
+                /* @var $defense EgsDefense */
+                $data['document_status_id'] = $defense->document_status_id;
+                $data['editable'] = Format::$user_type_id === Config::$PERSON_STAFF_TYPE || Format::$user_id === $defense->student_id;
+                return $data;
+            },
+            'post_document_status' => function ($defense) {
+                /* @var $defense EgsDefense */
+                $data['post_document_status_id'] = $defense->post_document_status_id;
+                $data['editable'] = Format::$user_type_id === Config::$PERSON_STAFF_TYPE || Format::$user_id === $defense->student_id;
+                $ready = true;
+                $post_document_status = EgsActionOnStatus::find()->joinWith(['status s'])->where([
+                    'action_id' => $defense->defense_type_id,
+                    'on_status_id' => Config::$ON_NOT_ANYMORE,
+                    's.status_type_id' => Config::$STATUS_POST_DEFENSE_DOCUMENT_TYPE
+                ])->one();
+                if ($post_document_status !== null)
+                    if ($post_document_status->status_id === $defense->post_document_status_id)
+                        $ready = false;
+                if ($defense->defense_score === null)
+                    $ready = false;
+                $data['ready'] = $ready;
+                return $data;
+            },
+            'defense_type_id',
+            'defense_pass_con' => function ($defense) {
+                /* @var $defense EgsDefense */
+                $defense_status = EgsActionOnStatus::find()->joinWith(['status s'])->where([
+                    'action_id' => $defense->defense_type_id,
+                    'on_status_id' => Config::$ON_PASS_CONDITIONALLY,
+                    's.status_type_id' => Config::$STATUS_DEFENSE_TYPE
+                ])->one();
+                if (!empty($defense_status)) {
+                    return $defense_status->status_id === $defense->defense_status_id;
+                }
+                return null;
+            },
+            'defense_credit' => function ($defense) {
+                /* @var $defense EgsDefense */
+                return $defense->defenseType->action_credit;
+            },
             'room' => function ($defense) {
                 /* @var $defense EgsDefense */
                 return Format::room($defense->room);
@@ -389,10 +489,6 @@ class Format
             'calendar_item' => function ($defense) {
                 /* @var $defense EgsDefense */
                 return $defense->calendar->calendar;
-            },
-            'defense_type' => function ($defense) {
-                /* @var $defense EgsDefense */
-                return Format::actionNoDetail($defense->defenseType);
             },
             'room' => function ($defense) {
                 /* @var $defense EgsDefense */
@@ -402,7 +498,19 @@ class Format
                 /* @var $defense EgsDefense */
                 return Format::committee($defense->egsCommittees);
             },
-            'defense_status_id'
+            'defense_status' => function ($defense) {
+                /* @var $defense EgsDefense */
+                $defense_default_status = EgsActionOnStatus::find()->joinWith(['status s'])->where([
+                    'action_id' => $defense->defense_type_id,
+                    'on_status_id' => Config::$ON_DEFAULT,
+                    's.status_type_id' => Config::$STATUS_DEFENSE_TYPE
+                ])->one();
+                $ready = $defense_default_status->status_id !== $defense->defense_status_id;
+                $data['defense_status_id'] = $defense->defense_status_id;
+                $data['editable'] = Format::$user_type_id === Config::$PERSON_STAFF_TYPE || Format::$user_type_id === Config::$PERSON_TEACHER_TYPE;
+                $data['ready'] = $ready;
+                return $data;
+            }
         ]]);
     }
 
@@ -455,6 +563,7 @@ class Format
             'defense_date',
             'defense_time_start',
             'defense_time_end',
+            'document_status_id',
             'defense_type' => function ($defense) {
                 /* @var $defense EgsDefense */
                 return Format::actionNoDetail($defense->defenseType);
@@ -466,6 +575,10 @@ class Format
             'committees' => function ($defense) {
                 /* @var $defense EgsDefense */
                 return Format::committee($defense->egsCommittees);
+            },
+            'defense_document' => function ($defense) {
+                /* @var $defense EgsDefense */
+                return Format::defense_document($defense->egsDefenseDocuments);
             },
             'defense_status' => function ($defense) {
                 /* @var $defense EgsDefense */
@@ -488,7 +601,6 @@ class Format
             }
         ]]);
     }
-
 
     static public function defense($defenses)
     {
