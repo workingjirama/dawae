@@ -4,9 +4,27 @@ import 'whatwg-fetch'
 const _URL = URL.REQUEST.REQUEST_ADD
 const _TYPE = TYPE.REQUEST.REQUEST_ADD
 
-export function getCalendarItem(ownerId, calendarId, semesterId, actionId, callback) {
+export function setCurrent(current) {
     return dispatch => {
-        fetch(_URL.GET_CALENDAR_ITEM(ownerId, calendarId, semesterId, actionId), {
+        dispatch({
+            type: _TYPE.SET_CURRENT,
+            payload: current
+        })
+    }
+}
+
+export function setComponent(component) {
+    return dispatch => {
+        dispatch({
+            type: _TYPE.SET_COMPONENT,
+            payload: component
+        })
+    }
+}
+
+export function getCalendarItem(ownerId, calendarId, levelId, semesterId, actionId, callback) {
+    return dispatch => {
+        fetch(_URL.GET_CALENDAR_ITEM(ownerId, calendarId, levelId, semesterId, actionId), {
             credentials: 'same-origin'
         }).then(response => {
             return response.json()
@@ -20,7 +38,23 @@ export function getCalendarItem(ownerId, calendarId, semesterId, actionId, callb
     }
 }
 
-export function getAllTeacher() {
+export function getStep(actionId, callback) {
+    return dispatch => {
+        fetch(_URL.GET_STEP(actionId), {
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(response => {
+            callback(response)
+            dispatch({
+                type: _TYPE.SET_STEP,
+                payload: response
+            })
+        })
+    }
+}
+
+export function getTeacher() {
     return dispatch => {
         fetch(_URL.GET_ALL_TEACHER, {
             credentials: 'same-origin'
@@ -35,7 +69,7 @@ export function getAllTeacher() {
     }
 }
 
-export function getAllPosition(actionId) {
+export function getPosition(actionId) {
     return dispatch => {
         fetch(_URL.GET_ALL_POSITION(actionId), {
             credentials: 'same-origin'
@@ -50,7 +84,7 @@ export function getAllPosition(actionId) {
     }
 }
 
-export function getAllRoom() {
+export function getRoom() {
     return dispatch => {
         fetch(_URL.GET_ALL_ROOM, {
             credentials: 'same-origin'
@@ -74,7 +108,7 @@ export function setPost(post) {
     }
 }
 
-export function insertUserRequest(init, post, calendarItem, callback) {
+export function insert(init, post, calendarItem, callback) {
     return dispatch => {
         const data = new FormData()
         post = {
@@ -101,16 +135,15 @@ export function insertUserRequest(init, post, calendarItem, callback) {
     }
 }
 
-
-export function getDefenseEvent(calendarItem, defense, callback) {
+export function getDefenseEvent(calendarItem, defense, teachers, callback) {
     return dispatch => {
         const data = new FormData()
         data.append('json', JSON.stringify({
+            teachers,
             calendarId: calendarItem.calendar.calendar_id,
             ownerId: calendarItem.owner_id,
             levelId: calendarItem.level.level_id,
             semesterId: calendarItem.semester.semester_id,
-            roomId: defense.room,
             defenseTypeId: defense.type
         }))
         fetch(_URL.GET_DEFENSE_EVENT, {

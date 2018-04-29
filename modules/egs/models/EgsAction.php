@@ -14,25 +14,27 @@ use Yii;
  * @property string $action_detail_en
  * @property integer $action_type_id
  * @property integer $action_default
- * @property integer $redo
+ * @property integer $action_redo
  * @property integer $action_credit
+ * @property integer $action_cond
  *
  * @property EgsActionType $actionType
- * @property EgsActionCompleteStep[] $egsActionCompleteSteps
- * @property EgsStep[] $steps
  * @property EgsActionDocument[] $egsActionDocuments
  * @property EgsDocument[] $documents
  * @property EgsActionFor[] $egsActionFors
+ * @property EgsActionInit[] $egsActionInits
+ * @property EgsActionInit[] $egsActionInits0
+ * @property EgsAction[] $initTypes
+ * @property EgsAction[] $requestTypes
  * @property EgsActionItem[] $egsActionItems
- * @property EgsActionOnStatus[] $egsActionOnStatuses
- * @property EgsActionSubmitStep[] $egsActionSubmitSteps
- * @property EgsStep[] $steps0
+ * @property EgsActionStep[] $egsActionSteps
+ * @property EgsStep[] $steps
  * @property EgsCommitteeFee[] $egsCommitteeFees
  * @property EgsDefense[] $egsDefenses
  * @property EgsUserRequest[] $calendars
  * @property EgsRequestDefense[] $egsRequestDefenses
  * @property EgsRequestDefense[] $egsRequestDefenses0
- * @property EgsAction[] $requestTypes
+ * @property EgsAction[] $requestTypes0
  * @property EgsAction[] $defenseTypes
  * @property EgsRequestFee[] $egsRequestFees
  */
@@ -60,8 +62,8 @@ class EgsAction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['action_id', 'action_name_th', 'action_name_en', 'action_type_id', 'action_default', 'redo', 'action_credit'], 'required'],
-            [['action_id', 'action_type_id', 'action_default', 'redo', 'action_credit'], 'integer'],
+            [['action_id', 'action_name_th', 'action_name_en', 'action_type_id', 'action_default', 'action_redo', 'action_credit', 'action_cond'], 'required'],
+            [['action_id', 'action_type_id', 'action_default', 'action_redo', 'action_credit', 'action_cond'], 'integer'],
             [['action_name_th', 'action_name_en', 'action_detail_th', 'action_detail_en'], 'string', 'max' => 255],
             [['action_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsActionType::className(), 'targetAttribute' => ['action_type_id' => 'action_type_id']],
         ];
@@ -80,8 +82,9 @@ class EgsAction extends \yii\db\ActiveRecord
             'action_detail_en' => 'Action Detail En',
             'action_type_id' => 'Action Type ID',
             'action_default' => 'Action Default',
-            'redo' => 'Redo',
+            'action_redo' => 'Action Redo',
             'action_credit' => 'Action Credit',
+            'action_cond' => 'Action Cond',
         ];
     }
 
@@ -91,22 +94,6 @@ class EgsAction extends \yii\db\ActiveRecord
     public function getActionType()
     {
         return $this->hasOne(EgsActionType::className(), ['action_type_id' => 'action_type_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getEgsActionCompleteSteps()
-    {
-        return $this->hasMany(EgsActionCompleteStep::className(), ['action_id' => 'action_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSteps()
-    {
-        return $this->hasMany(EgsStep::className(), ['step_id' => 'step_id'])->viaTable('egs_action_complete_step', ['action_id' => 'action_id']);
     }
 
     /**
@@ -136,6 +123,38 @@ class EgsAction extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getEgsActionInits()
+    {
+        return $this->hasMany(EgsActionInit::className(), ['request_type_id' => 'action_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsActionInits0()
+    {
+        return $this->hasMany(EgsActionInit::className(), ['init_type_id' => 'action_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInitTypes()
+    {
+        return $this->hasMany(EgsAction::className(), ['action_id' => 'init_type_id'])->viaTable('egs_action_init', ['request_type_id' => 'action_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRequestTypes()
+    {
+        return $this->hasMany(EgsAction::className(), ['action_id' => 'request_type_id'])->viaTable('egs_action_init', ['init_type_id' => 'action_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getEgsActionItems()
     {
         return $this->hasMany(EgsActionItem::className(), ['action_id' => 'action_id']);
@@ -144,25 +163,17 @@ class EgsAction extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEgsActionOnStatuses()
+    public function getEgsActionSteps()
     {
-        return $this->hasMany(EgsActionOnStatus::className(), ['action_id' => 'action_id']);
+        return $this->hasMany(EgsActionStep::className(), ['action_id' => 'action_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEgsActionSubmitSteps()
+    public function getSteps()
     {
-        return $this->hasMany(EgsActionSubmitStep::className(), ['action_id' => 'action_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSteps0()
-    {
-        return $this->hasMany(EgsStep::className(), ['step_id' => 'step_id'])->viaTable('egs_action_submit_step', ['action_id' => 'action_id']);
+        return $this->hasMany(EgsStep::className(), ['step_id' => 'step_id'])->viaTable('egs_action_step', ['action_id' => 'action_id']);
     }
 
     /**
@@ -208,7 +219,7 @@ class EgsAction extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getRequestTypes()
+    public function getRequestTypes0()
     {
         return $this->hasMany(EgsAction::className(), ['action_id' => 'request_type_id'])->viaTable('egs_request_defense', ['defense_type_id' => 'action_id']);
     }

@@ -2,6 +2,7 @@
 
 namespace app\modules\egs\controllers;
 
+use app\modules\egs\models\EgsRequestInit;
 use Yii;
 
 use app\modules\egs\models\EgsActionItem;
@@ -51,7 +52,7 @@ class CalendarController extends Controller
         $calendar->calendar_id = $year;
         $calendar->calendar_active = 0;
         if ($calendar->save()) {
-            $action_items = EgsActionItem::find()->all();
+            $action_items = EgsActionItem::find()->joinWith(['action a'])->where(['!=', 'a.action_type_id', Config::$ACTION_INIT_TYPE])->all();
             foreach ($action_items as $action_item) {
                 $calendar_item = new EgsCalendarItem();
                 $calendar_item->calendar_id = $calendar->calendar_id;
@@ -59,7 +60,20 @@ class CalendarController extends Controller
                 $calendar_item->level_id = $action_item->level_id;
                 $calendar_item->semester_id = $action_item->semester_id;
                 $calendar_item->owner_id = Config::$SYSTEM_ID;
-                if (!$calendar_item->save()) return Json::encode($calendar_item->errors);
+                if ($calendar_item->save()) {
+                    $request_init = EgsRequestInit::find()->where(['request_type_id' => $calendar_item->action_id])->one();
+                    if (!empty($request_init)) {
+                        $calendar_item_ = new EgsCalendarItem();
+                        $calendar_item_->calendar_id = $calendar_item->calendar_id;
+                        $calendar_item_->action_id = $request_init->init_type_id;
+                        $calendar_item_->level_id = $calendar_item->level_id;
+                        $calendar_item_->semester_id = $calendar_item->semester_id;
+                        $calendar_item_->owner_id = Config::$SYSTEM_ID;
+                        if (!$calendar_item_->save()) return Json::encode($calendar_item_->errors);
+                    }
+                } else {
+                    return Json::encode($calendar_item->errors);
+                }
             }
         } else {
             return Json::encode($calendar->errors);

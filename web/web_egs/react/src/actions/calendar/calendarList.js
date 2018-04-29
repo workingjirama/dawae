@@ -19,10 +19,10 @@ export function getAllCalendar(callback = null) {
     }
 }
 
-export function insertCalendar(post, callback) {
+export function insertCalendar(year, callback) {
     return function (dispatch) {
         const data = new FormData()
-        data.append('json', JSON.stringify(post))
+        data.append('json', JSON.stringify({year}))
         fetch(_URL.INSERT_CALENDAR, {
             method: 'post',
             body: data,

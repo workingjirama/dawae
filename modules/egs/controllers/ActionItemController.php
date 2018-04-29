@@ -19,9 +19,10 @@ class ActionItemController extends Controller
     {
         $semester = EgsSemester::find()->one();
         $action_items = EgsActionItem::find()
+            ->joinWith(['action a'])
             ->where([
-                'semester_id' => $semester->semester_id
-            ])
+                'semester_id' => $semester->semester_id,
+            ])->andWhere(['!=', 'a.action_type_id', Config::$ACTION_INIT_TYPE])
             ->all();
         return Json::encode(Format::actionItemActionOnly($action_items));
     }

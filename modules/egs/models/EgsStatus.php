@@ -10,18 +10,13 @@ use Yii;
  * @property integer $status_id
  * @property string $status_name_th
  * @property string $status_name_en
- * @property integer $status_type_id
  * @property integer $status_label_id
  *
- * @property EgsActionOnStatus[] $egsActionOnStatuses
  * @property EgsDefense[] $egsDefenses
- * @property EgsDefense[] $egsDefenses0
- * @property EgsDefense[] $egsDefenses1
+ * @property EgsDefenseDocument[] $egsDefenseDocuments
+ * @property EgsRequestDocument[] $egsRequestDocuments
  * @property EgsStatusLabel $statusLabel
- * @property EgsStatusType $statusType
  * @property EgsUserRequest[] $egsUserRequests
- * @property EgsUserRequest[] $egsUserRequests0
- * @property EgsUserRequest[] $egsUserRequests1
  */
 class EgsStatus extends \yii\db\ActiveRecord
 {
@@ -47,11 +42,10 @@ class EgsStatus extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status_id', 'status_name_th', 'status_name_en', 'status_type_id', 'status_label_id'], 'required'],
-            [['status_id', 'status_type_id', 'status_label_id'], 'integer'],
+            [['status_id', 'status_name_th', 'status_name_en', 'status_label_id'], 'required'],
+            [['status_id', 'status_label_id'], 'integer'],
             [['status_name_th', 'status_name_en'], 'string', 'max' => 255],
             [['status_label_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatusLabel::className(), 'targetAttribute' => ['status_label_id' => 'status_label_id']],
-            [['status_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatusType::className(), 'targetAttribute' => ['status_type_id' => 'status_type_id']],
         ];
     }
 
@@ -64,17 +58,8 @@ class EgsStatus extends \yii\db\ActiveRecord
             'status_id' => 'Status ID',
             'status_name_th' => 'Status Name Th',
             'status_name_en' => 'Status Name En',
-            'status_type_id' => 'Status Type ID',
             'status_label_id' => 'Status Label ID',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getEgsActionOnStatuses()
-    {
-        return $this->hasMany(EgsActionOnStatus::className(), ['status_id' => 'status_id']);
     }
 
     /**
@@ -88,17 +73,17 @@ class EgsStatus extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEgsDefenses0()
+    public function getEgsDefenseDocuments()
     {
-        return $this->hasMany(EgsDefense::className(), ['document_status_id' => 'status_id']);
+        return $this->hasMany(EgsDefenseDocument::className(), ['defense_document_status_id' => 'status_id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEgsDefenses1()
+    public function getEgsRequestDocuments()
     {
-        return $this->hasMany(EgsDefense::className(), ['post_document_status_id' => 'status_id']);
+        return $this->hasMany(EgsRequestDocument::className(), ['request_document_status_id' => 'status_id']);
     }
 
     /**
@@ -112,32 +97,8 @@ class EgsStatus extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getStatusType()
-    {
-        return $this->hasOne(EgsStatusType::className(), ['status_type_id' => 'status_type_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getEgsUserRequests()
     {
-        return $this->hasMany(EgsUserRequest::className(), ['fee_status_id' => 'status_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getEgsUserRequests0()
-    {
-        return $this->hasMany(EgsUserRequest::className(), ['post_document_status_id' => 'status_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getEgsUserRequests1()
-    {
-        return $this->hasMany(EgsUserRequest::className(), ['document_status_id' => 'status_id']);
+        return $this->hasMany(EgsUserRequest::className(), ['request_fee_status_id' => 'status_id']);
     }
 }

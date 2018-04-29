@@ -43,34 +43,34 @@ class Dummy
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12
+            10, 11, 12, 13
         ]);
         $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 1, 2, '2019-01-01', '2019-12-31', [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12
+            10, 11, 12, 13
         ]);
         $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 1, 3, '2020-01-01', '2020-12-31', [
-            10, 11, 12
+            10, 11, 12, 13
         ]);
         $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 1, '2018-01-01', '2018-12-31', [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12
+            10, 11, 12, 13
         ]);
         $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 2, '2019-01-01', '2019-12-31', [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12
+            10, 11, 12, 13
         ]);
         $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 3, '2020-01-01', '2020-12-31', [
-            10, 11, 12
+            10, 11, 12, 13
         ]);
     }
 
@@ -88,14 +88,22 @@ class Dummy
             if (!$calendar_item->save()) {
                 echo Json::encode($calendar_item->errors);
                 exit();
-            };
-            if ($calendar_item->semester->action->action_default) {
+            }
+            if ($action === 11 || $action === 12) {
                 $calendar_item->calendar_item_date_start = $start;
                 $calendar_item->calendar_item_date_end = $start;
                 if (!$calendar_item->save()) {
                     echo $calendar_item->errors;
                     exit();
-                };
+                }
+            }
+            if ($action === 13) {
+                $calendar_item->calendar_item_date_start = $start;
+                $calendar_item->calendar_item_date_end = $end;
+                if (!$calendar_item->save()) {
+                    echo $calendar_item->errors;
+                    exit();
+                }
                 $user_request = new EgsUserRequest();
                 $user_request->student_id = Config::$SYSTEM_ID;
                 $user_request->calendar_id = $calendar_item->calendar_id;
@@ -103,49 +111,47 @@ class Dummy
                 $user_request->level_id = $calendar_item->level_id;
                 $user_request->semester_id = $calendar_item->semester_id;
                 $user_request->owner_id = $calendar_item->owner_id;
-                $user_request->document_status_id = 1;
-                $user_request->fee_status_id = 1;
                 $user_request->request_fee = 0;
-                $user_request->request_fee_paid = 0;
-                $user_request->post_document_status_id = 1;
+                $user_request->request_fee_status_id = 1;
                 if (!$user_request->save()) {
-                    echo Json::encode($user_request->errors);
+                    echo Json::encode(['USER_REQUEST', $user_request->errors]);
                     exit();
-                };
-                $defense = new EgsDefense();
-                $defense->student_id = $user_request->student_id;
-                $defense->calendar_id = $user_request->calendar_id;
-                $defense->action_id = $user_request->action_id;
-                $defense->level_id = $user_request->level_id;
-                $defense->semester_id = $user_request->semester_id;
-                $defense->defense_type_id = $user_request->action_id;
-                $defense->defense_date = $start;
-                $defense->owner_id = $user_request->owner_id;
-                $defense->defense_time_start = '12:00';
-                $defense->defense_time_end = '14:00';
-                $defense->room_id = 1;
-                $defense->defense_status_id = 1;
-                $defense->document_status_id = 1;
-                $defense->post_document_status_id = 1;
-                if (!$defense->save()) {
-                    echo Json::encode($defense->errors);
-                    exit();
-                };
-                $committee = new EgsCommittee();
-                $committee->student_id = $defense->student_id;
-                $committee->calendar_id = $defense->calendar_id;
-                $committee->action_id = $defense->action_id;
-                $committee->level_id = $defense->level_id;
-                $committee->semester_id = $defense->semester_id;
-                $committee->defense_type_id = $defense->action_id;
-                $committee->owner_id = $defense->owner_id;
-                $committee->committee_fee = 0;
-                $committee->teacher_id = 2;
-                $committee->position_id = 3;
-                if (!$committee->save()) {
-                    echo Json::encode($committee->errors);
-                    exit();
-                };
+                }
+                $request_defenses = EgsRequestDefense::find()->where(['request_type_id' => $user_request->action_id])->all();
+                foreach ($request_defenses as $request_defense) {
+                    $defense = new EgsDefense();
+                    $defense->student_id = $user_request->student_id;
+                    $defense->calendar_id = $user_request->calendar_id;
+                    $defense->action_id = $user_request->action_id;
+                    $defense->level_id = $user_request->level_id;
+                    $defense->semester_id = $user_request->semester_id;
+                    $defense->defense_type_id = $request_defense->defense_type_id;
+                    $defense->defense_date = $start;
+                    $defense->owner_id = $user_request->owner_id;
+                    $defense->defense_time_start = '12:00';
+                    $defense->defense_time_end = '14:00';
+                    $defense->room_id = 1;
+                    $defense->defense_status_id = 1;
+                    if (!$defense->save()) {
+                        echo Json::encode(['DEFENSE', $defense->errors]);
+                        exit();
+                    }
+                    $committee = new EgsCommittee();
+                    $committee->student_id = $defense->student_id;
+                    $committee->calendar_id = $defense->calendar_id;
+                    $committee->action_id = $defense->action_id;
+                    $committee->level_id = $defense->level_id;
+                    $committee->semester_id = $defense->semester_id;
+                    $committee->defense_type_id = $defense->defense_type_id;
+                    $committee->owner_id = $defense->owner_id;
+                    $committee->committee_fee = 0;
+                    $committee->teacher_id = 2;
+                    $committee->position_id = 3;
+                    if (!$committee->save()) {
+                        echo Json::encode(['COMMITTEE', $committee->errors]);
+                        exit();
+                    }
+                }
             }
         }
     }

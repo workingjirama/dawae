@@ -2,42 +2,53 @@
 
 namespace app\modules\egs\controllers;
 
-use app\modules\egs\models\EgsLevel;
+use app\modules\egs\models\EgsCalendar;
+use app\modules\egs\models\EgsCalendarItem;
 use app\modules\egs\models\EgsLevelBinder;
 use app\modules\egs\models\EgsPlanBinder;
 use app\modules\egs\models\EgsProgramBinder;
 use Yii;
-
-use app\modules\egs\models\EgsActionItem;
-use app\modules\egs\models\EgsCalendar;
-use app\modules\egs\models\EgsCalendarItem;
-
-use yii\base\Module;
 use yii\helpers\Json;
 use yii\web\Controller;
 
 class CalendarItemController extends Controller
 {
+    public function actionFindInit()
+    {
+        $user = Config::get_current_user();
+        $user_type_id = $user['user_type_id'];
+        $calendar = EgsCalendar::find()->where(['calendar_active' => 1])->one();
+        $calendar->egsCalendarItems;
+        $calendar_items = EgsCalendarItem::find()
+            ->joinWith(['calendar c'])
+            ->joinWith(['semester.action a'])
+            ->where([
+                'a.action_type_id' => Config::$ACTION_INIT_TYPE,
+                'c.calendar_active' => 1,
+            ])->all();
+        return Json::encode(Format::calendarItemWithStatus($calendar_items, $user_type_id, null, null));
+    }
+
     public function actionFind($calendar_id)
     {
         $calendar_items = EgsCalendarItem::find()
+            ->joinWith(['semester.action a'])
             ->where([
                 'calendar_id' => $calendar_id,
                 'owner_id' => Config::$SYSTEM_ID
-            ])
+            ])->andWhere(['!=', 'a.action_type_id', Config::$ACTION_INIT_TYPE])
             ->all();
         return Json::encode(Format::calendarItem($calendar_items));
     }
 
-    public function actionFindOne($calendar_id, $semester_id, $action_id, $owner_id)
+    public function actionFindOne($calendar_id, $semester_id, $action_id, $owner_id, $level_id)
     {
         $user = Config::get_current_user();
-        $level = EgsLevelBinder::find()->where(['reg_program_id' => $user['program_id']])->one();
-        $level_id = empty($level) ? -1 : $level->level_id;
         $program = EgsProgramBinder::find()->where(['reg_program_id' => $user['program_id']])->one();
         $program_id = empty($program) ? -1 : $program->program_id;
         $plan = EgsPlanBinder::find()->where(['reg_program_id' => $user['program_id']])->one();
         $plan_id = empty($plan) ? -1 : $plan->plan_id;
+        $user_type_id = $user['user_type_id'];
         $calendar_item = EgsCalendarItem::findOne([
             'calendar_id' => $calendar_id,
             'level_id' => $level_id,
@@ -45,7 +56,7 @@ class CalendarItemController extends Controller
             'action_id' => $action_id,
             'owner_id' => $owner_id
         ]);
-        return Json::encode(Format::calendarItemFull($calendar_item, $plan_id, $program_id));
+        return Json::encode(Format::calendarItemFull($calendar_item, $user_type_id, $plan_id, $program_id));
     }
 
     public function actionFindWithStatus()
@@ -60,15 +71,12 @@ class CalendarItemController extends Controller
         $calendar_items = EgsCalendarItem::find()
             ->joinWith(['calendar c'])
             ->joinWith(['semester.action a'])
-            ->joinWith(['semester.action.egsActionFors af'])
             ->where([
                 'a.action_type_id' => Config::$ACTION_REQUEST_TYPE,
                 'c.calendar_active' => 1,
                 'egs_calendar_item.level_id' => $level_id,
-                'af.program_id' => $program_id,
-                'af.plan_id' => $plan_id
             ])->all();
-        return Json::encode(Format::calendarItemWithStatus($calendar_items));
+        return Json::encode(Format::calendarItemWithStatus($calendar_items, null, $program_id, $plan_id));
     }
 
     public function actionUpdate()

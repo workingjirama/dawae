@@ -6,7 +6,7 @@ use app\modules\egs\models\EgsActionCompleteStep;
 use app\modules\egs\models\EgsActionDocument;
 use app\modules\egs\models\EgsActionFor;
 use app\modules\egs\models\EgsActionItem;
-use app\modules\egs\models\EgsActionOnStatus;
+use app\modules\egs\models\EgsActionStep;
 use app\modules\egs\models\EgsActionSubmitStep;
 use app\modules\egs\models\EgsActionType;
 use app\modules\egs\models\EgsCalendar;
@@ -17,31 +17,30 @@ use app\modules\egs\models\EgsDocument;
 use app\modules\egs\models\EgsDocumentType;
 use app\modules\egs\models\EgsLevel;
 use app\modules\egs\models\EgsLevelBinder;
-use app\modules\egs\models\EgsOnStatus;
 use app\modules\egs\models\EgsProgram;
 use app\modules\egs\models\EgsProgramBinder;
 use app\modules\egs\models\EgsRequestDefense;
 use app\modules\egs\models\EgsAction;
+use app\modules\egs\models\EgsRequestInit;
 use app\modules\egs\models\EgsSemester;
 use app\modules\egs\models\EgsStatus;
 use app\modules\egs\models\EgsStatusLabel;
-use app\modules\egs\models\EgsStatusType;
 use app\modules\egs\models\EgsStep;
+use app\modules\egs\models\EgsStepType;
 use app\modules\egs\models\EgsSubmitType;
 use app\modules\egs\models\EgsUserRequest;
 use yii\helpers\Json;
-
 
 class Calendar
 {
     public function delete()
     {
+        EgsActionStep::deleteAll();
+        EgsStep::deleteAll();
+        EgsStepType::deleteAll();
         EgsActionFor::deleteAll();
-        EgsActionOnStatus::deleteAll();
         EgsStatus::deleteAll();
-        EgsStatusType::deleteAll();
         EgsStatusLabel::deleteAll();
-        EgsOnStatus::deleteAll();
         EgsActionDocument::deleteAll();
         EgsDocument::deleteAll();
         EgsSubmitType::deleteAll();
@@ -49,6 +48,7 @@ class Calendar
         EgsCalendar::deleteAll();
         EgsActionItem::deleteAll();
         EgsRequestDefense::deleteAll();
+        EgsRequestInit::deleteAll();
         EgsAction::deleteAll();
         EgsActionType::deleteAll();
         EgsSemester::deleteAll();
@@ -56,63 +56,148 @@ class Calendar
 
     public function insert()
     {
-        $this->status_type();
         $this->status_label();
         $this->status();
         $this->action_type();
         $this->action();
         $this->request_defense();
+        $this->request_init();
         $this->semester();
         $this->action_item();
         $this->submit_type();
         $this->document();
         $this->action_document();
-        $this->on_status();
-        $this->action_on_status();
         $this->action_for();
         $this->step();
+        $this->step_type();
+        $this->action_step();
     }
 
     private function step()
     {
         $step = new EgsStep();
         $step->step_id = 1;
-        $step->step_component = '';
+        $step->step_name_th = 'DETAIL[TH]';
+        $step->step_name_en = 'DETAIL[EN]';
+        $step->step_component = 'Detail';
+        $step->step_icon = 'message';
+        $step->save();
+        $step = new EgsStep();
+        $step->step_id = 2;
+        $step->step_name_th = 'TEACHER[TH]';
+        $step->step_name_en = 'TEACHER[EN]';
+        $step->step_component = 'Teacher';
+        $step->step_icon = 'usergroup-add';
+        $step->save();
+        $step = new EgsStep();
+        $step->step_id = 3;
+        $step->step_name_th = 'DEFENSE[TH]';
+        $step->step_name_en = 'DEFENSE[EN]';
+        $step->step_component = 'Defense';
+        $step->step_icon = 'calendar';
+        $step->save();
+        $step = new EgsStep();
+        $step->step_id = 4;
+        $step->step_name_th = 'SUMMARY[TH]';
+        $step->step_name_en = 'SUMMARY[EN]';
+        $step->step_component = 'Summary';
+        $step->step_icon = 'profile';
+        $step->save();
+
+        $step = new EgsStep();
+        $step->step_id = 5;
+        $step->step_name_th = 'PETITION_BEFORE+FEE[TH]';
+        $step->step_name_en = 'PETITION_BEFORE+FEE[EN]';
+        $step->step_component = 'PetBefore';
+        $step->step_icon = 'file-text';
+        $step->step_validation = 'request_document_before_and_fee_all_submit';
+        $step->save();
+        $step = new EgsStep();
+        $step->step_id = 6;
+        $step->step_name_th = 'DOC_BEFORE[TH]';
+        $step->step_name_en = 'DOC_BEFORE[EN]';
+        $step->step_component = 'DocBefore';
+        $step->step_icon = 'cloud-upload-o';
+        $step->step_validation = 'defense_document_before_all_submit';
+        $step->save();
+        $step = new EgsStep();
+        $step->step_id = 7;
+        $step->step_name_th = 'DEFENSE[TH]';
+        $step->step_name_en = 'DEFENSE[EN]';
+        $step->step_component = 'DefenseResult';
+        $step->step_icon = 'line-chart';
+        $step->step_validation = 'defense_resulted';
+        $step->save();
+        $step = new EgsStep();
+        $step->step_id = 8;
+        $step->step_name_th = 'PETITION_AFTER[TH]';
+        $step->step_name_en = 'PETITION_AFTER[EN]';
+        $step->step_component = 'PetAfter';
+        $step->step_icon = 'file-text';
+        $step->step_validation = 'request_document_after_all_submit';
+        $step->save();
+        $step = new EgsStep();
+        $step->step_id = 9;
+        $step->step_name_th = 'DOC_AFTER[TH]';
+        $step->step_name_en = 'DOC_AFTER[EN]';
+        $step->step_component = 'DocAfter';
+        $step->step_icon = 'cloud-upload-o';
+        $step->step_validation = 'defense_document_after_all_submit';
+        $step->save();
+        $step = new EgsStep();
+        $step->step_id = 10;
+        $step->step_name_th = 'FINAL[TH]';
+        $step->step_name_en = 'FINAL[EN]';
+        $step->step_component = 'Final';
+        $step->step_icon = 'check';
         $step->save();
     }
 
-    private function action_submit_step_insert($actions, $steps)
+    private function step_type()
+    {
+        $step_type = new EgsStepType();
+        $step_type->step_type_id = 1;
+        $step_type->step_type_name_th = 'SUBMIT';
+        $step_type->step_type_name_en = 'SUBMIT';
+        $step_type->save();
+        $step_type = new EgsStepType();
+        $step_type->step_type_id = 2;
+        $step_type->step_type_name_th = 'PROCESS';
+        $step_type->step_type_name_en = 'PROCESS';
+        $step_type->save();
+    }
+
+    private function action_step_insert($actions, $steps, $setp_type)
     {
         foreach ($actions as $action) {
-            foreach ($steps as $step) {
-                $action_submit_step = new EgsActionSubmitStep();
-                $action_submit_step->action_id = $action;
-                $action_submit_step->step_id = $step;
-                $action_submit_step->save();
+            foreach ($steps as $index => $step) {
+                $action_step = new EgsActionStep();
+                $action_step->action_id = $action;
+                $action_step->step_id = $step;
+                $action_step->step_type_id = $setp_type;
+                $action_step->action_step_index = $index;
+                if (!$action_step->save()) {
+                    echo Json::encode($action_step->errors);
+                    exit();
+                }
+
             }
         }
     }
 
-    private function action_submit_step()
+    private function action_step()
     {
+        $step_type = 1;
+        $this->action_step_insert([1], [1, 2, 4], $step_type);
+        $this->action_step_insert([2, 4, 5, 8], [1, 2, 3, 4], $step_type);
+        $this->action_step_insert([13], [2, 3, 4], $step_type);
+        $this->action_step_insert([10], [1, 4], $step_type);
+
+        $step_type = 2;
+        $this->action_step_insert([1], [5, 10], $step_type);
+        $this->action_step_insert([2, 4, 5, 8], [5, 6, 7, 8, 10], $step_type);
+        $this->action_step_insert([10], [5, 7, 10], $step_type);
     }
-
-    private function action_complete_step_insert($actions, $steps)
-    {
-        foreach ($actions as $action) {
-            foreach ($steps as $step) {
-                $action_submit_step = new EgsActionCompleteStep();
-                $action_submit_step->action_id = $action;
-                $action_submit_step->step_id = $step;
-                $action_submit_step->save();
-            }
-        }
-    }
-
-//    private function action_submit_step()
-//    {
-//    }
-
 
     private function action_for_insert($action_id, $plans, $programs)
     {
@@ -147,53 +232,49 @@ class Calendar
         $this->action_for_insert(12, [4, 5, 6, 7], [1, 2, 3]);
     }
 
-    private function status_type()
-    {
-        $status_type = new EgsStatusType();
-        $status_type->status_type_id = 1;
-        $status_type->status_type_name = 'REQUEST_DOCUMENT';
-        if (!$status_type->save()) return Json::encode($status_type->errors);
-        $status_type = new EgsStatusType();
-        $status_type->status_type_id = 2;
-        $status_type->status_type_name = 'DEFENSE_DOCUMENT';
-        if (!$status_type->save()) return Json::encode($status_type->errors);
-        $status_type = new EgsStatusType();
-        $status_type->status_type_id = 3;
-        $status_type->status_type_name = 'DEFENSE';
-        if (!$status_type->save()) return Json::encode($status_type->errors);
-        $status_type = new EgsStatusType();
-        $status_type->status_type_id = 4;
-        $status_type->status_type_name = 'FEE';
-        if (!$status_type->save()) return Json::encode($status_type->errors);
-        $status_type = new EgsStatusType();
-        $status_type->status_type_id = 5;
-        $status_type->status_type_name = 'POST_REQUEST_DOCUMENT';
-        if (!$status_type->save()) return Json::encode($status_type->errors);
-        $status_type = new EgsStatusType();
-        $status_type->status_type_id = 6;
-        $status_type->status_type_name = 'POST_DEFENSE_DOCUMENT';
-        if (!$status_type->save()) return Json::encode($status_type->errors);
-    }
-
     private function status()
     {
-        /* NOTE: REQUEST_DOCUMENT TYPE */
-        $status_type_id = 1;
         $status = new EgsStatus();
-        $status->status_id = 4;
-        $status->status_name_th = 'ยังไม่ได้ส่งใบคำร้อง';
-        $status->status_name_en = 'YANG MAI DAI SONG PET';
-        $status->status_type_id = $status_type_id;
+        $status->status_id = 1;
+        $status->status_name_th = 'ยังไม่ได้สอบ';
+        $status->status_name_en = 'Waiting';
+        $status->status_label_id = 3;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+        $status = new EgsStatus();
+        $status->status_id = 2;
+        $status->status_name_th = 'สอบไม่ผ่าน';
+        $status->status_name_en = 'Not Pass';
         $status->status_label_id = 2;
         if (!$status->save()) {
             echo Json::encode($status->errors);
             exit();
         }
         $status = new EgsStatus();
+        $status->status_id = 3;
+        $status->status_name_th = 'สอบผ่าน';
+        $status->status_name_en = 'Pass';
+        $status->status_label_id = 1;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+        $status = new EgsStatus();
+        $status->status_id = 4;
+        $status->status_name_th = 'สอบผ่านแบบมีเงื่อยไข';
+        $status->status_name_en = 'Pass Conditionally';
+        $status->status_label_id = 1;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+
+        $status = new EgsStatus();
         $status->status_id = 5;
-        $status->status_name_th = 'ส่งใบคำร้องแล้ว';
-        $status->status_name_en = 'SONG PET LAEW';
-        $status->status_type_id = $status_type_id;
+        $status->status_name_th = 'ส่งแล้ว';
+        $status->status_name_en = 'Submitted';
         $status->status_label_id = 1;
         if (!$status->save()) {
             echo Json::encode($status->errors);
@@ -201,244 +282,45 @@ class Calendar
         }
         $status = new EgsStatus();
         $status->status_id = 6;
-        $status->status_name_th = 'ไม่ต้องส่งใบคำร้อง';
-        $status->status_name_en = 'MAI TONG SONG PET';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-
-        /* NOTE: DEFENSE_DOCUMENT TYPE */
-        $status_type_id = 2;
-        $status = new EgsStatus();
-        $status->status_id = 1;
-        $status->status_name_th = 'ยังไม่ได้อัพโหลดเอกสารสอบ';
-        $status->status_name_en = 'YANG MAI DAI UPLOAD DOC';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 2;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 2;
-        $status->status_name_th = 'อัพโหลดเอกสารสอบแล้ว';
-        $status->status_name_en = 'UPLOAD DOC LAEW';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 3;
-        $status->status_name_th = 'ไม่ต้องอัพโหลดเอกสาร';
-        $status->status_name_en = 'MAI TONG UPLOAD DOC';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-
-        /* NOTE: DEFENSE TYPE */
-        $status_type_id = 3;
-        $status = new EgsStatus();
-        $status->status_id = 7;
-        $status->status_name_th = 'ยังไม่พร้อมสอบ';
-        $status->status_name_en = 'YANG MAI PROM SORB';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 2;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 8;
-        $status->status_name_th = 'พร้อมสอบ';
-        $status->status_name_en = 'PROM SORB';
-        $status->status_type_id = $status_type_id;
+        $status->status_name_th = 'ยังไม่ส่ง';
+        $status->status_name_en = 'Not Submitted';
         $status->status_label_id = 3;
         if (!$status->save()) {
             echo Json::encode($status->errors);
             exit();
         }
         $status = new EgsStatus();
-        $status->status_id = 9;
-        $status->status_name_th = 'สอบผ่าน(ต้องส่งเอกสารหลังสอบ)';
-        $status->status_name_en = 'PASS WITH DOC';
-        $status->status_type_id = $status_type_id;
+        $status->status_id = 7;
+        $status->status_name_th = 'ไม่ต้องส่ง';
+        $status->status_name_en = 'No Need';
         $status->status_label_id = 1;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+
+        $status = new EgsStatus();
+        $status->status_id = 8;
+        $status->status_name_th = 'จ่ายแล้ว';
+        $status->status_name_en = 'Paid';
+        $status->status_label_id = 1;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+        $status = new EgsStatus();
+        $status->status_id = 9;
+        $status->status_name_th = 'ยังไม่จ่าย';
+        $status->status_name_en = 'Not Pay Yet';
+        $status->status_label_id = 3;
         if (!$status->save()) {
             echo Json::encode($status->errors);
             exit();
         }
         $status = new EgsStatus();
         $status->status_id = 10;
-        $status->status_name_th = 'สอบผ่าน';
-        $status->status_name_en = 'PASS';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 11;
-        $status->status_name_th = 'สอบไม่ผ่าน';
-        $status->status_name_en = 'YOU SHALL NOT PASS';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 2;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-
-        /* NOTE: FEE TYPE */
-        $status_type_id = 4;
-        $status = new EgsStatus();
-        $status->status_id = 12;
         $status->status_name_th = 'ไม่ต้องจ่าย';
-        $status->status_name_en = 'DONT HAVE TO PAY';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 13;
-        $status->status_name_th = 'จ่ายแล้ว';
-        $status->status_name_en = 'PAID';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 14;
-        $status->status_name_th = 'ยังไม่ได้จ่าย';
-        $status->status_name_en = 'NOT PAID YET';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 2;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-
-        /* NOTE: POST_REQUEST_DOCUMENT TYPE */
-        $status_type_id = 5;
-        $status = new EgsStatus();
-        $status->status_id = 15;
-        $status->status_name_th = 'ยังไม่ได้สอบ';
-        $status->status_name_en = 'YANG MAI DAI SORB';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 4;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 16;
-        $status->status_name_th = 'ส่งใบคำร้องแล้ว';
-        $status->status_name_en = 'SONG PET LAEW';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 17;
-        $status->status_name_th = 'ยังไม่ได้ส่งใบคำร้อง';
-        $status->status_name_en = 'YANG MAI DAI SONG PET';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 2;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 18;
-        $status->status_name_th = 'ไม่ต้องส่งใบคำร้อง';
-        $status->status_name_en = 'MAI TONG SONG PET';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 19;
-        $status->status_name_th = 'ไม่มีการสอบ';
-        $status->status_name_en = 'MAI ME GARN SORB';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 20;
-        $status->status_name_th = 'ไม่ต้องส่งใบคำร้อง(สอบไม่ผ่าน)';
-        $status->status_name_en = 'MAI ME GARN SORB';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-
-        /* NOTE: POST_DEFENSE_DOCUMENT TYPE */
-        $status_type_id = 6;
-        $status = new EgsStatus();
-        $status->status_id = 21;
-        $status->status_name_th = 'ยังไม่ได้สอบ';
-        $status->status_name_en = 'YANG MAI DAI SORB';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 4;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 22;
-        $status->status_name_th = 'อัพโหลดเอกสารสอบแล้ว';
-        $status->status_name_en = 'UPLOAD DOC LAEW';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 23;
-        $status->status_name_th = 'ยังไม่ได้อัพโหลดเอกสารสอบ';
-        $status->status_name_en = 'YANG MAI DAI UPLOAD DOC';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 2;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 24;
-        $status->status_name_th = 'ไม่ต้องอัพโหลดเอกสาร';
-        $status->status_name_en = 'MAI TONG UPLOAD DOC';
-        $status->status_type_id = $status_type_id;
-        $status->status_label_id = 1;
-        if (!$status->save()) {
-            echo Json::encode($status->errors);
-            exit();
-        }
-        $status = new EgsStatus();
-        $status->status_id = 25;
-        $status->status_name_th = 'ไม่ต้องอัพโหลดเอกสาร(สอบไม่ผ่าน)';
-        $status->status_name_en = 'MAI TONG UPLOAD DOC';
-        $status->status_type_id = $status_type_id;
+        $status->status_name_en = 'Don\'t Need to Pay';
         $status->status_label_id = 1;
         if (!$status->save()) {
             echo Json::encode($status->errors);
@@ -457,223 +339,18 @@ class Calendar
         }
         $status_label = new EgsStatusLabel();
         $status_label->status_label_id = 2;
-        $status_label->status_label_name = 'danger';
+        $status_label->status_label_name = 'error';
         if (!$status_label->save()) {
             echo Json::encode($status_label->errors);
             exit();
         }
         $status_label = new EgsStatusLabel();
         $status_label->status_label_id = 3;
-        $status_label->status_label_name = 'blue';
+        $status_label->status_label_name = 'default';
         if (!$status_label->save()) {
             echo Json::encode($status_label->errors);
             exit();
         }
-        $status_label = new EgsStatusLabel();
-        $status_label->status_label_id = 4;
-        $status_label->status_label_name = 'warning';
-        if (!$status_label->save()) {
-            echo Json::encode($status_label->errors);
-            exit();
-        }
-    }
-
-    private function on_status()
-    {
-        $on_status = new EgsOnStatus();
-        $on_status->on_status_id = 1;
-        $on_status->on_status_name_th = 'DEFAULT';
-        $on_status->on_status_name_en = 'DEFAULT';
-        $on_status->save();
-        $on_status = new EgsOnStatus();
-        $on_status->on_status_id = 2;
-        $on_status->on_status_name_th = 'SUCCESS';
-        $on_status->on_status_name_en = 'SUCCESS';
-        $on_status->save();
-        $on_status = new EgsOnStatus();
-        $on_status->on_status_id = 3;
-        $on_status->on_status_name_th = 'FAIL';
-        $on_status->on_status_name_en = 'FAIL';
-        $on_status->save();
-        $on_status = new EgsOnStatus();
-        $on_status->on_status_id = 4;
-        $on_status->on_status_name_th = 'READY';
-        $on_status->on_status_name_en = 'READY';
-        $on_status->save();
-        $on_status = new EgsOnStatus();
-        $on_status->on_status_id = 5;
-        $on_status->on_status_name_th = 'PASS CONDITIONALLY';
-        $on_status->on_status_name_en = 'PASS CONDITIONALLY';
-        $on_status->save();
-        $on_status = new EgsOnStatus();
-        $on_status->on_status_id = 6;
-        $on_status->on_status_name_th = 'TIME OUT';
-        $on_status->on_status_name_en = 'TIME OUT';
-        $on_status->save();
-        $on_status = new EgsOnStatus();
-        $on_status->on_status_id = 7;
-        $on_status->on_status_name_th = 'NOT ANYMORE';
-        $on_status->on_status_name_en = 'NOT ANYMORE';
-        $on_status->save();
-    }
-
-    private function action_on_status_insert($actions, $statuses)
-    {
-        foreach ($actions as $action) {
-            foreach ($statuses as $on => $status) {
-                $action_on_status = new EgsActionOnStatus();
-                $action_on_status->action_id = $action;
-                $action_on_status->on_status_id = $on;
-                $action_on_status->status_id = $status;
-                if (!$action_on_status->save()) {
-                    echo Json::encode($action_on_status->errors);
-                    exit();
-                };
-            }
-        }
-    }
-
-    private function action_on_status()
-    {
-        /* NOTE: REQUEST_DOCUMENT TYPE */
-        $this->action_on_status_insert([1], [
-            1 => 4,
-            2 => 5,
-            3 => 4
-        ]);
-        $this->action_on_status_insert([2], [
-            1 => 4,
-            2 => 5,
-            3 => 4
-        ]);
-        $this->action_on_status_insert([4, 5], [
-            1 => 4,
-            2 => 5,
-            3 => 4
-        ]);
-        $this->action_on_status_insert([8], [
-            1 => 4,
-            2 => 5,
-            3 => 4
-        ]);
-        $this->action_on_status_insert([10], [
-            1 => 4,
-            2 => 5,
-            3 => 4
-        ]);
-
-        /* NOTE: DEFENSE_DOCUMENT TYPE */
-        $this->action_on_status_insert([3], [
-            1 => 1,
-            2 => 2,
-            3 => 1
-        ]);
-        $this->action_on_status_insert([6, 7], [
-            1 => 1,
-            2 => 2,
-            3 => 1
-        ]);
-        $this->action_on_status_insert([9], [
-            1 => 1,
-            2 => 2,
-            3 => 1
-        ]);
-        $this->action_on_status_insert([11, 12], [
-            1 => 3
-        ]);
-
-        /* NOTE: DEFENSE TYPE */
-        $this->action_on_status_insert([3], [
-            1 => 7,
-            2 => 9,
-            2 => 10,
-            3 => 11,
-            4 => 8
-        ]);
-        $this->action_on_status_insert([6, 7], [
-            1 => 7,
-            2 => 10,
-            3 => 11,
-            4 => 8,
-            5 => 9,
-        ]);
-        $this->action_on_status_insert([9], [
-            1 => 7,
-            2 => 10,
-            3 => 11,
-            4 => 8
-        ]);
-        $this->action_on_status_insert([11, 12], [
-            1 => 7,
-            2 => 10,
-            3 => 11,
-            4 => 8
-        ]);
-
-        /* NOTE: FEE TYPE */
-        $this->action_on_status_insert([1], [
-            1 => 12
-        ]);
-        $this->action_on_status_insert([2], [
-            1 => 12
-        ]);
-        $this->action_on_status_insert([4], [
-            1 => 14,
-            2 => 13,
-            3 => 14
-        ]);
-        $this->action_on_status_insert([5], [
-            1 => 14,
-            2 => 13,
-            3 => 14
-        ]);
-        $this->action_on_status_insert([8], [
-            1 => 12
-        ]);
-        $this->action_on_status_insert([10], [
-            1 => 14,
-            2 => 13,
-            3 => 14
-        ]);
-
-        /* NOTE: POST_REQUEST_DOCUMENT TYPE */
-        $this->action_on_status_insert([1], [
-            1 => 19
-        ]);
-        $this->action_on_status_insert([2], [
-            1 => 15,
-            2 => 16,
-            3 => 17,
-            4 => 17,
-            7 => 20
-        ]);
-        $this->action_on_status_insert([4, 5], [
-            1 => 18
-        ]);
-        $this->action_on_status_insert([8], [
-            1 => 18
-        ]);
-        $this->action_on_status_insert([10], [
-            1 => 18
-        ]);
-
-        /* NOTE: POST_DEFENSE_DOCUMENT TYPE */
-        $this->action_on_status_insert([3], [
-            1 => 24
-        ]);
-        $this->action_on_status_insert([6, 7], [
-            1 => 21,
-            2 => 22,
-            3 => 23,
-            4 => 23,
-            7 => 25
-        ]);
-        $this->action_on_status_insert([9], [
-            1 => 24
-        ]);
-        $this->action_on_status_insert([11, 12], [
-            1 => 24
-        ]);
     }
 
     private function submit_type()
@@ -831,6 +508,11 @@ class Calendar
         $action_type->action_type_name_th = 'สอบ';
         $action_type->actiont_type_name_en = 'Defense';
         if (!$action_type->save()) return Json::encode($action_type->errors);
+        $action_type = new EgsActionType();
+        $action_type->action_type_id = 3;
+        $action_type->action_type_name_th = 'INIT';
+        $action_type->actiont_type_name_en = 'INIT';
+        if (!$action_type->save()) return Json::encode($action_type->errors);
     }
 
     private function action()
@@ -843,8 +525,9 @@ class Calendar
         $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
         $action->action_default = 0;
-        $action->redo = 0;
+        $action->action_redo = 0;
         $action->action_credit = 0;
+        $action->action_cond = 0;
         if (!$action->save()) return Json::encode($action->errors);
 
         $action = new EgsAction();
@@ -855,8 +538,9 @@ class Calendar
         $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
         $action->action_default = 0;
-        $action->redo = 0;
+        $action->action_redo = 0;
         $action->action_credit = 0;
+        $action->action_cond = 0;
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 3;
@@ -864,8 +548,9 @@ class Calendar
         $action->action_name_en = 'Defense of Thesis/Independent Study\'s Proposal';
         $action->action_type_id = 2;
         $action->action_default = 0;
-        $action->redo = 0;
+        $action->action_redo = 0;
         $action->action_credit = 0;
+        $action->action_cond = 0;
         if (!$action->save()) return Json::encode($action->errors);
 
         $action = new EgsAction();
@@ -876,8 +561,9 @@ class Calendar
         $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
         $action->action_default = 0;
-        $action->redo = 0;
+        $action->action_redo = 0;
         $action->action_credit = 0;
+        $action->action_cond = 0;
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 5;
@@ -887,8 +573,9 @@ class Calendar
         $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
         $action->action_default = 0;
-        $action->redo = 0;
+        $action->action_redo = 0;
         $action->action_credit = 0;
+        $action->action_cond = 0;
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 6;
@@ -896,8 +583,9 @@ class Calendar
         $action->action_name_en = 'Defense of Thesis/Independent Study (1st)';
         $action->action_type_id = 2;
         $action->action_default = 0;
-        $action->redo = 1;
+        $action->action_redo = 1;
         $action->action_credit = 0;
+        $action->action_cond = 1;
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 7;
@@ -905,8 +593,9 @@ class Calendar
         $action->action_name_en = 'Defense of Thesis/Independent Study (2nd)';
         $action->action_type_id = 2;
         $action->action_default = 0;
-        $action->redo = 1;
+        $action->action_redo = 1;
         $action->action_credit = 0;
+        $action->action_cond = 1;
         if (!$action->save()) return Json::encode($action->errors);
 
         $action = new EgsAction();
@@ -917,8 +606,9 @@ class Calendar
         $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
         $action->action_default = 0;
-        $action->redo = 0;
+        $action->action_redo = 0;
         $action->action_credit = 0;
+        $action->action_cond = 0;
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 9;
@@ -926,8 +616,9 @@ class Calendar
         $action->action_name_en = 'Dissertation Progressing Examination';
         $action->action_type_id = 2;
         $action->action_default = 0;
-        $action->redo = 0;
+        $action->action_redo = 0;
         $action->action_credit = 1;
+        $action->action_cond = 0;
         if (!$action->save()) return Json::encode($action->errors);
 
         $action = new EgsAction();
@@ -937,9 +628,10 @@ class Calendar
         $action->action_detail_th = 'รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด';
         $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
-        $action->action_default = 0;
-        $action->redo = 0;
+        $action->action_default = 1;
+        $action->action_redo = 0;
         $action->action_credit = 0;
+        $action->action_cond = 0;
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 11;
@@ -947,8 +639,9 @@ class Calendar
         $action->action_name_en = 'Take Comprehensive/Qualifying Examination (Writing)';
         $action->action_type_id = 2;
         $action->action_default = 1;
-        $action->redo = 0;
+        $action->action_redo = 0;
         $action->action_credit = 0;
+        $action->action_cond = 0;
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 12;
@@ -956,9 +649,31 @@ class Calendar
         $action->action_name_en = 'Take Comprehensive/Qualifying Examination (Oral)';
         $action->action_type_id = 2;
         $action->action_default = 1;
-        $action->redo = 0;
+        $action->action_redo = 0;
         $action->action_credit = 0;
+        $action->action_cond = 0;
         if (!$action->save()) return Json::encode($action->errors);
+
+        $action = new EgsAction();
+        $action->action_id = 13;
+        $action->action_name_th = 'ตั้งค่าเริ่มต้นสอบประมวลความรู้/วัดคุณสมบัติ';
+        $action->action_name_en = 'Request for Taking Comprehensive/Qualifying Examination';
+        $action->action_detail_th = 'รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด';
+        $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
+        $action->action_type_id = 3;
+        $action->action_default = 0;
+        $action->action_redo = 0;
+        $action->action_credit = 0;
+        $action->action_cond = 0;
+        if (!$action->save()) return Json::encode($action->errors);
+    }
+
+    private function request_init()
+    {
+        $request_init = new EgsRequestInit();
+        $request_init->request_type_id = 10;
+        $request_init->init_type_id = 13;
+        if (!$request_init->save()) return Json::encode($request_init->errors);
     }
 
     private function request_defense()
@@ -987,6 +702,14 @@ class Calendar
         $request_defense->request_type_id = 10;
         $request_defense->defense_type_id = 12;
         if (!$request_defense->save()) return Json::encode($request_defense->errors);
+        $request_defense = new EgsRequestDefense();
+        $request_defense->request_type_id = 13;
+        $request_defense->defense_type_id = 11;
+        if (!$request_defense->save()) return Json::encode($request_defense->errors);
+        $request_defense = new EgsRequestDefense();
+        $request_defense->request_type_id = 13;
+        $request_defense->defense_type_id = 12;
+        if (!$request_defense->save()) return Json::encode($request_defense->errors);
     }
 
     private function action_item()
@@ -996,34 +719,34 @@ class Calendar
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12
+            10, 11, 12, 13
         ]);
         $this->insert_action_item(1, 2, [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12
+            10, 11, 12, 13
         ]);
         $this->insert_action_item(1, 3, [
-            10, 11, 12
+            10, 11, 12, 13
         ]);
         $this->insert_action_item(2, 1, [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12
+            10, 11, 12, 13
         ]);
         $this->insert_action_item(2, 2, [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12
+            10, 11, 12, 13
         ]);
         $this->insert_action_item(2, 3, [
-            10, 11, 12
+            10, 11, 12, 13
         ]);
     }
 

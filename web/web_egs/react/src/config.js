@@ -4,7 +4,8 @@ export const URL = {
     BASE: base,
     EGS_BASE: egs_base,
     MAIN: {
-        GET_CURRENT_USER: `${egs_base}/person/current`
+        GET_CURRENT_USER: `${egs_base}/person/current`,
+        GET_CONFIG: `${egs_base}/config`
     },
     LANGUAGE: {
         GET_DATA: `${egs_base}/language/get`
@@ -18,9 +19,16 @@ export const URL = {
             GET_ALL: `${egs_base}/calendar/find-all`,
             INSERT_CALENDAR: `${egs_base}/calendar/calendar-insert`,
         },
+        CALENDAR_INIT: {
+            MAIN: {
+                PATH: `/calendar-init`,
+                LINK: `${egs_base}/#/calendar-init`
+            },
+            GET_CALENDAR_ITEM_INIT: `${egs_base}/calendar-item/find-init`,
+        },
         CALENDAR: {
             MAIN: {
-                PATH: `/calendar-:calendarId`,
+                PATH: `/calendar/:calendarId`,
                 LINK: (calendarId) => {
                     return `${egs_base}/#/calendar-${calendarId}`
                 }
@@ -40,12 +48,6 @@ export const URL = {
         }
     },
     REQUEST: {
-        REQUEST_INIT: {
-            MAIN: {
-                PATH: `/requestInit`,
-                LINK: `${egs_base}/#/requestInit`
-            }
-        },
         REQUEST_LIST: {
             MAIN: {
                 PATH: `/requestList`,
@@ -56,13 +58,16 @@ export const URL = {
         },
         REQUEST_ADD: {
             MAIN: {
-                PATH: `/requestAdd/:calendarId/:semesterId/:actionId/:ownerId`,
+                PATH: `/request-add/:ownerId/:calendarId/:levelId/:semesterId/:actionId`,
                 LINK: (calendarItem) => {
-                    return `${egs_base}/#/requestAdd/${calendarItem.calendar_id}/${calendarItem.semester_id}/${calendarItem.action.action_id}/${calendarItem.owner_id}`
+                    return `${egs_base}/#/request-add/${calendarItem.owner_id}/${calendarItem.calendar_id}/${calendarItem.level_id}/${calendarItem.semester_id}/${calendarItem.action.action_id}`
                 }
             },
-            GET_CALENDAR_ITEM: (ownerId, calendarId, semesterId, actionId) => {
-                return `${egs_base}/calendar-item/find-one?calendar_id=${calendarId}&semester_id=${semesterId}&action_id=${actionId}&owner_id=${ownerId}`
+            GET_STEP: (actionId) => {
+                return `${egs_base}/action-step/insert?action_id=${actionId}`
+            },
+            GET_CALENDAR_ITEM: (ownerId, calendarId, levelId, semesterId, actionId) => {
+                return `${egs_base}/calendar-item/find-one?calendar_id=${calendarId}&semester_id=${semesterId}&action_id=${actionId}&owner_id=${ownerId}&level_id=${levelId}`
             },
             GET_ALL_TEACHER: `${egs_base}/person/find-teacher`,
             GET_ALL_POSITION: (actionId) => {
@@ -71,6 +76,20 @@ export const URL = {
             GET_ALL_ROOM: `${egs_base}/room/all`,
             INSERT_USER_REQUEST: `${egs_base}/user-request/insert`,
             GET_DEFENSE_EVENT: `${egs_base}/defense/event`
+        },
+        REQUEST_DATA: {
+            MAIN: {
+                PATH: `/request-data`,
+                LINK: `${egs_base}/#/request-data`
+            },
+            GET_STEP: (actionId) => {
+                return `${egs_base}/action-step/process?action_id=${actionId}`
+            },
+            GET_STATUS: `${egs_base}/status/all`,
+            UPDATE_RESULT: `${egs_base}/defense/update-result`,
+            UPDATE_REQUEST_DOCUMENT: `${egs_base}/request-document/update`,
+            UPDATE_REQUEST_FEE: `${egs_base}/user-request/update-fee`,
+            UPDATE_DEFENSE_DOCUMENT: `${egs_base}/defense-document/update`,
         }
     },
     DATA: {
@@ -129,7 +148,8 @@ export const TYPE = {
     MAIN: {
         SET_HEADER: 'SET_MAIN_HEADER',
         SET_CONTAINER: 'SET_MAIN_CONTAINER',
-        SET_CURRENT_USER: 'SET_MAIN_CURRENT_USER'
+        SET_CURRENT_USER: 'SET_MAIN_CURRENT_USER',
+        SET_CONFIG: 'SET_MAIN_CONFIG'
     },
     LANGUAGE: {
         SET_DATA: 'SET_LANGUAGE_DATA'
@@ -140,6 +160,10 @@ export const TYPE = {
             SET_POST: 'SET_CALENDAR_LIST_POST',
             SET_BTN_ACTIVE: 'SET_CALENDAR_LIST_ACTIVE_BTN',
             RESET: 'RESET_CALENDAR_LIST'
+        },
+        CALENDAR_INIT: {
+            SET_ALL_CALENDAR_ITEM: 'SET_CALENDAR_INITCALENDAR_ITEM_ALL',
+            RESET: 'RESET_CALENDAR_INIT'
         },
         CALENDAR: {
             SET_ALL_SEMESTER: 'SET_CALENDAR_SEMESTER_ALL',
@@ -163,7 +187,15 @@ export const TYPE = {
             SET_ALL_POSITION: 'SET_REQUEST_ADD_ALL_POSITION',
             SET_POST: 'SET_REQUEST_ADD_POST',
             SET_ALL_ROOM: 'SET_REQUEST_ADD_ALL_ROOM',
+            SET_STEP: 'SET_REQUEST_ADD_ACTION_STEP',
+            SET_CURRENT: 'SET_REQUEST_ADD_CURRENT',
+            SET_COMPONENT: 'SET_REQUEST_ADD_COMPONENT',
             RESET: 'RESET_REQUEST_ADD',
+        },
+        REQUEST_DATA: {
+            SET_STEP: 'SET_REQUEST_DATA_STEP',
+            SET_STATUS: 'SET_REQUEST_DATA_STATUS',
+            SET_UNMOUNT: 'SET_REQUEST_DATA_UNMOUNT'
         }
     },
     DATA: {

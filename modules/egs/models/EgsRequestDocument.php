@@ -15,8 +15,10 @@ use Yii;
  * @property integer $semester_id
  * @property integer $owner_id
  * @property integer $student_id
+ * @property integer $request_document_status_id
  *
  * @property EgsDocument $document
+ * @property EgsStatus $requestDocumentStatus
  * @property EgsUserRequest $calendar
  */
 class EgsRequestDocument extends \yii\db\ActiveRecord
@@ -43,9 +45,10 @@ class EgsRequestDocument extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['document_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'required'],
-            [['document_id', 'request_document_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'integer'],
+            [['document_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'request_document_status_id'], 'required'],
+            [['document_id', 'request_document_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'request_document_status_id'], 'integer'],
             [['document_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsDocument::className(), 'targetAttribute' => ['document_id' => 'document_id']],
+            [['request_document_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['request_document_status_id' => 'status_id']],
             [['calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsUserRequest::className(), 'targetAttribute' => ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']],
         ];
     }
@@ -64,6 +67,7 @@ class EgsRequestDocument extends \yii\db\ActiveRecord
             'semester_id' => 'Semester ID',
             'owner_id' => 'Owner ID',
             'student_id' => 'Student ID',
+            'request_document_status_id' => 'Request Document Status ID',
         ];
     }
 
@@ -73,6 +77,14 @@ class EgsRequestDocument extends \yii\db\ActiveRecord
     public function getDocument()
     {
         return $this->hasOne(EgsDocument::className(), ['document_id' => 'document_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRequestDocumentStatus()
+    {
+        return $this->hasOne(EgsStatus::className(), ['status_id' => 'request_document_status_id']);
     }
 
     /**

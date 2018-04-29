@@ -5,22 +5,25 @@ namespace app\modules\egs\models;
 use Yii;
 
 /**
- * This is the model class for table "egs_action_submit_step".
+ * This is the model class for table "egs_action_step".
  *
  * @property integer $action_id
  * @property integer $step_id
+ * @property integer $step_type_id
+ * @property integer $action_step_index
  *
  * @property EgsAction $action
  * @property EgsStep $step
+ * @property EgsStepType $stepType
  */
-class EgsActionSubmitStep extends \yii\db\ActiveRecord
+class EgsActionStep extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'egs_action_submit_step';
+        return 'egs_action_step';
     }
 
     /**
@@ -37,10 +40,11 @@ class EgsActionSubmitStep extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['action_id', 'step_id'], 'required'],
-            [['action_id', 'step_id'], 'integer'],
+            [['action_id', 'step_id', 'step_type_id', 'action_step_index'], 'required'],
+            [['action_id', 'step_id', 'step_type_id', 'action_step_index'], 'integer'],
             [['action_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsAction::className(), 'targetAttribute' => ['action_id' => 'action_id']],
             [['step_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStep::className(), 'targetAttribute' => ['step_id' => 'step_id']],
+            [['step_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStepType::className(), 'targetAttribute' => ['step_type_id' => 'step_type_id']],
         ];
     }
 
@@ -52,6 +56,8 @@ class EgsActionSubmitStep extends \yii\db\ActiveRecord
         return [
             'action_id' => 'Action ID',
             'step_id' => 'Step ID',
+            'step_type_id' => 'Step Type ID',
+            'action_step_index' => 'Action Step Index',
         ];
     }
 
@@ -69,5 +75,13 @@ class EgsActionSubmitStep extends \yii\db\ActiveRecord
     public function getStep()
     {
         return $this->hasOne(EgsStep::className(), ['step_id' => 'step_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getStepType()
+    {
+        return $this->hasOne(EgsStepType::className(), ['step_type_id' => 'step_type_id']);
     }
 }

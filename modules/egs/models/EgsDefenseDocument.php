@@ -16,9 +16,11 @@ use Yii;
  * @property integer $student_id
  * @property integer $document_id
  * @property string $defense_document_path
+ * @property integer $defense_document_status_id
  *
  * @property EgsDefense $defenseType
  * @property EgsDocument $document
+ * @property EgsStatus $defenseDocumentStatus
  */
 class EgsDefenseDocument extends \yii\db\ActiveRecord
 {
@@ -44,11 +46,12 @@ class EgsDefenseDocument extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['defense_type_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'document_id'], 'required'],
-            [['defense_type_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'document_id'], 'integer'],
+            [['defense_type_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'document_id', 'defense_document_status_id'], 'required'],
+            [['defense_type_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'document_id', 'defense_document_status_id'], 'integer'],
             [['defense_document_path'], 'string', 'max' => 255],
             [['defense_type_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsDefense::className(), 'targetAttribute' => ['defense_type_id' => 'defense_type_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']],
             [['document_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsDocument::className(), 'targetAttribute' => ['document_id' => 'document_id']],
+            [['defense_document_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['defense_document_status_id' => 'status_id']],
         ];
     }
 
@@ -67,6 +70,7 @@ class EgsDefenseDocument extends \yii\db\ActiveRecord
             'student_id' => 'Student ID',
             'document_id' => 'Document ID',
             'defense_document_path' => 'Defense Document Path',
+            'defense_document_status_id' => 'Defense Document Status ID',
         ];
     }
 
@@ -84,5 +88,13 @@ class EgsDefenseDocument extends \yii\db\ActiveRecord
     public function getDocument()
     {
         return $this->hasOne(EgsDocument::className(), ['document_id' => 'document_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDefenseDocumentStatus()
+    {
+        return $this->hasOne(EgsStatus::className(), ['status_id' => 'defense_document_status_id']);
     }
 }

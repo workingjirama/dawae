@@ -6,41 +6,39 @@ use Yii;
 
 class Config
 {
+    static public $PASS_DEFENSE_SCORE = 50;
+
+    static public $DEFENSE_STATUS_DEFAULT = 1;
+    static public $DEFENSE_STATUS_FAIL = 2;
+    static public $DEFENSE_STATUS_PASS = 3;
+    static public $DEFENSE_STATUS_PASS_CON = 4;
+    static public $DOC_STATUS_SUBMMITTED = 5;
+    static public $DOC_STATUS_NOT_SUBMITTED = 6;
+    static public $DOC_STATUS_NO_NEED = 7;
+    static public $FEE_STATUS_PAID = 8;
+    static public $FEE_STATUS_NOT_PAY = 9;
+    static public $DONT_NEED_TO_PAY = 10;
+
     static public $DEFAULT_LANGUAGE = 'th';
-    static public $COMPLETE_PETITION_STATUS = 5; /* TEMPORARY: NEED WORKING */
     static public $SYSTEM_ID = -99;
+
+    static public $STEP_TYPE_INSERT = 1;
+    static public $STEP_TYPE_PROCESS = 2;
 
     static public $PRINTING_TYPE_REVIEW = 1;
 
-    static public $DONT_HAVE_TO_PAY_STATUS = 12;
-
     static public $ACTION_REQUEST_TYPE = 1;
     static public $ACTION_DEFENSE_TYPE = 2;
+    static public $ACTION_INIT_TYPE = 3;
 
     static public $DOCUMENT_PETITION_TYPE = 1;
     static public $DOCUMENT_PAPER_TYPE = 2;
-
-    static public $STATUS_REQUEST_DOCUMENT_TYPE = 1;
-    static public $STATUS_DEFENSE_DOCUMENT_TYPE = 2;
-    static public $STATUS_DEFENSE_TYPE = 3;
-    static public $STATUS_FEE_TYPE = 4;
-    static public $STATUS_POST_REQUEST_DOCUMENT_TYPE = 5;
-    static public $STATUS_POST_DEFENSE_DOCUMENT_TYPE = 6;
 
     static public $COMMITTEE_MAIN_POSITION = 3;
     static public $COMMITTEE_CO_POSITION = 4;
 
     static public $SUBMIT_TYPE_BEFORE = 1;
     static public $SUBMIT_TYPE_AFTER = 2;
-
-    static public $ON_DEFAULT = 1;
-    static public $ON_SUCCESS = 2;
-    static public $ON_FAIL = 3;
-    static public $ON_READY = 4;
-    static public $ON_PASS_CONDITIONALLY = 5;
-    static public $ON_TIME_OUT = 6;
-    static public $ON_NOT_ANYMORE = 7;
-
 
     static public $PERSON_STUDENT_TYPE = 0;
     static public $PERSON_TEACHER_TYPE = 1;

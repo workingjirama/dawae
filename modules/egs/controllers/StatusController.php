@@ -21,25 +21,9 @@ use yii\web\Controller;
 
 class StatusController extends Controller
 {
-    public function actionFind($type_id)
+    public function actionAll()
     {
-        $status = EgsStatus::find()->where(['status_type_id' => $type_id])->all();
-        return Json::encode(Format::status($status));
-    }
-
-    public function actionPostRequestDocumentStatus()
-    {
-        $status = EgsStatus::findAll([
-            'status_type_id' => Config::$STATUS_POST_REQUEST_DOCUMENT_TYPE
-        ]);
-        return Json::encode(Format::status($status));
-    }
-
-    public function actionPostDefenseDocumentStatus()
-    {
-        $status = EgsStatus::findAll([
-            'status_type_id' => Config::$STATUS_POST_DEFENSE_DOCUMENT_TYPE
-        ]);
+        $status = EgsStatus::find()->all();
         return Json::encode(Format::status($status));
     }
 }

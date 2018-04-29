@@ -23,13 +23,13 @@ import moment from 'moment'
         positions: store.requestAdd.positions,
         rooms: store.requestAdd.rooms,
         post: store.requestAdd.post,
-        lang: store.language.data
+        lang: store.language.data,
     }
 })
 export default class RequestAdd extends React.Component {
 
     constructor(props) {
-        super(props)
+        super()
         const {lang} = props
         moment.locale(lang.lang)
         this.edit

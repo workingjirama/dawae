@@ -9,11 +9,17 @@ export function setHeader(header) {
     }
 }
 
-export function setContainer(container) {
-    return function (dispatch) {
-        dispatch({
-            type: TYPE.MAIN.SET_CONTAINER,
-            payload: container
+export function getConfig() {
+    return dispatch => {
+        fetch(URL.MAIN.GET_CONFIG, {
+            // credentials: 'same-origin'
+        }).then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            dispatch({
+                type: TYPE.MAIN.SET_CONFIG,
+                payload: json
+            })
         })
     }
 }

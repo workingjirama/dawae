@@ -63,7 +63,6 @@ class UserRequestController extends Controller
     public function actionUpdateFee()
     {
         $post = Json::decode(Yii::$app->request->post('json'));
-        $user = Config::get_current_user();
         $user_request = EgsUserRequest::findOne([
             'student_id' => $post['studentId'],
             'calendar_id' => $post['calendarId'],
@@ -72,43 +71,9 @@ class UserRequestController extends Controller
             'semester_id' => $post['semesterId'],
             'owner_id' => $post['owner_id']
         ]);
-        $fee_status = EgsActionOnStatus::find()->joinWith(['status s'])->where([
-            'action_id' => $user_request->action_id,
-            'on_status_id' => $post['paid'] ? Config::$ON_SUCCESS : Config::$ON_FAIL,
-            's.status_type_id' => Config::$STATUS_FEE_TYPE
-        ])->one();
-        $user_request->fee_status_id = $fee_status->status_id;
-        $user_request->request_fee_paid = $post['paid'];
-        $user_request->save();
-        $defense_ready = true;
-        foreach ($user_request->egsRequestDocuments as $request_document) {
-            if ($request_document->request_document_id === null) {
-                if ($request_document->document->submit_type_id === Config::$SUBMIT_TYPE_BEFORE)
-                    $defense_ready = false;
-            }
-            foreach ($user_request->egsDefenses as $defense)
-                foreach ($defense->egsDefenseDocuments as $defense_document)
-                    if ($request_document->document->submit_type_id === Config::$SUBMIT_TYPE_BEFORE)
-                        if ($defense_document->defense_document_path === null)
-                            $defense_ready = false;
-        }
-        if (!$user_request->request_fee_paid) $defense_ready = false;
-        foreach ($user_request->egsDefenses as $defense) {
-            $defense->defense_status_id = EgsActionOnStatus::find()
-                ->joinWith(['status s'])
-                ->where([
-                    'action_id' => $defense->defense_type_id,
-                    'on_status_id' => $defense_ready ? Config::$ON_READY : Config::$ON_DEFAULT,
-                    's.status_type_id' => Config::$STATUS_DEFENSE_TYPE
-                ])->one()->status_id;
-            if (!$defense_ready) {
-                $defense->defense_score = null;
-                $defense->defense_credit = null;
-                $defense->defense_comment = null;
-            }
-            $defense->save();
-        }
-        return Json::encode(Format::userRequestForListing($user_request, $user['user_type_id']));
+        $user_request->request_fee_status_id = $post['paid'] ? Config::$FEE_STATUS_PAID : Config::$FEE_STATUS_NOT_PAY;
+        if (!$user_request->save()) return $user_request->errors;
+        return Json::encode(Format::userRequestForListing($user_request));
     }
 
     public function actionInsert()
@@ -149,54 +114,43 @@ class UserRequestController extends Controller
             $user_request->owner_id = $calendar_item_['owner_id'];
         } else {
             /* NOTE: IF EXIST DELETE ALL CHILDS */
-            foreach ($user_request->egsRequestDocuments as $request_document) {
-                $request_document->delete();
-            }
-            foreach ($user_request->egsAdvisors as $advisor) {
-                $advisor->delete();
-            }
+            foreach ($user_request->egsRequestDocuments as $request_document) $request_document->delete();
+            foreach ($user_request->egsAdvisors as $advisor) $advisor->delete();
             foreach ($user_request->egsDefenses as $defense) {
-                foreach ($defense->egsDefenseDocuments as $defense_document) {
+                foreach ($defense->egsDefenseDocuments as $defense_document)
                     $defense_document->delete();
-                }
-                foreach ($defense->egsCommittees as $committee) {
+                foreach ($defense->egsCommittees as $committee)
                     $committee->delete();
-                }
                 $defense->delete();
             }
         }
-        $document_status = EgsActionOnStatus::find()->joinWith(['status s'])->where([
-            'action_id' => $calendar_item_['actionId'],
-            'on_status_id' => Config::$ON_DEFAULT,
-            's.status_type_id' => Config::$STATUS_REQUEST_DOCUMENT_TYPE
-        ])->one();
-        $post_document_status = EgsActionOnStatus::find()->joinWith(['status s'])->where([
-            'action_id' => $calendar_item_['actionId'],
-            'on_status_id' => Config::$ON_DEFAULT,
-            's.status_type_id' => Config::$STATUS_POST_REQUEST_DOCUMENT_TYPE
-        ])->one();
-        $fee_status = EgsActionOnStatus::find()->joinWith(['status s'])->where([
-            'action_id' => $calendar_item_['actionId'],
-            'on_status_id' => Config::$ON_DEFAULT,
-            's.status_type_id' => Config::$STATUS_FEE_TYPE
-        ])->one();
         $request_fee = EgsRequestFee::findOne([
             'plan_id' => empty($plan_type) ? null : $plan_type->plan_id,
             'branch_id' => $branch_id,
             'action_id' => $calendar_item_['actionId']
         ]);
-        $fee_status_fail = EgsActionOnStatus::find()->joinWith(['status s'])->where([
-            'action_id' => $calendar_item_['actionId'],
-            'on_status_id' => Config::$ON_FAIL,
-            's.status_type_id' => Config::$STATUS_FEE_TYPE
-        ])->one();
-        $user_request->document_status_id = empty($document_status) ? 1 : $document_status->status_id;
-        $user_request->post_document_status_id = empty($post_document_status) ? 1 : $post_document_status->status_id;
-        $user_request->fee_status_id = empty($fee_status) ? 1 : $fee_status->status_id;
         $user_request->request_fee = empty($request_fee) ? 0 : $request_fee->request_fee_amount;
-        $user_request->request_fee_paid = empty($fee_status_fail) ? 1 : 0;
+        $user_request->request_fee_status_id = $user_request->request_fee === 0 ? Config::$DONT_NEED_TO_PAY : Config::$FEE_STATUS_NOT_PAY;
         /* NOTE: IF SAVE AND NOT INITAILIZE */
         if ($user_request->save()) {
+            if (!$init) {
+                /* NOTE: FIND & INSERT DOCUMENT OF THIS ACTION */
+                $action_documents = EgsActionDocument::findAll([
+                    'action_id' => $user_request->action_id
+                ]);
+                foreach ($action_documents as $action_document) {
+                    $request_document = new EgsRequestDocument();
+                    $request_document->student_id = $student_id;
+                    $request_document->calendar_id = $user_request->calendar_id;
+                    $request_document->action_id = $user_request->action_id;
+                    $request_document->level_id = $user_request->level_id;
+                    $request_document->semester_id = $user_request->semester_id;
+                    $request_document->owner_id = $user_request->owner_id;
+                    $request_document->document_id = $action_document->document_id;
+                    $request_document->request_document_status_id = Config::$DOC_STATUS_NOT_SUBMITTED;
+                    if (!$request_document->save()) return Json::encode($request_document->errors);
+                }
+            }
             if (!$is_defense) {
                 /* NOTE: IF NOT DEFENSE INSERT ADVISOR */
                 foreach ($teachers as $teacher) {
@@ -217,23 +171,6 @@ class UserRequestController extends Controller
                 /* NOTE: IF DEFENSE INSERT DEFENSE & COMMITEE */
                 foreach ($defenses as $defense_) {
                     $defense_type_id = $defense_['type'];
-                    $defense_status = EgsActionOnStatus::find()
-                        ->joinWith(['status s'])
-                        ->where([
-                            'action_id' => $defense_type_id,
-                            'on_status_id' => Config::$ON_DEFAULT,
-                            's.status_type_id' => Config::$STATUS_DEFENSE_TYPE
-                        ])->one();
-                    $document_status = EgsActionOnStatus::find()->joinWith(['status s'])->where([
-                        'action_id' => $defense_type_id,
-                        'on_status_id' => Config::$ON_DEFAULT,
-                        's.status_type_id' => Config::$STATUS_DEFENSE_DOCUMENT_TYPE
-                    ])->one();
-                    $post_document_status = EgsActionOnStatus::find()->joinWith(['status s'])->where([
-                        'action_id' => $defense_type_id,
-                        'on_status_id' => Config::$ON_DEFAULT,
-                        's.status_type_id' => Config::$STATUS_POST_DEFENSE_DOCUMENT_TYPE
-                    ])->one();
                     $defense = new EgsDefense();
                     $defense->student_id = $user_request->student_id;
                     $defense->calendar_id = $user_request->calendar_id;
@@ -246,24 +183,25 @@ class UserRequestController extends Controller
                     $defense->defense_time_start = $defense_['start'];
                     $defense->defense_time_end = $defense_['end'];
                     $defense->room_id = $defense_['room'];
-                    $defense->defense_status_id = empty($defense_status) ? 1 : $defense_status->status_id;
-                    $defense->document_status_id = empty($document_status) ? 1 : $document_status->status_id;
-                    $defense->post_document_status_id = empty($post_document_status) ? 1 : $post_document_status->status_id;
+                    $defense->defense_status_id = Config::$DEFENSE_STATUS_DEFAULT;
                     if ($defense->save()) {
-                        $action_documents = EgsActionDocument::findAll([
-                            'action_id' => $defense->defense_type_id
-                        ]);
-                        foreach ($action_documents as $action_document) {
-                            $defense_document = new EgsDefenseDocument();
-                            $defense_document->defense_type_id = $defense->defense_type_id;
-                            $defense_document->student_id = $student_id;
-                            $defense_document->calendar_id = $user_request->calendar_id;
-                            $defense_document->action_id = $user_request->action_id;
-                            $defense_document->level_id = $user_request->level_id;
-                            $defense_document->semester_id = $user_request->semester_id;
-                            $defense_document->owner_id = $user_request->owner_id;
-                            $defense_document->document_id = $action_document->document_id;
-                            $defense_document->save();
+                        if (!$init) {
+                            $action_documents = EgsActionDocument::findAll([
+                                'action_id' => $defense->defense_type_id
+                            ]);
+                            foreach ($action_documents as $action_document) {
+                                $defense_document = new EgsDefenseDocument();
+                                $defense_document->defense_type_id = $defense->defense_type_id;
+                                $defense_document->student_id = $student_id;
+                                $defense_document->calendar_id = $user_request->calendar_id;
+                                $defense_document->action_id = $user_request->action_id;
+                                $defense_document->level_id = $user_request->level_id;
+                                $defense_document->semester_id = $user_request->semester_id;
+                                $defense_document->owner_id = $user_request->owner_id;
+                                $defense_document->document_id = $action_document->document_id;
+                                $defense_document->defense_document_status_id = Config::$DOC_STATUS_NOT_SUBMITTED;
+                                if (!$defense_document->save()) return Json::encode($defense_document->errors);
+                            }
                         }
                         $fee = $this->committeeFeeCalculator($defense->defense_type_id, $branch_id, $level_id, $plan_type_id, sizeof($teachers));
                         foreach ($teachers as $teacher) {
@@ -285,24 +223,10 @@ class UserRequestController extends Controller
                     }
                 }
             }
-            /* NOTE: FIND & INSERT DOCUMENT OF THIS ACTION */
-            $action_documents = EgsActionDocument::findAll([
-                'action_id' => $user_request->action_id
-            ]);
-            foreach ($action_documents as $action_document) {
-                $request_document = new EgsRequestDocument();
-                $request_document->student_id = $student_id;
-                $request_document->calendar_id = $user_request->calendar_id;
-                $request_document->action_id = $user_request->action_id;
-                $request_document->level_id = $user_request->level_id;
-                $request_document->semester_id = $user_request->semester_id;
-                $request_document->owner_id = $user_request->owner_id;
-                $request_document->document_id = $action_document->document_id;
-                $request_document->save();
-            }
         } else {
             return Json::encode($user_request->errors);
         }
+
         if ($init) {
             $calendar_item = EgsCalendarItem::findOne([
                 'calendar_id' => $calendar_item_['calendarId'],
@@ -313,9 +237,10 @@ class UserRequestController extends Controller
             ]);
             $calendar_item->calendar_item_date_start = $defenses[0]['date'];
             $calendar_item->calendar_item_date_end = $defenses[0]['date'];
-            $calendar_item->save();
+            if (!$calendar_item->save()) return Json::encode($calendar_item->errors);
             return Json::encode($calendar_item);
         }
         return Json::encode(null);
     }
+
 }

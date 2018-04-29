@@ -16,10 +16,17 @@ class PositionController extends Controller
 {
     public function actionFind($action_id)
     {
-        $egs_request_defense = EgsRequestDefense::find()->where(['request_type_id' => $action_id])->all();
-        $position = EgsPosition::find()->where([
-            'position_type_id' => !empty($egs_request_defense) ? Config::$POSITION_COMMITTEE_TYPE : Config::$POSITION_ADVISOR_TYPE
-        ])->all();
+        $position = null;
+        if ($action_id === 'DEFENSE-XD') {
+            $position = EgsPosition::find()->where([
+                'position_type_id' => Config::$POSITION_COMMITTEE_TYPE
+            ])->all();
+        } else {
+            $egs_request_defense = EgsRequestDefense::find()->where(['request_type_id' => $action_id])->all();
+            $position = EgsPosition::find()->where([
+                'position_type_id' => !empty($egs_request_defense) ? Config::$POSITION_COMMITTEE_TYPE : Config::$POSITION_ADVISOR_TYPE
+            ])->all();
+        }
         return Json::encode(Format::position($position));
     }
 }

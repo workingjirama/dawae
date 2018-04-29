@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {setHeader} from '../../actions/main'
-import DateRangePicker from 'react-bootstrap-daterangepicker'
+// import DateRangePicker from 'react-bootstrap-daterangepicker'
 import moment from 'moment'
 import {toastr} from 'react-redux-toastr'
 import {Tooltip} from 'react-tippy'

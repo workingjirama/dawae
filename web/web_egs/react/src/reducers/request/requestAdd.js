@@ -7,6 +7,9 @@ const init = {
     teachers: null,
     positions: null,
     rooms: null,
+    steps: null,
+    current: 0,
+    component: null,
     post: {
         teachers: [],
         defenses: []
@@ -19,6 +22,16 @@ export default function reducer(state = init, action) {
             return {
                 ...state,
                 calendarItem: action.payload
+            }
+        case _TYPE.SET_COMPONENT:
+            return {
+                ...state,
+                component: action.payload
+            }
+        case _TYPE.SET_CURRENT:
+            return {
+                ...state,
+                current: action.payload
             }
         case _TYPE.SET_ALL_TEACHER:
             return {
@@ -39,6 +52,11 @@ export default function reducer(state = init, action) {
             return {
                 ...state,
                 rooms: action.payload
+            }
+        case _TYPE.SET_STEP:
+            return {
+                ...state,
+                steps: action.payload
             }
         case _TYPE.RESET:
             return init

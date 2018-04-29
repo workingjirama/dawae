@@ -2,8 +2,9 @@ import {TYPE} from './../config'
 
 const init = {
     header: "HOME",
-    container: null,
-    currentUser: null
+    currentUser: null,
+    config: null
+
 }
 export default function reducer(state = init, action) {
     switch (action.type) {
@@ -12,15 +13,15 @@ export default function reducer(state = init, action) {
                 ...state,
                 header: action.payload
             }
-        case TYPE.MAIN.SET_CONTAINER:
-            return {
-                ...state,
-                container: action.payload
-            }
         case TYPE.MAIN.SET_CURRENT_USER:
             return {
                 ...state,
                 currentUser: action.payload
+            }
+        case TYPE.MAIN.SET_CONFIG:
+            return {
+                ...state,
+                config: action.payload
             }
     }
     return state

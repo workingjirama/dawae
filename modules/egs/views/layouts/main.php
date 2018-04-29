@@ -57,12 +57,6 @@
                                 </a>
                             </li>
                             <li>
-                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/defense') ?>'>
-                                    <i class='main-icon fa fa-slack'></i>
-                                    <span>การสอบ</span>
-                                </a>
-                            </li>
-                            <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/review-add') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
                                     <span>REVIEW</span>
@@ -77,12 +71,6 @@
                                     <span>คำร้อง</span>
                                 </a>
                             </li>
-                            <li>
-                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/defense') ?>'>
-                                    <i class='main-icon fa fa-slack'></i>
-                                    <span>การสอบ</span>
-                                </a>
-                            </li>
                             <?php break;
                         /* THIS IS STAFF */
                         case 2:
@@ -94,15 +82,15 @@
                                 </a>
                             </li>
                             <li>
-                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/request') ?>'>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/calendar-init') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>คำร้อง</span>
+                                    <span>CALENDAR_ITEM_INITIAL</span>
                                 </a>
                             </li>
                             <li>
-                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/defense') ?>'>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/request') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>การสอบ</span>
+                                    <span>คำร้อง</span>
                                 </a>
                             </li>
                             <li>

@@ -8,12 +8,14 @@ use Yii;
  * This is the model class for table "egs_step".
  *
  * @property integer $step_id
+ * @property string $step_name_th
+ * @property string $step_name_en
  * @property string $step_component
+ * @property string $step_icon
+ * @property string $step_validation
  *
- * @property EgsActionCompleteStep[] $egsActionCompleteSteps
+ * @property EgsActionStep[] $egsActionSteps
  * @property EgsAction[] $actions
- * @property EgsActionSubmitStep[] $egsActionSubmitSteps
- * @property EgsAction[] $actions0
  */
 class EgsStep extends \yii\db\ActiveRecord
 {
@@ -39,9 +41,9 @@ class EgsStep extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['step_id', 'step_component'], 'required'],
+            [['step_id', 'step_name_th', 'step_name_en', 'step_component', 'step_icon'], 'required'],
             [['step_id'], 'integer'],
-            [['step_component'], 'string', 'max' => 255],
+            [['step_name_th', 'step_name_en', 'step_component', 'step_icon', 'step_validation'], 'string', 'max' => 255],
         ];
     }
 
@@ -52,16 +54,20 @@ class EgsStep extends \yii\db\ActiveRecord
     {
         return [
             'step_id' => 'Step ID',
+            'step_name_th' => 'Step Name Th',
+            'step_name_en' => 'Step Name En',
             'step_component' => 'Step Component',
+            'step_icon' => 'Step Icon',
+            'step_validation' => 'Step Validation',
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getEgsActionCompleteSteps()
+    public function getEgsActionSteps()
     {
-        return $this->hasMany(EgsActionCompleteStep::className(), ['step_id' => 'step_id']);
+        return $this->hasMany(EgsActionStep::className(), ['step_id' => 'step_id']);
     }
 
     /**
@@ -69,22 +75,6 @@ class EgsStep extends \yii\db\ActiveRecord
      */
     public function getActions()
     {
-        return $this->hasMany(EgsAction::className(), ['action_id' => 'action_id'])->viaTable('egs_action_complete_step', ['step_id' => 'step_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getEgsActionSubmitSteps()
-    {
-        return $this->hasMany(EgsActionSubmitStep::className(), ['step_id' => 'step_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getActions0()
-    {
-        return $this->hasMany(EgsAction::className(), ['action_id' => 'action_id'])->viaTable('egs_action_submit_step', ['step_id' => 'step_id']);
+        return $this->hasMany(EgsAction::className(), ['action_id' => 'action_id'])->viaTable('egs_action_step', ['step_id' => 'step_id']);
     }
 }

@@ -22,15 +22,11 @@ use Yii;
  * @property integer $semester_id
  * @property integer $owner_id
  * @property integer $student_id
- * @property integer $document_status_id
- * @property integer $post_document_status_id
  *
  * @property EgsCommittee[] $egsCommittees
  * @property EgsAction $defenseType
  * @property EgsRoom $room
  * @property EgsStatus $defenseStatus
- * @property EgsStatus $documentStatus
- * @property EgsStatus $postDocumentStatus
  * @property EgsUserRequest $calendar
  * @property EgsDefenseDocument[] $egsDefenseDocuments
  * @property EgsDocument[] $documents
@@ -59,15 +55,13 @@ class EgsDefense extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['defense_type_id', 'defense_date', 'defense_time_start', 'defense_time_end', 'room_id', 'defense_status_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'document_status_id', 'post_document_status_id'], 'required'],
-            [['defense_type_id', 'room_id', 'defense_status_id', 'defense_score', 'defense_credit', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'document_status_id', 'post_document_status_id'], 'integer'],
+            [['defense_type_id', 'defense_date', 'defense_time_start', 'defense_time_end', 'room_id', 'defense_status_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'required'],
+            [['defense_type_id', 'room_id', 'defense_status_id', 'defense_score', 'defense_credit', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'integer'],
             [['defense_date', 'defense_time_start', 'defense_time_end'], 'safe'],
             [['defense_comment'], 'string', 'max' => 2560],
             [['defense_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsAction::className(), 'targetAttribute' => ['defense_type_id' => 'action_id']],
             [['room_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsRoom::className(), 'targetAttribute' => ['room_id' => 'room_id']],
             [['defense_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['defense_status_id' => 'status_id']],
-            [['document_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['document_status_id' => 'status_id']],
-            [['post_document_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['post_document_status_id' => 'status_id']],
             [['calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsUserRequest::className(), 'targetAttribute' => ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']],
         ];
     }
@@ -93,8 +87,6 @@ class EgsDefense extends \yii\db\ActiveRecord
             'semester_id' => 'Semester ID',
             'owner_id' => 'Owner ID',
             'student_id' => 'Student ID',
-            'document_status_id' => 'Document Status ID',
-            'post_document_status_id' => 'Post Document Status ID',
         ];
     }
 
@@ -128,22 +120,6 @@ class EgsDefense extends \yii\db\ActiveRecord
     public function getDefenseStatus()
     {
         return $this->hasOne(EgsStatus::className(), ['status_id' => 'defense_status_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getDocumentStatus()
-    {
-        return $this->hasOne(EgsStatus::className(), ['status_id' => 'document_status_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPostDocumentStatus()
-    {
-        return $this->hasOne(EgsStatus::className(), ['status_id' => 'post_document_status_id']);
     }
 
     /**

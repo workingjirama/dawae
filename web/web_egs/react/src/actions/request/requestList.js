@@ -1,5 +1,4 @@
 import {URL, TYPE} from "../../config"
-import 'whatwg-fetch'
 
 const _URL = URL.REQUEST.REQUEST_LIST
 const _TYPE = TYPE.REQUEST.REQUEST_LIST
