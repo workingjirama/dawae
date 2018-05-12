@@ -5,6 +5,7 @@ namespace app\modules\egs\controllers\reset;
 use app\modules\egs\models\EgsActionItem;
 use app\modules\egs\models\EgsActionType;
 use app\modules\egs\models\EgsAdvisor;
+use app\modules\egs\models\EgsAdvisorFee;
 use app\modules\egs\models\EgsBranchBinder;
 use app\modules\egs\models\EgsCalendar;
 use app\modules\egs\models\EgsCalendarItem;
@@ -42,6 +43,7 @@ class Fee
         EgsLoad::deleteAll();
         EgsRequestFee::deleteAll();
         EgsCommitteeFee::deleteAll();
+        EgsAdvisorFee::deleteAll();
     }
 
     public function insert()
@@ -49,6 +51,58 @@ class Fee
         $this->committee_fee();
         $this->load();
         $this->request_fee();
+        $this->advisor_fee();
+    }
+
+    private function advisor_fee_insert($actions, $plans, $branchs)
+    {
+        foreach ($actions as $action) {
+            foreach ($plans as $plan) {
+                foreach ($branchs as $branch => $amount) {
+                    $advisor_fee = new EgsAdvisorFee();
+                    $advisor_fee->plan_id = $plan;
+                    $advisor_fee->branch_id = $branch;
+                    $advisor_fee->action_id = $action;
+                    $advisor_fee->advisor_fee_amount = $amount;
+                    if (!$advisor_fee->save()) {
+                        echo Json::encode($advisor_fee->errors);
+                        exit();
+                    }
+                }
+            }
+        }
+    }
+
+    private function advisor_fee()
+    {
+        $this->advisor_fee_insert([4, 5], [1, 2], [
+            1 => 5000,
+            2 => 8400
+        ]);
+        $this->advisor_fee_insert([4, 5], [3], [
+            1 => 3500,
+            2 => 7000
+        ]);
+        $this->advisor_fee_insert([4, 5], [4, 5], [
+            1 => 20000,
+            3 => 84000
+        ]);
+        $this->advisor_fee_insert([4, 5], [6, 7], [
+            1 => 15000,
+            3 => 72000
+        ]);
+        $this->advisor_fee_insert([2], [1, 2], [
+            1 => 4000,
+            3 => 6000
+        ]);
+        $this->advisor_fee_insert([2], [4, 5], [
+            1 => 3000,
+            3 => 3500
+        ]);
+        $this->advisor_fee_insert([2], [6, 7], [
+            1 => 4000,
+            3 => 6000
+        ]);
     }
 
     private function request_fee_insert($branch, $actions, $plans)
@@ -120,11 +174,11 @@ class Fee
     {
         $load = new EgsLoad();
         $load->plan_type_id = 1;
-        $load->load_amount = 1;
+        $load->load_amount = 3;
         $load->save();
         $load = new EgsLoad();
         $load->plan_type_id = 2;
-        $load->load_amount = 0.33;
+        $load->load_amount = 1;
         $load->save();
     }
 

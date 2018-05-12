@@ -13,6 +13,48 @@ export function setCurrent(current) {
     }
 }
 
+export function updateProject(name_th, name_en, callback) {
+    return dispatch => {
+        const data = new FormData()
+        data.append('json', JSON.stringify({name_th, name_en}))
+        fetch(_URL.ADD_PROJECT, {
+            method: 'post',
+            body: data,
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            callback(json)
+        })
+    }
+}
+
+
+export function getProject() {
+    return dispatch => {
+        fetch(_URL.GET_PROJECT, {
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            dispatch({
+                type: _TYPE.SET_PROJECT,
+                payload: json
+            })
+        })
+    }
+}
+
+export function setProject(json) {
+    return dispatch => {
+        dispatch({
+            type: _TYPE.SET_PROJECT,
+            payload: json
+        })
+    }
+}
+
+
 export function setComponent(component) {
     return dispatch => {
         dispatch({
@@ -108,12 +150,11 @@ export function setPost(post) {
     }
 }
 
-export function insert(init, post, calendarItem, callback) {
+export function insert(post, calendarItem, callback) {
     return dispatch => {
         const data = new FormData()
         post = {
-            ...post, init,
-            isDefense: calendarItem.action.is_defense,
+            ...post,
             calendarItem: {
                 calendarId: calendarItem.calendar.calendar_id,
                 actionId: calendarItem.action.action_id,

@@ -2,6 +2,14 @@
 
 namespace app\modules\egs\controllers;
 
+use app\modules\egs\models\EgsAdvisor;
+use app\modules\egs\models\EgsAdvisorFee;
+use app\modules\egs\models\EgsBranchBinder;
+use app\modules\egs\models\EgsPlan;
+use app\modules\egs\models\EgsPlanBinder;
+use app\modules\egs\models\EgsProgramBinder;
+use app\modules\egs\models\EgsSubject;
+use app\modules\egs\models\EgsSubjectFor;
 use Yii;
 
 use yii\helpers\Json;
@@ -17,7 +25,25 @@ class TempoController extends Controller
 
     public function actionTest()
     {
-        return Json::encode($_FILES['paper']);
+        $student = Config::get_current_user();
+        $student_id = (int)$student['user_type_id'] === Config::$PERSON_STAFF_TYPE ? Config::$SYSTEM_ID : $student['id'];
+        $reg_program_id = $student['program_id'];
+        $plan = EgsPlanBinder::find()->where(['reg_program_id' => $reg_program_id])->one();
+        $plan_id = empty($plan) ? null : $plan->plan_id;
+        $program = EgsProgramBinder::find()->where(['reg_program_id' => $reg_program_id])->one();
+        $program_id = empty($program) ? null : $program->program_id;
+
+        $subject_for = EgsSubjectFor::find()->where([
+            'plan_id' => $plan_id,
+            'program_id' => $program_id
+        ])->all();
+        $subject = EgsSubject::find()
+            ->joinWith(['egsSubjectFors sf'])
+            ->where([
+                'sf.plan_id' => $plan_id,
+                'sf.program_id' => $program_id
+            ])->all();
+        return Json::encode($subject_for);
     }
 
     public function actionIndex()
@@ -53,7 +79,6 @@ class TempoController extends Controller
         $session->set('type', $type);
         $this->redirect(Url::base() . '/egs');
     }
-
 
     public function actionLogout()
     {

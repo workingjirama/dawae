@@ -9,7 +9,7 @@ use yii\web\Controller;
 class ResetController extends Controller
 {
 
-    private $calendar, $request, $fee, $dummy, $printing, $binder;
+    private $calendar, $request, $fee, $dummy, $evaluation, $binder;
 
     public function __construct($id, Module $module, array $config = [])
     {
@@ -18,7 +18,7 @@ class ResetController extends Controller
         $this->request = new Request();
         $this->fee = new Fee();
         $this->dummy = new Dummy();
-        $this->printing = new Printing();
+        $this->evaluation = new Evaluation();
         $this->binder = new Binder();
     }
 
@@ -28,30 +28,13 @@ class ResetController extends Controller
         $this->insert();
         $this->quote();
     }
-//    public function actionCalendar()
-//    {
-//        $this->calendar->delete();
-//        $this->calendar->insert();
-//    }
-//
-//
-//    public function actionRequest()
-//    {
-//        $this->request->delete();
-//        $this->request->insert();
-//    }
-//
-//    public function actionFee()
-//    {
-//        $this->fee->delete();
-//        $this->fee->insert();
-//    }
+
     private function delete()
     {
         $this->request->delete();
         $this->fee->delete();
         $this->calendar->delete();
-        $this->printing->delete();
+        $this->evaluation->delete();
         $this->binder->delete();
     }
 
@@ -62,7 +45,7 @@ class ResetController extends Controller
         $this->request->insert();
         $this->fee->insert();
         $this->dummy->insert();
-        $this->printing->insert();
+        $this->evaluation->insert();
     }
 
     private function quote()

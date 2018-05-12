@@ -17,9 +17,16 @@ use yii\web\Controller;
 class ActionController extends Controller
 {
 
-    public function actionFindAll($is_defense)
+    public function actionRequest()
     {
-        $action = EgsAction::find()->where(['action_type_id' => ($is_defense) ? Config::$ACTION_DEFENSE_TYPE : Config::$ACTION_REQUEST_TYPE])->all();
-        return Json::encode(Format::actionNoDetail($action));
+        $action = EgsAction::find()->where(['action_type_id' => Config::$ACTION_REQUEST_TYPE])->all();
+        return Json::encode(Format::action($action));
     }
+
+    public function actionDefense()
+    {
+        $action = EgsAction::find()->where(['action_type_id' => Config::$ACTION_DEFENSE_TYPE])->all();
+        return Json::encode(Format::action($action));
+    }
+
 }

@@ -45,6 +45,12 @@
                         /* THIS IS STUDENT */
                         case 0: ?>
                             <li>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/todo') ?>'>
+                                    <i class='main-icon fa fa-slack'></i>
+                                    <span>TODO</span>
+                                </a>
+                            </li>
+                            <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/requestList') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
                                     <span>เพิ่มคำร้อง</span>
@@ -57,9 +63,9 @@
                                 </a>
                             </li>
                             <li>
-                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/review-add') ?>'>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/evaluation-submit') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>REVIEW</span>
+                                    <span>EVALUATION SUBMIT</span>
                                 </a>
                             </li>
                             <?php break;
@@ -88,15 +94,27 @@
                                 </a>
                             </li>
                             <li>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/defense') ?>'>
+                                    <i class='main-icon fa fa-slack'></i>
+                                    <span>DEFENSE XD</span>
+                                </a>
+                            </li>
+                            <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/request') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
                                     <span>คำร้อง</span>
                                 </a>
                             </li>
                             <li>
-                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/review-list') ?>'>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/evaluation-list') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>ปริ้นเอกสาร</span>
+                                    <span>EVALUATION</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/evaluation-all') ?>'>
+                                    <i class='main-icon fa fa-slack'></i>
+                                    <span>PRINT_EVALUATION</span>
                                 </a>
                             </li>
                             <?php break;

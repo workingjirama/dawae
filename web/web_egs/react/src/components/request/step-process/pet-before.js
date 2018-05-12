@@ -3,8 +3,7 @@ import {connect} from 'react-redux'
 import Tag from 'antd/lib/tag'
 import Checkbox from 'antd/lib/checkbox'
 import PetEach from "./pet-each";
-import {toggleFee} from "../../../actions/request/requestData";
-import {updateUserRequest} from "../../../actions/data/dataRequest";
+import {toggleFee, updateUserRequest} from "../../../actions/request/requestData";
 
 @connect((store) => {
     return {

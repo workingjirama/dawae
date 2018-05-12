@@ -1,11 +1,12 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {getCalendarItemWithStatus, resetRequestList} from "../../actions/request/requestList";
-import {getAllSemester} from "../../actions/calendar/calendar";
-import {setHeader} from "../../actions/main"
+import {getCalendarItemWithStatus, resetRequestList} from '../../actions/request/requestList'
+import {getAllSemester} from '../../actions/calendar/calendar'
+import {setHeader} from '../../actions/main'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
-import RequestListEach from "./request-list-each"
+import RequestListEach from './request-list-each'
+import Affix from 'antd/lib/affix'
 import Loading from "../loading";
 
 @connect((store) => {
@@ -17,12 +18,6 @@ import Loading from "../loading";
     }
 })
 export default class RequestList extends React.Component {
-
-    constructor(props) {
-        super(props)
-        const {lang} = props
-    }
-
     componentWillUnmount() {
         const {dispatch} = this.props
         dispatch(resetRequestList())
@@ -30,9 +25,8 @@ export default class RequestList extends React.Component {
 
     componentDidMount() {
         const {dispatch, lang} = this.props
-        // NOTE: fetch needed data
         dispatch(setHeader(lang.requestList.head))
-        // dispatch(getCalendarItemWithStatus())
+        dispatch(getCalendarItemWithStatus())
         dispatch(getAllSemester())
     }
 
@@ -49,7 +43,7 @@ export default class RequestList extends React.Component {
                                     <h3>******REDO******</h3>
                                 </Col>
                                 <Col sm={22} span={24}>
-                                    <table class='table table-bordered'>
+                                    <table class='table'>
                                         <tbody>
                                         {
                                             calendarItemRedo.map(
@@ -72,7 +66,27 @@ export default class RequestList extends React.Component {
                                             <h3>{semester.semester_name}</h3>
                                         </Col>
                                         <Col sm={22} span={24}>
-                                            <table class='table table-bordered'>
+                                            <table class='table'>
+                                                <thead>
+                                                <tr>
+                                                    <th>
+                                                        <Affix>
+                                                            <Col class='text-center table-col'
+                                                                 sm={8} span={24} style={{backgroundColor: 'white'}}>
+                                                                {lang.calendar.list}
+                                                            </Col>
+                                                            <Col class='text-center table-col'
+                                                                 sm={8} span={24} style={{backgroundColor: 'white'}}>
+                                                                {lang.calendar.list}
+                                                            </Col>
+                                                            <Col class='text-center table-col'
+                                                                 sm={8} span={24} style={{backgroundColor: 'white'}}>
+                                                                {lang.calendar.list}
+                                                            </Col>
+                                                        </Affix>
+                                                    </th>
+                                                </tr>
+                                                </thead>
                                                 <tbody>
                                                 {
                                                     _calendarItem.length === 0 ?

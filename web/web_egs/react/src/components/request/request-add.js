@@ -11,19 +11,21 @@ import {
     getTeacher,
     getPosition,
     setPost,
-    getRoom, resetRequestAdd
+    getRoom, resetRequestAdd, getProject
 } from '../../actions/request/requestAdd'
 import Teacher from './step/teacher'
 import Defense from './step/defense'
 import Detail from './step/detail'
 import Summary from './step/Summary'
 import Button from "./step/button";
+import Loading from "../loading";
 
 const Step = Steps.Step
 
 @connect((store) => {
     return {
         lang: store.language.data,
+        project: store.requestAdd.project,
         steps: store.requestAdd.steps,
         current: store.requestAdd.current,
         component: store.requestAdd.component,
@@ -51,20 +53,23 @@ export default class RequestAdd extends React.Component {
         dispatch(getCalendarItem(ownerId, calendarId, levelId, semesterId, actionId, calendarItem => {
                 this.edit = calendarItem.user_request !== null && !calendarItem.action.action_default
                 if (calendarItem.user_request !== null)
-                    this.initPost(calendarItem.user_request)
+                    this.initPost(calendarItem)
             }
         ))
+        dispatch(getProject())
         dispatch(getPosition(actionId))
         dispatch(getTeacher())
         dispatch(getRoom())
     }
 
-    initPost(userRequest) {
-        const {dispatch, post, calendarItem} = this.props
+    initPost(calendarItem) {
+        const {dispatch, post} = this.props
         let defenses = []
+        const userRequest = calendarItem.user_request
         userRequest.defenses === undefined ? null :
-            userRequest.defenses.map(
-                defense => {
+            calendarItem.request_defense.map(
+                request_defense => {
+                    const defense = userRequest.defenses[userRequest.defenses.findIndex(defense => defense.defense_type.action_id === request_defense.action.action_id)]
                     const defense_ = {
                         date: defense.defense_date,
                         end: defense.defense_time_end,
@@ -73,8 +78,22 @@ export default class RequestAdd extends React.Component {
                         type: defense.defense_type.action_id
                     }
                     defenses.push(defense_)
+
                 }
             )
+        // userRequest.defenses === undefined ? null :
+        // userRequest.defenses.map(
+        //     defense => {
+        //         const defense_ = {
+        //             date: defense.defense_date,
+        //             end: defense.defense_time_end,
+        //             room: defense.room.room_id,
+        //             start: defense.defense_time_start,
+        //             type: defense.defense_type.action_id
+        //         }
+        //         defenses.push(defense_)
+        //     }
+        // )
         const teachers_ = userRequest.advisors.length !== 0 ? userRequest.advisors :
             userRequest.defenses.length === 0 ? [] : userRequest.defenses[0].committees
         let teachers = []
@@ -92,15 +111,16 @@ export default class RequestAdd extends React.Component {
     }
 
     render() {
-        const {lang, steps, current, component, positions, rooms} = this.props
+        const {lang, steps, current, component, positions, rooms, project} = this.props
         const Component = this.component[component]
         return (
-            rooms === null || positions === null || steps === null || component === null ? null :
+            rooms === null || positions === null || steps === null || component === null || project === undefined ?
+                <Loading/> :
                 <Row type='flex' justify='center'>
                     <Col span={20}>
                         <Row>
                             <Col span={24}>
-                                <Steps current={current}>
+                                <Steps style={{marginBottom: 32}} current={current}>
                                     {
                                         steps.map(
                                             (step, index) =>

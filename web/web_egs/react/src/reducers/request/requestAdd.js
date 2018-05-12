@@ -10,6 +10,7 @@ const init = {
     steps: null,
     current: 0,
     component: null,
+    project: undefined,
     post: {
         teachers: [],
         defenses: []
@@ -57,6 +58,11 @@ export default function reducer(state = init, action) {
             return {
                 ...state,
                 steps: action.payload
+            }
+        case _TYPE.SET_PROJECT:
+            return {
+                ...state,
+                project: action.payload
             }
         case _TYPE.RESET:
             return init

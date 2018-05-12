@@ -75,16 +75,22 @@ export const URL = {
             },
             GET_ALL_ROOM: `${egs_base}/room/all`,
             INSERT_USER_REQUEST: `${egs_base}/user-request/insert`,
-            GET_DEFENSE_EVENT: `${egs_base}/defense/event`
+            GET_DEFENSE_EVENT: `${egs_base}/defense/event`,
+            GET_PROJECT: `${egs_base}/project/current-user`,
+            ADD_PROJECT: `${egs_base}/project/update`
         },
         REQUEST_DATA: {
             MAIN: {
-                PATH: `/request-data`,
-                LINK: `${egs_base}/#/request-data`
+                PATH: `/request`,
+                LINK: `${egs_base}/#/request`
             },
             GET_STEP: (actionId) => {
                 return `${egs_base}/action-step/process?action_id=${actionId}`
             },
+            GET_ALL_USER_REQUEST: (calendar, level, semester, action) => {
+                return `${egs_base}/user-request/list?calendar=${calendar}&level=${level}&semester=${semester}&action=${action}`
+            },
+            GET_ALL_ACTION: `${egs_base}/action/request`,
             GET_STATUS: `${egs_base}/status/all`,
             UPDATE_RESULT: `${egs_base}/defense/update-result`,
             UPDATE_REQUEST_DOCUMENT: `${egs_base}/request-document/update`,
@@ -92,54 +98,69 @@ export const URL = {
             UPDATE_DEFENSE_DOCUMENT: `${egs_base}/defense-document/update`,
         }
     },
-    DATA: {
-        DATA_REQUEST: {
+    EVALUATION: {
+        EVALUATION_ADD: {
             MAIN: {
-                PATH: `/request`,
-                LINK: `${egs_base}/#/request`
+                PATH: `/evaluation-add`,
+                LINK: `${egs_base}/#/evaluation-add`
             },
-            GET_ALL_USER_REQUEST: `${egs_base}/user-request/find-all`,
-            GET_ALL_ACTION: `${egs_base}/action/find-all?is_defense=0`,
-            GET_ALL_REQUEST_DOCUMENT_STATUS: `${egs_base}/status/find?type_id=1`,
-            GET_ALL_POST_REQUEST_DOCUMENT_STATUS: `${egs_base}/status/post-request-document-status`,
-            GET_ALL_FEE_STATUS: `${egs_base}/status/find?type_id=4`,
-            UPDATE_REQUEST_DOCUMENT: `${egs_base}/request-document/update`,
-            UPDATE_REQUEST_FEE: `${egs_base}/user-request/update-fee`
+            INSERT: `${egs_base}/evaluation/insert`
         },
-        DATA_DEFENSE: {
+        EVALUATION_LIST: {
             MAIN: {
-                PATH: `/defense`,
-                LINK: `${egs_base}/#/defense`
+                PATH: `/evaluation-list`,
+                LINK: `${egs_base}/#/evaluation-list`
             },
-            GET_ALL_DEFENSE: `${egs_base}/defense/find-all`,
-            GET_ALL_ACTION: `${egs_base}/action/find-all?is_defense=1`,
-            GET_ALL_DEFENSE_STATUS: `${egs_base}/status/find?type_id=3`,
-            GET_ALL_POST_DEFENSE_DOCUMENT_STATUS: `${egs_base}/status/post-defense-document-status`,
-            UPDATE_RESULT: `${egs_base}/defense/update-result`,
-            UPDATE_DEFENSE_COMMENT: `${egs_base}/defense/update-comment`,
-            UPDATE_DEFENSE_SCORE: `${egs_base}/defense/update-score`,
-            UPDATE_DEFENSE_CREDIT: `${egs_base}/defense/update-credit`,
-            GET_ALL_DOC_STATUS: `${egs_base}/status/find?type_id=2`,
-            UPDATE_DEFENSE_DOCUMENT: `${egs_base}/defense-document/update`,
+            GET_EVALUATION: `${egs_base}/evaluation/all`,
+            ACTIVE_EVALUATION: (id) => {
+                return `${egs_base}/evaluation/active?eval_id=${id}`
+            }
+        },
+        EVALUATION_SUBMIT: {
+            MAIN: {
+                PATH: `/evaluation-submit`,
+                LINK: `${egs_base}/#/evaluation-submit`
+            },
+            GET_EVALUATION: `${egs_base}/evaluation/current`,
+            GET_SUBMITTED: `${egs_base}/user-evaluation/submitted`,
+            INSERT: `${egs_base}/user-evaluation/insert`
+        },
+        EVALUATION_ALL: {
+            MAIN: {
+                PATH: `/evaluation-all`,
+                LINK: `${egs_base}/#/evaluation-all`
+            },
+            GET_USER_EVALUATION: `${egs_base}/user-evaluation/all`
         }
     },
-    PRINTING: {
-        REVIEW_ADD: {
+    DEFENSE: {
+        DEFENES_ALL: {
             MAIN: {
-                PATH: `/review-add`,
-                LINK: `${egs_base}/#/review-add`
-            }
-        },
-        REVIEW_LIST: {
+                PATH: '/defense',
+                LINK: `${egs_base}/#/defense`
+            },
+            GET_DEFENSE: (calendar, level, semester, action) => {
+                return `${egs_base}/defense/list?calendar=${calendar}&level=${level}&semester=${semester}&action=${action}`
+            },
+            GET_ACTION: `${egs_base}/action/defense`
+        }
+    },
+    TODO: {
+        TODO_ALL: {
             MAIN: {
-                PATH: `/review-list`,
-                LINK: `${egs_base}/#/review-list`
-            }
-        },
-        REVIEW: {
-            INSERT_REVIEW: `${egs_base}/printing/insert-review`,
-            INSERT_REVIEW_COMPONENT: `${egs_base}/printing/insert-review-component`,
-            GET_ALL_REVIEW: `${egs_base}/printing/get-review`
+                PATH: `/todo`,
+                LINK: `${egs_base}/#/todo`
+            },
+            GET_TODO: `${egs_base}/todo/all`
+        }
+    },
+    ADVISOR: {
+        ADVISOR_LOAD: {
+            MAIN: {
+                LINK: `/advisor/load`,
+                PATH: `${egs_base}/#/advisor/load`
+            },
+            GET_TEACHER: `${egs_base}/advisor/load`
         }
     }
 }
@@ -190,37 +211,49 @@ export const TYPE = {
             SET_STEP: 'SET_REQUEST_ADD_ACTION_STEP',
             SET_CURRENT: 'SET_REQUEST_ADD_CURRENT',
             SET_COMPONENT: 'SET_REQUEST_ADD_COMPONENT',
+            SET_PROJECT: 'SET_REQUEST_ADD_PROJECT',
             RESET: 'RESET_REQUEST_ADD',
         },
         REQUEST_DATA: {
+            SET_ALL_USER_REQUEST: 'SET_REQUEST_DATA_ALL_USER_REQUEST',
+            SET_ALL_ACTION: 'SET_REQUEST_DATA_ALL_ACTION',
             SET_STEP: 'SET_REQUEST_DATA_STEP',
             SET_STATUS: 'SET_REQUEST_DATA_STATUS',
-            SET_UNMOUNT: 'SET_REQUEST_DATA_UNMOUNT'
+            SET_RESET: 'RESET_REQUEST_DATA',
+            SET_UNMOUNT: 'SET_REQUEST_DATA_UNMOUNT',
+            UPDATE_USER_REQUEST: 'UPDATE_REQUEST_DATA_USER_REQUEST'
         }
     },
-    DATA: {
-        DATA_REQUEST: {
-            SET_ALL_USER_REQUEST: 'SET_DATA_REQUEST_ALL_USER_REQUEST',
-            SET_ALL_ACTION: 'SET_DATA_REQUEST_ALL_ACTION',
-            UPDATE_USER_REQUEST: 'UPDATE_DATA_REQUEST_USER_REQUEST',
-            RESET: 'RESET_DATA_REQUEST',
-            SET_ALL_PET_STATUS: 'SET_DATA_REQUEST_ALL_PET_STATUS',
-            SET_ALL_FEE_STATUS: 'SET_DATA_REQUEST_ALL_FEE_STATUS',
-            SET_ALL_POST_REQUEST_DOCUMENT_STATUS: 'SET_DATA_REQUEST_ALL_REQUEST_DOCUMENT_STATUS'
+    EVALUATION: {
+        EVALUATION_LIST: {
+            SET_EVALUATION: 'SET_EVALUATION_LIST_EVALUATION',
+            RESET: 'RESET_EVALUATION'
         },
-        DATA_DEFENSE: {
-            SET_ALL_DEFENSE: 'SET_DATA_DEFENSE_ALL_DEFENSE',
-            SET_ALL_ACTION: 'SET_DATA_DEFENSE_ALL_ACTION',
-            RESET: 'RESET_CALENDAR',
-            SET_ALL_DEFENSE_STATUS: 'SET_DATA_DEFENSE_ALL_DEFENSE_STATUS',
-            UPDATE_DEFENSE: 'UPDATE_DATA_DEFENSE_DEFENSE',
-            SET_ALL_DOC_STATUS: 'SET_DATA_REQUEST_ALL_DOC_STATUS',
-            SET_ALL_POST_DEFENSE_DOCUMENT_STATUS: 'SET_DATA_DEFENSE_ALL_DEFENSE_DOCUMENT_STATUS'
+        EVALUATION_ADD: {},
+        EVALUATION_SUBMIT: {
+            SET_EVALUATION: 'SET_EVALUATION_EVALUATION_SUBMIT',
+            SET_SUBMITTED: 'SET_SUBMITTED_EVALUATION_SUBMIT',
+            UPDATE_EVALUATION: 'UPDATE_EVALUATION_EVALUATIO_SUBMITN'
+        },
+        EVALUATION_ALL: {
+            SET_USER_EVALUATION: 'SET_USER_EVALUATION_EVALUATION_ALL'
         }
     },
-    PRINTING: {
-        REVIEW: {
-            SET_ALL_REVIEW: 'SET_REVIEW_ALL_REVIEW'
+    DEFENSE: {
+        DEFENSE_ALL: {
+            SET_DEFENSE: 'SET_DEFENSE_ALL_DEFENSE',
+            SET_ACTION: 'SET_DEFENSE_ALL_ACTION',
+            RESET: 'RESET_DEFENSE_ALL'
+        }
+    },
+    TODO: {
+        TODO_ALL: {
+            SET_TODO: 'SET_TODO_ALL_TODO'
+        }
+    },
+    ADVISOR: {
+        ADVISOR_LOAD: {
+            SET_TEACHER: 'SET_ADVISOR_LOAD_TEACHER'
         }
     }
 }

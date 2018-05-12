@@ -215,7 +215,6 @@ export default class DefenseEach extends React.Component {
                             )
                         }
                     </Select>
-                    {/*<DefenseRoom roomChange={this.roomChange}/>*/}
                 </Col>
                 <Col>
                     <div ref={elm => {

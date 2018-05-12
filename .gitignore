@@ -29,8 +29,10 @@ phpunit.phar
 tests/_output/*
 tests/_support/_generated
 
-web/web_egs/react/uploads
+*.pdf
 
-web/web_egs/react/docx
+*.docx
+
+*.xml
 
 web/web_egs/react/node_modules

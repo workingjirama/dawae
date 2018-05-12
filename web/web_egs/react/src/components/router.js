@@ -4,15 +4,16 @@ import CalendarList from './calendar/calendar-list'
 import Calendar from './calendar/calendar'
 import Test from './test'
 import {URL} from '../config'
-// import RequestList from './request/requestList'
 import RequestList from './request/request-list'
 import RequestAdd from './request/request-add'
-// import DataRequest from './data/dataRequest'
-// import DataDefense from './data/dataDefense'
-import ReviewAdd from './printing/reviewAdd'
-import ReviewList from './printing/reviewList'
 import RequestAll from './request/request-all'
 import CalendarInit from "./calendar/calendar-init";
+import EvaluationList from "./evaluation/evaluation-list";
+import EvaluationAdd from "./evaluation/evaluation-add";
+import EvaluationSubmit from "./evaluation/evaluation-submit";
+import EvaluationAll from "./evaluation/evaluation-all";
+import DefenseAll from "./defense/defense-all";
+import TodoAll from "./todo/todo-all";
 
 export default class Router extends React.Component {
 
@@ -20,27 +21,30 @@ export default class Router extends React.Component {
         return (
             <HashRouter history={null}>
                 <div>
-                    {/*========================================= NOTE: CALENDAR ======================================================================*/}
                     <Route path={URL.CALENDAR.CALENDAR_LIST.MAIN.PATH} exact render={() => <CalendarList/>}/>
                     <Route path={URL.CALENDAR.CALENDAR_INIT.MAIN.PATH} exact render={() => <CalendarInit/>}/>
                     <Route path={URL.CALENDAR.CALENDAR.MAIN.PATH} exact
                            render={({match}) => <Calendar calendarId={match.params.calendarId}/>}/>
-                    {/*========================================= NOTE: REQUEST ======================================================================*/}
+
+                    <Route path={URL.TODO.TODO_ALL.MAIN.PATH} exact render={({match}) => <TodoAll/>}/>
+
+                    <Route path={URL.TODO.TODO_ALL.MAIN.PATH} exact render={({match}) => <TodoAll/>}/>
+
                     <Route path={URL.REQUEST.REQUEST_LIST.MAIN.PATH} exact render={() => <RequestList/>}/>
                     <Route path={URL.REQUEST.REQUEST_ADD.MAIN.PATH} exact render={({match}) =>
-                        <RequestAdd calendarId={match.params.calendarId}
-                                    levelId={match.params.levelId}
-                                    semesterId={match.params.semesterId}
-                                    actionId={match.params.actionId}
+                        <RequestAdd calendarId={match.params.calendarId} levelId={match.params.levelId}
+                                    semesterId={match.params.semesterId} actionId={match.params.actionId}
                                     ownerId={match.params.ownerId}/>
                     }/>
-                    {/*============================================ NOTE: DATA ======================================================================*/}
-                    <Route path={URL.DATA.DATA_REQUEST.MAIN.PATH} exact render={() => <RequestAll/>}/>
-                    {/*<Route path={URL.DATA.DATA_DEFENSE.MAIN.PATH} exact render={() => <RequestAll/>}/>*/}
-                    {/*============================================ NOTE: PRINTING ======================================================================*/}
-                    <Route path={URL.PRINTING.REVIEW_ADD.MAIN.PATH} exact render={() => <ReviewAdd/>}/>
-                    <Route path={URL.PRINTING.REVIEW_LIST.MAIN.PATH} exact render={() => <ReviewList/>}/>
-                    {/*============================================ NOTE: ETC =======================================================================*/}
+                    <Route path={URL.REQUEST.REQUEST_DATA.MAIN.PATH} exact render={({match}) => <RequestAll/>}/>
+
+                    <Route path={URL.DEFENSE.DEFENES_ALL.MAIN.PATH} exact render={({match}) => <DefenseAll/>}/>
+
+                    <Route path={URL.EVALUATION.EVALUATION_LIST.MAIN.PATH} exact render={() => <EvaluationList/>}/>
+                    <Route path={URL.EVALUATION.EVALUATION_ADD.MAIN.PATH} exact render={() => <EvaluationAdd/>}/>
+                    <Route path={URL.EVALUATION.EVALUATION_SUBMIT.MAIN.PATH} exact render={() => <EvaluationSubmit/>}/>
+                    <Route path={URL.EVALUATION.EVALUATION_ALL.MAIN.PATH} exact render={() => <EvaluationAll/>}/>
+
                     <Route path='/' exact render={() => <div>Nothing</div>}/>
                     <Route path='/test' exact render={() => <Test/>}/>
                 </div>

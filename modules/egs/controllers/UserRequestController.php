@@ -2,20 +2,30 @@
 
 namespace app\modules\egs\controllers;
 
+use app\modules\egs\models\EgsAction;
 use app\modules\egs\models\EgsActionDocument;
 use app\modules\egs\models\EgsActionOnStatus;
 use app\modules\egs\models\EgsAdvisor;
+use app\modules\egs\models\EgsAdvisorFee;
 use app\modules\egs\models\EgsBranch;
 use app\modules\egs\models\EgsBranchBinder;
 use app\modules\egs\models\EgsCommittee;
 use app\modules\egs\models\EgsCommitteeFee;
 use app\modules\egs\models\EgsDefense;
+use app\modules\egs\models\EgsDefenseAdvisor;
 use app\modules\egs\models\EgsDefenseDocument;
+use app\modules\egs\models\EgsDefenseSubject;
+use app\modules\egs\models\EgsLevel;
 use app\modules\egs\models\EgsLevelBinder;
 use app\modules\egs\models\EgsLoad;
 use app\modules\egs\models\EgsPlanBinder;
+use app\modules\egs\models\EgsProgramBinder;
+use app\modules\egs\models\EgsProject;
+use app\modules\egs\models\EgsRequestDefense;
 use app\modules\egs\models\EgsRequestDocument;
 use app\modules\egs\models\EgsRequestFee;
+use app\modules\egs\models\EgsSemester;
+use app\modules\egs\models\EgsSubjectFor;
 use app\modules\egs\models\EgsUserRequest;
 use Yii;
 
@@ -33,11 +43,19 @@ class UserRequestController extends Controller
     private $COMMITTEE_MAIN_FEE_PERCENTAGE = .4;
     private $COMMITTEE_CO_FEE_PERCENTAGE = .6;
 
-    public function actionFindAll()
+    public function actionList($calendar, $level, $semester, $action)
     {
-        $user_request = EgsUserRequest::find()->andWhere(['!=', 'student_id', Config::$SYSTEM_ID])->all();
+        $calendar_id = $calendar === 'null' ? EgsCalendar::find()->where(['calendar_active' => 1])->one()->calendar_id : $calendar;
+        $level_id = $level === 'null' ? EgsLevel::find()->one()->level_id : $level;
+        $semester_id = $semester === 'null' ? EgsSemester::find()->one()->semester_id : $semester;
+        $action_id = $action === 'null' ? EgsAction::find()->where(['action_type_id' => Config::$ACTION_REQUEST_TYPE])->one()->action_id : $action;
+        $user_request = EgsUserRequest::find()->where([
+            'calendar_id' => $calendar_id,
+            'level_id' => $level_id,
+            'semester_id' => $semester_id,
+            'action_id' => $action_id
+        ])->andWhere(['!=', 'student_id', Config::$SYSTEM_ID])->all();
         $user = Config::get_current_user();
-        $format = new Format();
         return Json::encode(Format::userRequestForListing($user_request, $user['user_type_id']));
     }
 
@@ -81,19 +99,22 @@ class UserRequestController extends Controller
         /* NOTE: INITIALIZE DATA */
         $post = Json::decode(Yii::$app->request->post('json'));
         $calendar_item_ = $post['calendarItem'];
-        $is_defense = $post['isDefense'];
         $teachers = $post['teachers'];
         $defenses = $post['defenses'];
-        $init = $post['init'];
         $student = Config::get_current_user();
         $student_id = (int)$student['user_type_id'] === Config::$PERSON_STAFF_TYPE ? Config::$SYSTEM_ID : $student['id'];
-        $program_id = $student['program_id'];
-        $branch = EgsBranchBinder::find()->where(['reg_program_id' => $program_id])->one();
-        $level = EgsLevelBinder::find()->where(['reg_program_id' => $program_id])->one();
-        $plan_type = EgsPlanBinder::find()->where(['reg_program_id' => $program_id])->one();
+        $reg_program_id = $student['program_id'];
+        $branch = EgsBranchBinder::find()->where(['reg_program_id' => $reg_program_id])->one();
+        $level = EgsLevelBinder::find()->where(['reg_program_id' => $reg_program_id])->one();
+        $plan = EgsPlanBinder::find()->where(['reg_program_id' => $reg_program_id])->one();
+        $program = EgsProgramBinder::find()->where(['reg_program_id' => $reg_program_id])->one();
+        $project = EgsProject::findOne(['student_id' => $student_id]);
         $branch_id = empty($branch) ? null : $branch->branch_id;
         $level_id = empty($level) ? null : $level->level_id;
-        $plan_type_id = empty($plan_type) ? null : $plan_type->plan->plan_type_id;
+        $plan_id = empty($plan) ? null : $plan->plan->plan_id;
+        $plan_type_id = empty($plan) ? null : $plan->plan->plan_type_id;
+        $program_id = empty($program) ? null : $program->program_id;
+        $project_id = empty($project) ? null : $project->project_id;
         /* NOTE: FIND IF USER REQUEST EXIST */
         $user_request = EgsUserRequest::findOne([
             'student_id' => $student_id,
@@ -103,6 +124,18 @@ class UserRequestController extends Controller
             'semester_id' => $calendar_item_['semesterId'],
             'owner_id' => $calendar_item_['owner_id']
         ]);
+
+        $advisor = EgsAdvisor::find()->where([
+            'student_id' => $student_id,
+            'position_id' => Config::$ADVISOR_MAIN_POSITION
+        ])->one();
+
+        $advisor_fee = EgsAdvisorFee::findOne([
+            'plan_id' => $plan_id,
+            'branch_id' => $branch_id,
+            'action_id' => $calendar_item_['actionId']
+        ]);
+
         if (empty($user_request)) {
             /* NOTE: IF NOT INSERT */
             $user_request = new EgsUserRequest();
@@ -121,6 +154,10 @@ class UserRequestController extends Controller
                     $defense_document->delete();
                 foreach ($defense->egsCommittees as $committee)
                     $committee->delete();
+                foreach ($defense->egsDefenseSubjects as $defense_subject)
+                    $defense_subject->delete();
+                foreach ($defense->egsDefenseAdvisors as $defense_advisor)
+                    $defense_advisor->delete();
                 $defense->delete();
             }
         }
@@ -133,23 +170,23 @@ class UserRequestController extends Controller
         $user_request->request_fee_status_id = $user_request->request_fee === 0 ? Config::$DONT_NEED_TO_PAY : Config::$FEE_STATUS_NOT_PAY;
         /* NOTE: IF SAVE AND NOT INITAILIZE */
         if ($user_request->save()) {
-            if (!$init) {
-                /* NOTE: FIND & INSERT DOCUMENT OF THIS ACTION */
-                $action_documents = EgsActionDocument::findAll([
-                    'action_id' => $user_request->action_id
-                ]);
-                foreach ($action_documents as $action_document) {
-                    $request_document = new EgsRequestDocument();
-                    $request_document->student_id = $student_id;
-                    $request_document->calendar_id = $user_request->calendar_id;
-                    $request_document->action_id = $user_request->action_id;
-                    $request_document->level_id = $user_request->level_id;
-                    $request_document->semester_id = $user_request->semester_id;
-                    $request_document->owner_id = $user_request->owner_id;
-                    $request_document->document_id = $action_document->document_id;
-                    $request_document->request_document_status_id = Config::$DOC_STATUS_NOT_SUBMITTED;
-                    if (!$request_document->save()) return Json::encode($request_document->errors);
-                }
+            $is_defense = !empty(EgsRequestDefense::find()->where(['request_type_id' => $user_request->calendar->semester->action_id])->all());
+
+            /* NOTE: FIND & INSERT DOCUMENT OF THIS ACTION */
+            $action_documents = EgsActionDocument::findAll([
+                'action_id' => $user_request->action_id
+            ]);
+            foreach ($action_documents as $action_document) {
+                $request_document = new EgsRequestDocument();
+                $request_document->student_id = $student_id;
+                $request_document->calendar_id = $user_request->calendar_id;
+                $request_document->action_id = $user_request->action_id;
+                $request_document->level_id = $user_request->level_id;
+                $request_document->semester_id = $user_request->semester_id;
+                $request_document->owner_id = $user_request->owner_id;
+                $request_document->document_id = $action_document->document_id;
+                $request_document->request_document_status_id = Config::$DOC_STATUS_NOT_SUBMITTED;
+                if (!$request_document->save()) return Json::encode($request_document->errors);
             }
             if (!$is_defense) {
                 /* NOTE: IF NOT DEFENSE INSERT ADVISOR */
@@ -184,24 +221,66 @@ class UserRequestController extends Controller
                     $defense->defense_time_end = $defense_['end'];
                     $defense->room_id = $defense_['room'];
                     $defense->defense_status_id = Config::$DEFENSE_STATUS_DEFAULT;
+                    $defense->project_id = $project_id;
                     if ($defense->save()) {
-                        if (!$init) {
-                            $action_documents = EgsActionDocument::findAll([
-                                'action_id' => $defense->defense_type_id
-                            ]);
-                            foreach ($action_documents as $action_document) {
-                                $defense_document = new EgsDefenseDocument();
-                                $defense_document->defense_type_id = $defense->defense_type_id;
-                                $defense_document->student_id = $student_id;
-                                $defense_document->calendar_id = $user_request->calendar_id;
-                                $defense_document->action_id = $user_request->action_id;
-                                $defense_document->level_id = $user_request->level_id;
-                                $defense_document->semester_id = $user_request->semester_id;
-                                $defense_document->owner_id = $user_request->owner_id;
-                                $defense_document->document_id = $action_document->document_id;
-                                $defense_document->defense_document_status_id = Config::$DOC_STATUS_NOT_SUBMITTED;
-                                if (!$defense_document->save()) return Json::encode($defense_document->errors);
+                        $subject_fors = EgsSubjectFor::find()->where([
+                            'action_id' => $defense->defense_type_id,
+                            'program_id' => $program_id
+                        ])->all();
+                        if (!empty($subject_fors)) {
+                            foreach ($subject_fors as $subject_for) {
+                                $defense_subject = EgsDefenseSubject::find()->where([
+                                    'defense_type_id' => $defense->defense_type_id,
+                                    'action_id' => $defense->action_id,
+                                    'owner_id' => $defense->owner_id,
+                                    'level_id' => $defense->level_id,
+                                    'student_id' => $defense->student_id,
+                                    'subject_id' => $subject_for->subject_id
+                                ])->one();
+                                $already_passed = empty($defense_subject) ? 0 : $defense_subject->subject_pass ? 1 : 0;
+                                $defense_subject = new EgsDefenseSubject();
+                                $defense_subject->defense_type_id = $defense->defense_type_id;
+                                $defense_subject->student_id = $student_id;
+                                $defense_subject->calendar_id = $user_request->calendar_id;
+                                $defense_subject->action_id = $user_request->action_id;
+                                $defense_subject->level_id = $user_request->level_id;
+                                $defense_subject->semester_id = $user_request->semester_id;
+                                $defense_subject->owner_id = $user_request->owner_id;
+                                $defense_subject->subject_id = $subject_for->subject_id;
+                                $defense_subject->subject_pass = $already_passed;
+                                $defense_subject->already_passed = $already_passed;
+                                $defense_subject->defense_subject_status_id = $already_passed ? Config::$SUBJECT_STATUS_ALREADY_PASSED : Config::$DEFENSE_STATUS_FAIL;
+                                if (!$defense_subject->save()) return Json::encode($subject_for->errors);
                             }
+                        }
+                        $action_documents = EgsActionDocument::findAll([
+                            'action_id' => $defense->defense_type_id
+                        ]);
+                        foreach ($action_documents as $action_document) {
+                            $defense_document = new EgsDefenseDocument();
+                            $defense_document->defense_type_id = $defense->defense_type_id;
+                            $defense_document->student_id = $student_id;
+                            $defense_document->calendar_id = $user_request->calendar_id;
+                            $defense_document->action_id = $user_request->action_id;
+                            $defense_document->level_id = $user_request->level_id;
+                            $defense_document->semester_id = $user_request->semester_id;
+                            $defense_document->owner_id = $user_request->owner_id;
+                            $defense_document->document_id = $action_document->document_id;
+                            $defense_document->defense_document_status_id = Config::$DOC_STATUS_NOT_SUBMITTED;
+                            if (!$defense_document->save()) return Json::encode($defense_document->errors);
+                        }
+                        if (!empty($advisor_fee)) {
+                            $defense_advisor = new EgsDefenseAdvisor();
+                            $defense_advisor->teacher_id = $advisor->teacher_id;
+                            $defense_advisor->student_id = $defense->student_id;
+                            $defense_advisor->action_id = $defense->action_id;
+                            $defense_advisor->calendar_id = $defense->calendar_id;
+                            $defense_advisor->level_id = $defense->level_id;
+                            $defense_advisor->semester_id = $defense->semester_id;
+                            $defense_advisor->defense_type_id = $defense->defense_type_id;
+                            $defense_advisor->owner_id = $defense->owner_id;
+                            $defense_advisor->advisor_fee_amount = $advisor_fee->advisor_fee_amount;
+                            if (!$defense_advisor->save()) return Json::encode($defense_advisor->errors);
                         }
                         $fee = $this->committeeFeeCalculator($defense->defense_type_id, $branch_id, $level_id, $plan_type_id, sizeof($teachers));
                         foreach ($teachers as $teacher) {
@@ -226,21 +305,6 @@ class UserRequestController extends Controller
         } else {
             return Json::encode($user_request->errors);
         }
-
-        if ($init) {
-            $calendar_item = EgsCalendarItem::findOne([
-                'calendar_id' => $calendar_item_['calendarId'],
-                'action_id' => $calendar_item_['actionId'],
-                'level_id' => $calendar_item_['levelId'],
-                'semester_id' => $calendar_item_['semesterId'],
-                'owner_id' => Config::$SYSTEM_ID
-            ]);
-            $calendar_item->calendar_item_date_start = $defenses[0]['date'];
-            $calendar_item->calendar_item_date_end = $defenses[0]['date'];
-            if (!$calendar_item->save()) return Json::encode($calendar_item->errors);
-            return Json::encode($calendar_item);
-        }
         return Json::encode(null);
     }
-
 }

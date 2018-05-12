@@ -14,6 +14,9 @@ use app\modules\egs\models\EgsCommitteeFee;
 use app\modules\egs\models\EgsDefense;
 use app\modules\egs\models\EgsDocument;
 use app\modules\egs\models\EgsDocumentType;
+use app\modules\egs\models\EgsEvaluation;
+use app\modules\egs\models\EgsEvaluationTopic;
+use app\modules\egs\models\EgsEvaluationTopicGroup;
 use app\modules\egs\models\EgsLevel;
 use app\modules\egs\models\EgsLevelBinder;
 use app\modules\egs\models\EgsRequestDefense;
@@ -26,55 +29,55 @@ use yii\helpers\Json;
 
 class Dummy
 {
-
     public function insert()
     {
-        $this->INITIAL_CALENDAR_PLS_DELETE_THIS_IN_PRODUCTION();
+        $this->INITIAL_CALENDAR_DELETE_THIS_IN_PRODUCTION();
+        $this->INIT_EVALUATION_DELETE_THIS_IN_PRODUCTION();
     }
 
-    PRIVATE FUNCTION INITIAL_CALENDAR_PLS_DELETE_THIS_IN_PRODUCTION()
+    PRIVATE FUNCTION INITIAL_CALENDAR_DELETE_THIS_IN_PRODUCTION()
     {
         $calendar = new EgsCalendar();
         $calendar->calendar_id = 2569;
         $calendar->calendar_active = 1;
         if (!$calendar->save()) return Json::encode($calendar->errors);
-        $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 1, 1, '2018-01-01', '2018-12-31', [
+        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 1, 1, '2018-01-01', '2018-12-31', [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
             10, 11, 12, 13
         ]);
-        $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 1, 2, '2019-01-01', '2019-12-31', [
+        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 1, 2, '2018-01-01', '2018-12-31', [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
             10, 11, 12, 13
         ]);
-        $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 1, 3, '2020-01-01', '2020-12-31', [
+        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 1, 3, '2018-01-01', '2018-12-31', [
             10, 11, 12, 13
         ]);
-        $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 1, '2018-01-01', '2018-12-31', [
+        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 1, '2018-01-01', '2018-12-31', [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
             10, 11, 12, 13
         ]);
-        $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 2, '2019-01-01', '2019-12-31', [
+        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 2, '2018-01-01', '2018-12-31', [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
             10, 11, 12, 13
         ]);
-        $this->INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 3, '2020-01-01', '2020-12-31', [
+        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 3, '2018-01-01', '2018-12-31', [
             10, 11, 12, 13
         ]);
     }
 
-    PRIVATE FUNCTION INIT_CALENDAR_ITEM_PLS_DELETE_THIS_IN_PRODUCTION($calendar_id, $level_id, $semster_id, $start, $end, $actions)
+    PRIVATE FUNCTION INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar_id, $level_id, $semster_id, $start, $end, $actions)
     {
         foreach ($actions as $action) {
             $calendar_item = new EgsCalendarItem();
@@ -149,6 +152,84 @@ class Dummy
                     $committee->position_id = 3;
                     if (!$committee->save()) {
                         echo Json::encode(['COMMITTEE', $committee->errors]);
+                        exit();
+                    }
+                }
+            }
+        }
+    }
+
+    PRIVATE FUNCTION INIT_EVALUATION_DELETE_THIS_IN_PRODUCTION()
+    {
+        $evaluation = new EgsEvaluation();
+        $evaluation->evaluation_name_th = 'ประเมิน LOLLLLLLL';
+        $evaluation->evaluation_name_en = 'EVAL LOLLLLLLL';
+        $evaluation->evaluation_active = 1;
+        if (!$evaluation->save()) {
+            echo Json::encode($evaluation->errors);
+            exit();
+        } else {
+            $groups = [
+                'หลักสูตร' => [
+                    'การจัดการศึกษาสอดคล้องกับปรัชญาและวัตถุประสงค์ของหลักสูตร',
+                    'มีการจัดแผนการศึกษาตลอดหลักสูตรอย่างชัดเจน',
+                    'มีปฏิทินการศึกษาและโปรแกรมการศึกษาแต่ละภาคการศึกษาอย่างชัดเจน',
+                    'หลักสูตรมีความทันสมัยสอดคล้องกับความต้องการของตลาดแรงงาน',
+                    'วิชาเรียนมีความเหมาะสมและสอดคล้องกับความต้องการของนักศึกษา'
+                ],
+                'อาจารย์ผู้สอน' => [
+                    'อาจารย์มีคุณวุฒิและประสบการณ์เหมาะสมกับรายวิชาที่สอน',
+                    'อาจารย์สอน เนื้อหา ตรงตามวัตถุประสงค์ โดยใช้วิธีการที่หลากหลาย',
+                    'อาจารย์สนับสนุนส่งเสริมให้นักศึกษาเรียนรู้ และพัฒนาตนเองอย่างสม่ำเสมอ',
+                    'อาจารย์ให้คำปรึกษาด้านวิชาการและการพัฒนานักศึกษาได้อย่างเหมาะสม',
+                    'อาจารย์เป็นผู้มีคุณธรรม และจิตสำนึกในความเป็นครู'
+                ],
+                'สภาพแวดล้อมการเรียนรู้' => [
+                    'ห้องเรียนมีอุปกรณ์เหมาะสม เอื้อต่อการเรียนรู้ และเพียงพอต่อนักศึกษา',
+                    'ห้องปฏิบัติการมีอุปกรณ์เหมาะสม เอื้อต่อการเรียนรู้ และเพียงพอต่อนักศึกษา',
+                    'ระบบบริการสารสนเทศเหมาะสม เอื้อต่อการเรียนรู้และเพียงพอต่อนักศึกษา'
+                ],
+                'การจัดการเรียนการสอน' => [
+                    'การจัดการเรียนการสอนสอดคล้องกับลักษณะวิชาและวัตถุประสงค์การเรียนรู้',
+                    'การใช้สื่อประกอบการสอนอย่างเหมาะสม',
+                    'วิธีการสอนส่งเสริมให้นักศึกษาได้ประยุกต์แนวคิดศาสตร์ทางวิชาชีพและ/หรือศาสตร์ที่เกี่ยวข้องในการพัฒนาการเรียนรู้',
+                    'มีการใช้เทคโนโลยีสารสนเทศประกอบการเรียนการสอน',
+                    'การจัดการเรียนการสอนที่ส่งเสริมทักษะทางภาษาสากล'
+                ],
+                'การวัดและประเมินผล' => [
+                    'วิธีการวัดประเมินผลสอดคล้องกับวัตถุประสงค์ และกิจกรรมการเรียนการสอน',
+                    'การวัดและประเมินผลเป็นไปตามระเบียบกฎเกณฑ์ และข้อตกลง ที่กำหนดไว้ล่วงหน้า'
+                ],
+                'การเรียนรู้ตลอดหลักสูตรได้พัฒนาคุณลักษณะของนักศึกษา' => [
+                    'ด้านคุณธรรม จริยธรรม',
+                    'ด้านความรู้',
+                    'ด้านทักษะทางปัญญา',
+                    'ด้านความสัมพันธ์ระหว่างบุคคลและความรับผิดชอบ',
+                    'ด้านทักษะการวิเคราะห์เชิงตัวเลข การสื่อสาร และการใช้เทคโนโลยีสารสนเทศ'
+                ]
+            ];
+            $this->INIT_EVALUATION_DATA_DELETE_THIS_IN_PRODUCTION($groups, $evaluation->evaluation_id);
+        }
+    }
+
+    PRIVATE FUNCTION INIT_EVALUATION_DATA_DELETE_THIS_IN_PRODUCTION($groups, $evaluation_id)
+    {
+        foreach ($groups as $group_name => $topics) {
+            $eval_topic_group = new EgsEvaluationTopicGroup();
+            $eval_topic_group->evaluation_topic_group_name_th = $group_name;
+            $eval_topic_group->evaluation_topic_group_name_en = $group_name;
+            $eval_topic_group->evaluation_id = $evaluation_id;
+            if (!$eval_topic_group->save()) {
+                echo Json::encode($eval_topic_group->errors);
+                exit();
+            } else {
+                foreach ($topics as $topic) {
+                    $eval_topic = new EgsEvaluationTopic();
+                    $eval_topic->evaluation_topic_name_th = $topic;
+                    $eval_topic->evaluation_topic_name_en = $topic;
+                    $eval_topic->evaluation_topic_group_id = $eval_topic_group->evaluation_topic_group_id;
+                    if (!$eval_topic->save()) {
+                        echo Json::encode($eval_topic->errors);
                         exit();
                     }
                 }

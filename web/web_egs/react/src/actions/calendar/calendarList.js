@@ -1,10 +1,9 @@
 import {URL, TYPE} from "../../config"
-import 'whatwg-fetch'
 
 const _URL = URL.CALENDAR.CALENDAR_LIST
 const _TYPE = TYPE.CALENDAR.CALENDAR_LIST
 
-export function getAllCalendar(callback = null) {
+export function getAllCalendar() {
     return function (dispatch) {
         fetch(_URL.GET_ALL, {
             credentials: 'same-origin'

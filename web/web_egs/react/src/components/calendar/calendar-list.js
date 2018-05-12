@@ -1,11 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {
-    getAllCalendar,
-    insertCalendar,
-    resetCalendarList,
-    setPostCalendar,
-} from '../../actions/calendar/calendarList'
+import {getAllCalendar, insertCalendar, resetCalendarList,} from '../../actions/calendar/calendarList'
 import {setHeader} from '../../actions/main'
 import {URL} from '../../config'
 import Popover from 'antd/lib/popover'
@@ -43,7 +38,6 @@ export default class CalendarList extends React.Component {
 
     componentDidMount() {
         const {dispatch, lang} = this.props
-        // NOTE: fetch needed data
         dispatch(setHeader(lang.calendarList.head))
         dispatch(getAllCalendar())
     }
@@ -87,17 +81,17 @@ export default class CalendarList extends React.Component {
         return (
             <Row gutter={8}>
                 <Col span={24} sm={6}>
-                    <Popover placement='right' trigger="click" visible={visible} content={
+                    <Popover placement='right' trigger='click' visible={visible} content={
                         <Row>
-                            <Input value={year} style={{width: 60}} placeholder="Year"
+                            <Input value={year} style={{width: 60}} placeholder='Year'
                                    maxLength={4} onChange={(ev) => this.changeYear(ev.target.value)}/>
                             <Tag class='clickable tag-medium tag-success' onClick={() => this.submitYear()}>
-                                {loading ? <Icon type="loading"/> : lang.calendarList.add}
+                                {loading ? <Icon type='loading'/> : lang.calendarList.add}
                             </Tag>
                         </Row>
                     }>
                         <Card class='clickable' onClick={() => this.visible(!visible)}>
-                            <Icon type="plus"/>
+                            <Icon type='plus'/>
                             <span style={{marginLeft: 8}}>ADD</span>
                         </Card>
                     </Popover>

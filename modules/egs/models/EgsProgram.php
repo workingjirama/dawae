@@ -13,6 +13,8 @@ use Yii;
  *
  * @property EgsActionFor[] $egsActionFors
  * @property EgsProgramBinder[] $egsProgramBinders
+ * @property EgsSubjectFor[] $egsSubjectFors
+ * @property EgsTodoFor[] $egsTodoFors
  */
 class EgsProgram extends \yii\db\ActiveRecord
 {
@@ -70,5 +72,21 @@ class EgsProgram extends \yii\db\ActiveRecord
     public function getEgsProgramBinders()
     {
         return $this->hasMany(EgsProgramBinder::className(), ['program_id' => 'program_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsSubjectFors()
+    {
+        return $this->hasMany(EgsSubjectFor::className(), ['program_id' => 'program_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsTodoFors()
+    {
+        return $this->hasMany(EgsTodoFor::className(), ['program_id' => 'program_id']);
     }
 }

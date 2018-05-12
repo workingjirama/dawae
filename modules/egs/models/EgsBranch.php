@@ -11,6 +11,7 @@ use Yii;
  * @property string $branch_name_th
  * @property string $branch_name_en
  *
+ * @property EgsAdvisorFee[] $egsAdvisorFees
  * @property EgsBranchBinder[] $egsBranchBinders
  * @property EgsCommitteeFee[] $egsCommitteeFees
  * @property EgsRequestFee[] $egsRequestFees
@@ -55,6 +56,14 @@ class EgsBranch extends \yii\db\ActiveRecord
             'branch_name_th' => 'Branch Name Th',
             'branch_name_en' => 'Branch Name En',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsAdvisorFees()
+    {
+        return $this->hasMany(EgsAdvisorFee::className(), ['branch_id' => 'branch_id']);
     }
 
     /**

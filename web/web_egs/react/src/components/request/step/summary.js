@@ -32,7 +32,7 @@ export default class Summary extends React.Component {
 
     insert() {
         const {post, calendarItem, dispatch, config} = this.props
-        dispatch(insert(false, post, calendarItem, response => {
+        dispatch(insert(post, calendarItem, response => {
             window.location = calendarItem.action.action_type_id === config.ACTION_INIT_TYPE ? `${URL.EGS_BASE}/#/calendar-init` : `${URL.EGS_BASE}/#/requestList`
         }))
     }

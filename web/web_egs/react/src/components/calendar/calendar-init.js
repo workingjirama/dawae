@@ -2,20 +2,12 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {setHeader} from '../../actions/main'
 import DateRangePicker from 'react-bootstrap-daterangepicker'
-import {insert, resetRequestAdd, setPost} from "../../actions/request/requestAdd"
-import CalendarInitAdd from "./calendarInitAdd";
-import {
-    getAllLevel, getAllSemester, getDefense,
-    updateCalendarItem
-} from "../../actions/calendar/calendar"
+import {getAllLevel, getAllSemester, updateCalendarItem} from '../../actions/calendar/calendar'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
 import Tag from 'antd/lib/tag'
-import Popover from 'antd/lib/popover'
-import Teacher from "../request/step/teacher"
-import DefenseRoom from "../request/step/defense-room";
-import RequestListEach from "../request/request-list-each";
-import {getCalendarItemInit, resetCalendarInit} from "../../actions/calendar/calendar-init";
+import RequestListEach from '../request/request-list-each'
+import {getCalendarItemInit, resetCalendarInit} from '../../actions/calendar/calendar-init'
 
 @connect((store) => {
     return {
@@ -28,7 +20,6 @@ import {getCalendarItemInit, resetCalendarInit} from "../../actions/calendar/cal
 export default class CalendarInit extends React.Component {
 
     componentWillUnmount() {
-        /* TODO: RESET */
         const {dispatch} = this.props
         dispatch(resetCalendarInit())
     }

@@ -1,9 +1,11 @@
-const debug = process.env.NODE_ENV !== 'production';
-const webpack = require('webpack');
-const path = require('path');
+const debug = process.env.NODE_ENV !== 'production'
+const webpack = require('webpack')
+const path = require('path')
 
-const APP_DIR = path.resolve(__dirname, './src');
-const BUILD_DIR = path.resolve(__dirname, './public');
+const APP_DIR = path.resolve(__dirname, './src')
+const BUILD_DIR = path.resolve(__dirname, './public')
+
+const CompressionPlugin = require("compression-webpack-plugin")
 
 const config = {
     entry: APP_DIR + '/index.js',
@@ -14,12 +16,13 @@ const config = {
             loader: 'babel-loader',
             query: {
                 presets: ['react', 'es2015', 'stage-0'],
-                plugins: ['react-html-attrs', 'transform-class-properties', 'transform-decorators-legacy', 'emotion'],
+                plugins: ['react-html-attrs', 'transform-class-properties', 'transform-decorators-legacy'],
             }
         }]
     },
     node: {
-        fs: "empty"
+        fs: "empty",
+        child_process: 'empty'
     },
     output: {
         path: BUILD_DIR,
@@ -29,20 +32,25 @@ const config = {
         new webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false,
-                screw_ie8: true,
-                conditionals: true,
-                unused: true,
-                comparisons: true,
-                sequences: true,
-                dead_code: true,
-                evaluate: true,
-                if_return: true,
-                join_vars: true
+                pure_getters: true,
+                unsafe: true,
+                unsafe_comps: true,
+                screw_ie8: true
             },
             output: {
                 comments: false
             }
-        })
+        }),
+        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /de/),
+// new webpack.NoEmitOnErrorsPlugin(),
+        // new CompressionPlugin({
+        //     asset: "[path].gz[query]",
+        //     algorithm: "gzip",
+        //     test: /\.js$|\.css$|\.html$/,
+        //     threshold: 10240,
+        //     minRatio: 0
+        // }),
+        // new webpack.optimize.AggressiveMergingPlugin(),
     ]
 };
 

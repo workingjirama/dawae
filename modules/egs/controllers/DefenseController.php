@@ -2,10 +2,13 @@
 
 namespace app\modules\egs\controllers;
 
+use app\modules\egs\models\EgsAction;
 use app\modules\egs\models\EgsActionOnStatus;
 use app\modules\egs\models\EgsAdvisor;
 use app\modules\egs\models\EgsCommittee;
 use app\modules\egs\models\EgsDefense;
+use app\modules\egs\models\EgsLevel;
+use app\modules\egs\models\EgsSemester;
 use app\modules\egs\models\EgsUserRequest;
 use Yii;
 
@@ -19,8 +22,30 @@ use yii\web\Controller;
 
 class DefenseController extends Controller
 {
+
+    public function actionIndex()
+    {
+        return $this->render('/default/index', ['router' => 'defense']);
+    }
+
     private $FINAL_REQUEST_PLUS_DATE = 365;
     private $FINAL_DEFENSE_PLUS_DATE = 730;
+
+    public function actionList($calendar, $level, $semester, $action)
+    {
+        $calendar_id = $calendar === 'null' ? EgsCalendar::find()->where(['calendar_active' => 1])->one()->calendar_id : $calendar;
+        $level_id = $level === 'null' ? EgsLevel::find()->one()->level_id : $level;
+        $semester_id = $semester === 'null' ? EgsSemester::find()->one()->semester_id : $semester;
+        $action_id = $action === 'null' ? EgsAction::find()->where(['action_type_id' => Config::$ACTION_DEFENSE_TYPE])->one()->action_id : $action;
+        $defense = EgsDefense::find()->where([
+            'calendar_id' => $calendar_id,
+            'level_id' => $level_id,
+            'semester_id' => $semester_id,
+            'defense_type_id' => $action_id
+        ])->andWhere(['!=', 'student_id', Config::$SYSTEM_ID])->all();
+        $user = Config::get_current_user();
+        return Json::encode(Format::defense_print($defense));
+    }
 
     public function actionEvent()
     {
@@ -76,8 +101,33 @@ class DefenseController extends Controller
         ]);
         $defense->defense_score = $post['score'];
         $defense->defense_credit = $defense->defenseType->action_credit ? $post['credit'] : null;
-        $defense->defense_comment = $comment;
+        $defense->defense_comment = $comment === '' ? null : $comment;
         $defense->defense_status_id = $defense_pass ? $cond ? Config::$DEFENSE_STATUS_PASS_CON : Config::$DEFENSE_STATUS_PASS : Config::$DEFENSE_STATUS_FAIL;
+        if (!empty($defense->egsDefenseSubjects)) {
+            $pass_required = sizeof($defense->egsDefenseSubjects);
+            $passed = 0;
+            foreach ($defense->egsDefenseSubjects as $defense_subject)
+                foreach ($post['subject'] as $subject) {
+                    if ($defense_subject->subject_id === $subject['subject_id']) {
+                        if (!$defense_subject->already_passed) {
+                            $defense_subject->subject_pass = $subject['subject_pass'] ? 1 : 0;
+                            $defense_subject->defense_subject_status_id = $subject['subject_pass'] ? Config::$DEFENSE_STATUS_PASS : Config::$DEFENSE_STATUS_FAIL;
+                            if (!$defense_subject->save()) return Json::encode($defense_subject->errors);
+                            if ($subject['subject_pass']) {
+                                $passed++;
+                            }
+                        } else {
+                            $passed++;
+                        }
+                    }
+                }
+            $defense->defense_status_id = $passed === $pass_required ? Config::$SUBJECT_STATUS_PASS_ALL :
+                ($passed !== 0 ? Config::$SUBJECT_STATUS_PASS_SOME : Config::$SUBJECT_STATUS_FAIL_ALL);
+        } else if (!$defense->defenseType->action_score) {
+            $defense->defense_status_id = $post['pass_check'] ? Config::$DEFENSE_STATUS_PASS : Config::$DEFENSE_STATUS_FAIL;
+        }
+
+
         if (!$defense->save()) return Json::encode($defense->errors);
         $redo = $defense->defenseType->action_redo;
         if ($redo && $defense->owner_id === Config::$SYSTEM_ID) {

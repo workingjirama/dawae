@@ -1,8 +1,46 @@
 import {URL, TYPE} from "../../config"
-import 'whatwg-fetch'
 
 const _URL = URL.REQUEST.REQUEST_DATA
 const _TYPE = TYPE.REQUEST.REQUEST_DATA
+
+export function getAllUserRequest(calendar, level, semester, action) {
+    return dispatch => {
+        fetch(_URL.GET_ALL_USER_REQUEST(calendar, level, semester, action), {
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            dispatch({
+                type: _TYPE.SET_ALL_USER_REQUEST,
+                payload: json
+            })
+        })
+    }
+}
+
+export function UpdateUserRequestList(userRequests) {
+    return dispatch => {
+        dispatch({
+            type: _TYPE.SET_ALL_USER_REQUEST,
+            payload: userRequests
+        })
+    }
+}
+
+export function getAllAction() {
+    return dispatch => {
+        fetch(_URL.GET_ALL_ACTION, {
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            dispatch({
+                type: _TYPE.SET_ALL_ACTION,
+                payload: json
+            })
+        })
+    }
+}
 
 export function getStep(actionId) {
     return dispatch => {
@@ -30,10 +68,12 @@ export function updateResult(userRequest, defense, post, callback) {
             semesterId: userRequest.calendar_item.semester_id,
             ownerId: userRequest.calendar_item.owner_id,
             defenseTypeId: defense.defense_type.action_id,
+            subject: defense.subject,
             cond: post.cond,
             score: post.score,
             credit: post.credit,
-            comment: post.comment
+            comment: post.comment,
+            pass_check: post.pass_check
         }))
         fetch(_URL.UPDATE_RESULT, {
             method: 'post',
@@ -149,10 +189,21 @@ export function updateUserRequest(index, userRequest) {
     }
 }
 
-export function unmount(index, userRequest) {
+export function unmount() {
     return dispatch => {
         dispatch({
             type: _TYPE.SET_UNMOUNT
         })
     }
 }
+
+export function resetRequestData() {
+    return dispatch => {
+        dispatch({
+            type: _TYPE.SET_RESET
+        })
+    }
+}
+
+
+

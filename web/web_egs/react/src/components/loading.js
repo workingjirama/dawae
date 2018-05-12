@@ -19,15 +19,16 @@ export default class Loading extends React.Component {
     loading() {
         setTimeout(() => {
             const {dot} = this.state
-            this.setState({dot: dot === this.max ? 0 : (dot + 1)})
+            if (this.content)
+                this.setState({dot: dot === this.max ? 0 : (dot + 1)})
             this.loading()
-        }, 300)
+        }, 330)
     }
 
     render() {
         const {dot} = this.state
         return (
-            <Row type='flex' justify='center' align='middle' style={{
+            <Row ref={ref => this.content = ref} type='flex' justify='center' align='middle' style={{
                 height: '50vh', textAlign: 'center'
             }}>
                 <Col class='loading' span={24}>

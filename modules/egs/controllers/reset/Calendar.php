@@ -27,7 +27,11 @@ use app\modules\egs\models\EgsStatus;
 use app\modules\egs\models\EgsStatusLabel;
 use app\modules\egs\models\EgsStep;
 use app\modules\egs\models\EgsStepType;
+use app\modules\egs\models\EgsSubject;
+use app\modules\egs\models\EgsSubjectFor;
 use app\modules\egs\models\EgsSubmitType;
+use app\modules\egs\models\EgsTodo;
+use app\modules\egs\models\EgsTodoFor;
 use app\modules\egs\models\EgsUserRequest;
 use yii\helpers\Json;
 
@@ -35,6 +39,8 @@ class Calendar
 {
     public function delete()
     {
+        EgsSubjectFor::deleteAll();
+        EgsSubject::deleteAll();
         EgsActionStep::deleteAll();
         EgsStep::deleteAll();
         EgsStepType::deleteAll();
@@ -52,10 +58,14 @@ class Calendar
         EgsAction::deleteAll();
         EgsActionType::deleteAll();
         EgsSemester::deleteAll();
+        EgsTodoFor::deleteAll();
+        EgsTodo::deleteAll();
     }
 
     public function insert()
     {
+        $this->todo();
+        $this->todo_for();
         $this->status_label();
         $this->status();
         $this->action_type();
@@ -71,6 +81,63 @@ class Calendar
         $this->step();
         $this->step_type();
         $this->action_step();
+        $this->subject();
+        $this->subject_for();
+    }
+
+    private function subject_insert($id, $nameTH, $nameEN)
+    {
+        $subject = new EgsSubject();
+        $subject->subject_id = $id;
+        $subject->subject_name_th = $nameTH;
+        $subject->subject_name_en = $nameEN;
+        if (!$subject->save()) {
+            echo Json::encode($subject->errors);
+            exit();
+        }
+    }
+
+    private function subject()
+    {
+        $this->subject_insert(322721, 'Theory', 'Theory');
+        $this->subject_insert(322723, 'OS', 'OS');
+        $this->subject_insert(322722, 'Algorithm', 'Algorithm');
+        $this->subject_insert(322741, 'Com Architecture', 'Com Architecture');
+
+        $this->subject_insert(322724, 'SA', 'SA');
+        $this->subject_insert(322731, 'IT&WEB', 'IT&WEB');
+        $this->subject_insert(322733, 'DB', 'DB');
+        $this->subject_insert(322734, 'ITM', 'ITM');
+        $this->subject_insert(322766, 'Com network', 'Com network');
+
+        $this->subject_insert(320761, 'PRINCIPLES OF REMOTE SENSING ', 'PRINCIPLES OF REMOTE SENSING ');
+        $this->subject_insert(320781, 'GEOGRAPHIC INFORMATION SYSTEM', 'GEOGRAPHIC INFORMATION SYSTEM');
+        $this->subject_insert(320783, 'DATABASE MANAGEMENT SYSTEM AND GEOGRAPHIC INFORMATION SYSTEM STANDARD', 'DATABASE MANAGEMENT SYSTEM AND GEOGRAPHIC INFORMATION SYSTEM STANDARD');
+    }
+
+    private function subject_for_insert($actions, $subjects, $programs)
+    {
+        foreach ($actions as $action) {
+            foreach ($subjects as $subject) {
+                foreach ($programs as $program) {
+                    $subject_for = new EgsSubjectFor();
+                    $subject_for->subject_id = $subject;
+                    $subject_for->program_id = $program;
+                    $subject_for->action_id = $action;
+                    if (!$subject_for->save()) {
+                        echo Json::encode($subject_for->errors);
+                        exit();
+                    }
+                }
+            }
+        }
+    }
+
+    private function subject_for()
+    {
+        $this->subject_for_insert([11], [322721, 322723, 322722, 322741], [1]);
+        $this->subject_for_insert([11], [322724, 322731, 322733, 322734, 322766], [2]);
+        $this->subject_for_insert([11], [320761, 320781, 320783], [3]);
     }
 
     private function step()
@@ -195,7 +262,9 @@ class Calendar
 
         $step_type = 2;
         $this->action_step_insert([1], [5, 10], $step_type);
-        $this->action_step_insert([2, 4, 5, 8], [5, 6, 7, 8, 10], $step_type);
+        $this->action_step_insert([2], [5, 6, 7, 8, 10], $step_type);
+        $this->action_step_insert([4, 5], [5, 6, 7, 9, 10], $step_type);
+        $this->action_step_insert([8], [5, 6, 7, 10], $step_type);
         $this->action_step_insert([10], [5, 7, 10], $step_type);
     }
 
@@ -229,7 +298,57 @@ class Calendar
         $this->action_for_insert(10, [3, 4, 5, 6, 7], [1, 2, 3]);
         $this->action_for_insert(11, [3, 4, 5, 6, 7], [1, 2, 3]);
         $this->action_for_insert(12, [3], [1]);
-        $this->action_for_insert(12, [4, 5, 6, 7], [1, 2, 3]);
+    }
+
+    private function todo_for_insert($todo_id, $plans, $programs)
+    {
+        foreach ($plans as $plan) {
+            foreach ($programs as $program) {
+                $todo_for = new EgsTodoFor();
+                $todo_for->todo_id = $todo_id;
+                $todo_for->plan_id = $plan;
+                $todo_for->program_id = $program;
+                if (!$todo_for->save()) {
+                    echo Json::encode($todo_for->errors);
+                    exit();
+                }
+            }
+        }
+    }
+
+    private function todo_for()
+    {
+        $this->todo_for_insert(1, [1, 2, 3, 4, 5, 6, 7], [1, 2, 3]);
+        $this->todo_for_insert(2, [3, 4, 5, 6, 7], [1, 2, 3]);
+        $this->todo_for_insert(3, [4, 5, 6, 7], [1, 2, 3]);
+        $this->todo_for_insert(4, [1, 2, 3, 4, 5, 6, 7], [1, 2, 3]);
+        $this->todo_for_insert(5, [1, 2, 3, 4, 5, 6, 7], [1, 2, 3]);
+        $this->todo_for_insert(6, [1, 2, 3, 4, 5, 6, 7], [1, 2, 3]);
+        $this->todo_for_insert(7, [1, 2, 3, 4, 5, 6, 7], [1, 2, 3]);
+    }
+
+    private function todo_insert($id, $name_th, $name_en, $validate)
+    {
+        $todo = new EgsTodo();
+        $todo->todo_id = $id;
+        $todo->todo_name_th = $name_th;
+        $todo->todo_name_en = $name_en;
+        $todo->todo_validation = $validate;
+        if (!$todo->save()) {
+            echo Json::encode($todo->errors);
+            exit();
+        }
+    }
+
+    private function todo()
+    {
+        $this->todo_insert(1, 'แต่งตั้งอาจารย์ที่ปรึกษาแล้ว', 'แต่งตั้งอาจารย์ที่ปรึกษาแล้ว', 'advisor_added');
+        $this->todo_insert(2, 'สอบวัด/ประมวลผ่านครบทุกวิชาแล้ว', 'สอบวัด/ประมวลผ่านครบทุกวิชาแล้ว', 'defense_compre_qe_passed');
+        $this->todo_insert(3, 'สอบก้าวหน้าผ่านครบ x หน่วย', 'สอบก้าวหน้าผ่านครบ x หน่วย', 'defense_progress_passed');
+        $this->todo_insert(4, 'สอบเค้งโครงผ่าน', 'สอบเค้งโครง่าน', 'defense_proposal_passed');
+        $this->todo_insert(5, 'สอบจบผ่าน', 'สอบจบผ่าน', 'defense_final_passed');
+        $this->todo_insert(6, 'มีผลงานตีพิมพ์', 'มีผลงานตีพิมพ์', 'publication_submitted');
+        $this->todo_insert(7, 'ประเมินหลักสูตร', 'ประเมินหลักสูตร', 'evaluation_submitted');
     }
 
     private function status()
@@ -326,6 +445,81 @@ class Calendar
             echo Json::encode($status->errors);
             exit();
         }
+
+        $status = new EgsStatus();
+        $status->status_id = 11;
+        $status->status_name_th = 'สอบผ่าน(ครบ)';
+        $status->status_name_en = 'Pass(All)';
+        $status->status_label_id = 1;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+        $status = new EgsStatus();
+        $status->status_id = 12;
+        $status->status_name_th = 'สอบผ่าน(ยังไม่ครบ)';
+        $status->status_name_en = 'Pass(Some)';
+        $status->status_label_id = 2;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+        $status = new EgsStatus();
+        $status->status_id = 13;
+        $status->status_name_th = 'สอบไม่ผ่านเลย';
+        $status->status_name_en = 'Fail(XD)';
+        $status->status_label_id = 2;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+        $status = new EgsStatus();
+        $status->status_id = 14;
+        $status->status_name_th = 'สอบผ่านอยู่แล้ว';
+        $status->status_name_en = 'Already Passed';
+        $status->status_label_id = 3;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+
+        $status = new EgsStatus();
+        $status->status_id = 15;
+        $status->status_name_th = 'ไม่อยู่ในช่วงเวลา';
+        $status->status_name_en = 'NOT IN TIME XD';
+        $status->status_label_id = 2;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+        $status = new EgsStatus();
+        $status->status_id = 16;
+        $status->status_name_th = 'ทำผ่านแล้ว';
+        $status->status_name_en = 'ALREADY PASSED XD';
+        $status->status_label_id = 2;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+        $status = new EgsStatus();
+        $status->status_id = 17;
+        $status->status_name_th = 'ยังไม่ผ่านเงื่อนไข';
+        $status->status_name_en = 'NOT CONDITION XD';
+        $status->status_label_id = 2;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+        $status = new EgsStatus();
+        $status->status_id = 18;
+        $status->status_name_th = 'ไม่ต้องทำ';
+        $status->status_name_en = 'NOPE XD';
+        $status->status_label_id = 2;
+        if (!$status->save()) {
+            echo Json::encode($status->errors);
+            exit();
+        }
+
     }
 
     private function status_label()
@@ -521,150 +715,160 @@ class Calendar
         $action->action_id = 1;
         $action->action_name_th = 'ขอแต่งตั้งอาจารย์ที่ปรึกษา';
         $action->action_name_en = 'Request for Appointment Advisor';
-        $action->action_detail_th = 'รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด';
-        $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
-        $action->action_default = 0;
+        $action->action_project = 0;
         $action->action_redo = 0;
         $action->action_credit = 0;
         $action->action_cond = 0;
+        $action->todo_id = 1;
+        $action->action_score = 0;
         if (!$action->save()) return Json::encode($action->errors);
 
         $action = new EgsAction();
         $action->action_id = 2;
         $action->action_name_th = 'ขอสอบเค้าโครงการศึกษาอิสระ/วิทยานิพนธ์';
         $action->action_name_en = 'Request for Defense of Thesis/ Independent Study\'s Proposal';
-        $action->action_detail_th = 'รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด';
-        $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
-        $action->action_default = 0;
+        $action->action_project = 1;
         $action->action_redo = 0;
         $action->action_credit = 0;
         $action->action_cond = 0;
+        $action->todo_id = 4;
+        $action->action_score = 0;
+        $action->action_validation = 'request_proposal';
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 3;
         $action->action_name_th = 'สอบเค้าโครงการศึกษาอิสระ/วิทยานิพนธ์';
         $action->action_name_en = 'Defense of Thesis/Independent Study\'s Proposal';
         $action->action_type_id = 2;
-        $action->action_default = 0;
+        $action->action_project = 0;
         $action->action_redo = 0;
         $action->action_credit = 0;
         $action->action_cond = 0;
+        $action->action_score = 1;
         if (!$action->save()) return Json::encode($action->errors);
 
         $action = new EgsAction();
         $action->action_id = 4;
         $action->action_name_th = 'ขอสอบการศึกษาอิสระ/วิทยานิพนธ์ (ยื่นขอครั้งที่ 1)';
         $action->action_name_en = 'Request for Defense of Thesis/ Independent Study (1st)';
-        $action->action_detail_th = 'รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด';
-        $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
-        $action->action_default = 0;
+        $action->action_project = 1;
         $action->action_redo = 0;
         $action->action_credit = 0;
         $action->action_cond = 0;
+        $action->todo_id = 5;
+        $action->action_score = 0;
+        $action->action_validation = 'request_final';
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 5;
         $action->action_name_th = 'ขอสอบการศึกษาอิสระ/วิทยานิพนธ์ (ยื่นขอครั้งที่ 2)';
         $action->action_name_en = 'Request for Defense of Thesis/ Independent Study (2nd)';
-        $action->action_detail_th = 'รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด';
-        $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
-        $action->action_default = 0;
+        $action->action_project = 1;
         $action->action_redo = 0;
         $action->action_credit = 0;
         $action->action_cond = 0;
+        $action->todo_id = 5;
+        $action->action_score = 0;
+        $action->action_validation = 'request_final';
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 6;
         $action->action_name_th = 'สอบการศึกษาอิสระ/วิทยานิพนธ์ (ครั้งที่ 1)';
         $action->action_name_en = 'Defense of Thesis/Independent Study (1st)';
         $action->action_type_id = 2;
-        $action->action_default = 0;
+        $action->action_project = 0;
         $action->action_redo = 1;
         $action->action_credit = 0;
         $action->action_cond = 1;
+        $action->action_score = 1;
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 7;
         $action->action_name_th = 'สอบการศึกษาอิสระ/วิทยานิพนธ์ (ครั้งที่ 2)';
         $action->action_name_en = 'Defense of Thesis/Independent Study (2nd)';
         $action->action_type_id = 2;
-        $action->action_default = 0;
+        $action->action_project = 0;
         $action->action_redo = 1;
         $action->action_credit = 0;
         $action->action_cond = 1;
+        $action->action_score = 1;
         if (!$action->save()) return Json::encode($action->errors);
 
         $action = new EgsAction();
         $action->action_id = 8;
         $action->action_name_th = 'ขอสอบความก้าวหน้าดุษฎีนิพนธ์';
         $action->action_name_en = 'Request for Taking Dissertation Progressing Examination';
-        $action->action_detail_th = 'ร0ละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด';
-        $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
-        $action->action_default = 0;
+        $action->action_project = 1;
         $action->action_redo = 0;
         $action->action_credit = 0;
         $action->action_cond = 0;
+        $action->todo_id = 3;
+        $action->action_score = 0;
+        $action->action_validation = 'request_progress';
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 9;
         $action->action_name_th = 'สอบความก้าวหน้าดุษฎีนิพนธ์';
         $action->action_name_en = 'Dissertation Progressing Examination';
         $action->action_type_id = 2;
-        $action->action_default = 0;
+        $action->action_project = 0;
         $action->action_redo = 0;
         $action->action_credit = 1;
         $action->action_cond = 0;
+        $action->action_score = 1;
         if (!$action->save()) return Json::encode($action->errors);
 
         $action = new EgsAction();
         $action->action_id = 10;
         $action->action_name_th = 'ขอสอบประมวลความรู้/วัดคุณสมบัติ';
         $action->action_name_en = 'Request for Taking Comprehensive/Qualifying Examination';
-        $action->action_detail_th = 'รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด';
-        $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 1;
-        $action->action_default = 1;
+        $action->action_project = 0;
         $action->action_redo = 0;
         $action->action_credit = 0;
         $action->action_cond = 0;
+        $action->todo_id = 2;
+        $action->action_score = 0;
+        $action->action_validation = 'request_compre_qe';
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 11;
         $action->action_name_th = 'สอบประมวลความรู้/วัดคุณสมบัติ (ข้อเขียน)';
         $action->action_name_en = 'Take Comprehensive/Qualifying Examination (Writing)';
         $action->action_type_id = 2;
-        $action->action_default = 1;
+        $action->action_project = 0;
         $action->action_redo = 0;
         $action->action_credit = 0;
         $action->action_cond = 0;
+        $action->action_score = 0;
         if (!$action->save()) return Json::encode($action->errors);
         $action = new EgsAction();
         $action->action_id = 12;
         $action->action_name_th = 'สอบประมวลความรู้/วัดคุณสมบัติ (ปากเปล่า)';
         $action->action_name_en = 'Take Comprehensive/Qualifying Examination (Oral)';
         $action->action_type_id = 2;
-        $action->action_default = 1;
+        $action->action_project = 0;
         $action->action_redo = 0;
         $action->action_credit = 0;
         $action->action_cond = 0;
+        $action->action_score = 0;
         if (!$action->save()) return Json::encode($action->errors);
 
         $action = new EgsAction();
         $action->action_id = 13;
         $action->action_name_th = 'ตั้งค่าเริ่มต้นสอบประมวลความรู้/วัดคุณสมบัติ';
         $action->action_name_en = 'Request for Taking Comprehensive/Qualifying Examination';
-        $action->action_detail_th = 'รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด รายละเอียด';
-        $action->action_detail_en = 'detail detail detail detail detail detail detail detail detail detail detail detail detail';
         $action->action_type_id = 3;
-        $action->action_default = 0;
+        $action->action_project = 0;
         $action->action_redo = 0;
         $action->action_credit = 0;
         $action->action_cond = 0;
+        $action->action_score = 0;
         if (!$action->save()) return Json::encode($action->errors);
     }
 

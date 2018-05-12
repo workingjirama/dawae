@@ -12,9 +12,12 @@ use Yii;
  * @property string $plan_name_en
  * @property integer $plan_type_id
  *
+ * @property EgsActionFor[] $egsActionFors
+ * @property EgsAdvisorFee[] $egsAdvisorFees
  * @property EgsPlanType $planType
  * @property EgsPlanBinder[] $egsPlanBinders
  * @property EgsRequestFee[] $egsRequestFees
+ * @property EgsTodoFor[] $egsTodoFors
  */
 class EgsPlan extends \yii\db\ActiveRecord
 {
@@ -63,6 +66,22 @@ class EgsPlan extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getEgsActionFors()
+    {
+        return $this->hasMany(EgsActionFor::className(), ['plan_id' => 'plan_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsAdvisorFees()
+    {
+        return $this->hasMany(EgsAdvisorFee::className(), ['plan_id' => 'plan_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getPlanType()
     {
         return $this->hasOne(EgsPlanType::className(), ['plan_type_id' => 'plan_type_id']);
@@ -82,5 +101,13 @@ class EgsPlan extends \yii\db\ActiveRecord
     public function getEgsRequestFees()
     {
         return $this->hasMany(EgsRequestFee::className(), ['plan_id' => 'plan_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsTodoFors()
+    {
+        return $this->hasMany(EgsTodoFor::className(), ['plan_id' => 'plan_id']);
     }
 }

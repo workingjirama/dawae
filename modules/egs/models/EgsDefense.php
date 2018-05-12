@@ -22,14 +22,19 @@ use Yii;
  * @property integer $semester_id
  * @property integer $owner_id
  * @property integer $student_id
+ * @property integer $project_id
  *
  * @property EgsCommittee[] $egsCommittees
  * @property EgsAction $defenseType
+ * @property EgsProject $project
  * @property EgsRoom $room
  * @property EgsStatus $defenseStatus
  * @property EgsUserRequest $calendar
+ * @property EgsDefenseAdvisor[] $egsDefenseAdvisors
  * @property EgsDefenseDocument[] $egsDefenseDocuments
  * @property EgsDocument[] $documents
+ * @property EgsDefenseSubject[] $egsDefenseSubjects
+ * @property EgsSubject[] $subjects
  */
 class EgsDefense extends \yii\db\ActiveRecord
 {
@@ -56,10 +61,11 @@ class EgsDefense extends \yii\db\ActiveRecord
     {
         return [
             [['defense_type_id', 'defense_date', 'defense_time_start', 'defense_time_end', 'room_id', 'defense_status_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'required'],
-            [['defense_type_id', 'room_id', 'defense_status_id', 'defense_score', 'defense_credit', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'integer'],
+            [['defense_type_id', 'room_id', 'defense_status_id', 'defense_score', 'defense_credit', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id', 'project_id'], 'integer'],
             [['defense_date', 'defense_time_start', 'defense_time_end'], 'safe'],
             [['defense_comment'], 'string', 'max' => 2560],
             [['defense_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsAction::className(), 'targetAttribute' => ['defense_type_id' => 'action_id']],
+            [['project_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsProject::className(), 'targetAttribute' => ['project_id' => 'project_id']],
             [['room_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsRoom::className(), 'targetAttribute' => ['room_id' => 'room_id']],
             [['defense_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsStatus::className(), 'targetAttribute' => ['defense_status_id' => 'status_id']],
             [['calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsUserRequest::className(), 'targetAttribute' => ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']],
@@ -87,6 +93,7 @@ class EgsDefense extends \yii\db\ActiveRecord
             'semester_id' => 'Semester ID',
             'owner_id' => 'Owner ID',
             'student_id' => 'Student ID',
+            'project_id' => 'Project ID',
         ];
     }
 
@@ -104,6 +111,14 @@ class EgsDefense extends \yii\db\ActiveRecord
     public function getDefenseType()
     {
         return $this->hasOne(EgsAction::className(), ['action_id' => 'defense_type_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProject()
+    {
+        return $this->hasOne(EgsProject::className(), ['project_id' => 'project_id']);
     }
 
     /**
@@ -133,6 +148,14 @@ class EgsDefense extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getEgsDefenseAdvisors()
+    {
+        return $this->hasMany(EgsDefenseAdvisor::className(), ['defense_type_id' => 'defense_type_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getEgsDefenseDocuments()
     {
         return $this->hasMany(EgsDefenseDocument::className(), ['defense_type_id' => 'defense_type_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
@@ -144,5 +167,21 @@ class EgsDefense extends \yii\db\ActiveRecord
     public function getDocuments()
     {
         return $this->hasMany(EgsDocument::className(), ['document_id' => 'document_id'])->viaTable('egs_defense_document', ['defense_type_id' => 'defense_type_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsDefenseSubjects()
+    {
+        return $this->hasMany(EgsDefenseSubject::className(), ['defense_type_id' => 'defense_type_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSubjects()
+    {
+        return $this->hasMany(EgsSubject::className(), ['subject_id' => 'subject_id'])->viaTable('egs_defense_subject', ['defense_type_id' => 'defense_type_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
     }
 }

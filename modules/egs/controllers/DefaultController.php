@@ -8,6 +8,17 @@ class DefaultController extends Controller
 {
     public function actionIndex()
     {
-        return $this->render('index');
+        return $this->render('index', ['router' => null]);
     }
+
+    public function actionDefense()
+    {
+        return $this->render('index', ['router' => 'defense']);
+    }
+
+    public function actionRequest()
+    {
+        return $this->render('index', ['router' => 'request']);
+    }
+
 }

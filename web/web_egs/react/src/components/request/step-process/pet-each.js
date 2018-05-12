@@ -2,8 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import Tag from 'antd/lib/tag'
 import Checkbox from 'antd/lib/checkbox'
-import {togglePetition} from "../../../actions/request/requestData";
-import {updateUserRequest} from "../../../actions/data/dataRequest";
+import {togglePetition, updateUserRequest} from "../../../actions/request/requestData";
 
 @connect((store) => {
     return {

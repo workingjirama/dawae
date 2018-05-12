@@ -7,6 +7,7 @@ use Yii;
 class Config
 {
     static public $PASS_DEFENSE_SCORE = 50;
+    static public $REQUIRE_CREDITED = 12;
 
     static public $DEFENSE_STATUS_DEFAULT = 1;
     static public $DEFENSE_STATUS_FAIL = 2;
@@ -18,6 +19,16 @@ class Config
     static public $FEE_STATUS_PAID = 8;
     static public $FEE_STATUS_NOT_PAY = 9;
     static public $DONT_NEED_TO_PAY = 10;
+    static public $SUBJECT_STATUS_PASS_ALL = 11;
+    static public $SUBJECT_STATUS_PASS_SOME = 12;
+    static public $SUBJECT_STATUS_FAIL_ALL = 13;
+    static public $SUBJECT_STATUS_ALREADY_PASSED = 14;
+
+    static public $STATUS_NOT_IN_TIME = 15;
+    static public $STATUS_ALREADY_PASSED = 16;
+    static public $STATUS_NOT_CONDITION = 17;
+    static public $STATUS_DONT_NEED_TODO = 18;
+
 
     static public $DEFAULT_LANGUAGE = 'th';
     static public $SYSTEM_ID = -99;
@@ -34,6 +45,8 @@ class Config
     static public $DOCUMENT_PETITION_TYPE = 1;
     static public $DOCUMENT_PAPER_TYPE = 2;
 
+    static public $ADVISOR_MAIN_POSITION = 1;
+    static public $ADVISOR_CO_POSITION = 2;
     static public $COMMITTEE_MAIN_POSITION = 3;
     static public $COMMITTEE_CO_POSITION = 4;
 
@@ -46,6 +59,19 @@ class Config
 
     static public $POSITION_COMMITTEE_TYPE = 1;
     static public $POSITION_ADVISOR_TYPE = 2;
+
+    static public $LEVEL_MASTER = 1;
+    static public $LEVEL_DOCTOR = 2;
+
+    static public $REQUEST_ADVISOR = 1;
+    static public $REQUEST_PROPOSAL = 2;
+    static public $REQUEST_FINAL_1 = 4;
+    static public $REQUEST_FINAL_2 = 5;
+    static public $REQUEST_PROGRESS = 8;
+    static public $REQUEST_COMPRE_QE = 10;
+
+    static public $DEFENSE_WIRTE = 11;
+    static public $REQUEST_ORAL = 12;
 
     static public function get_language()
     {

@@ -38,3 +38,12 @@ export function getCurrntUser() {
         })
     }
 }
+
+export function setContainer(container) {
+    return dispatch => {
+        dispatch({
+            type: TYPE.MAIN.SET_CONTAINER,
+            payload: container
+        })
+    }
+}

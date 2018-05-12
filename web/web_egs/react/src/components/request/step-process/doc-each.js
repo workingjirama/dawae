@@ -1,9 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import Tag from 'antd/lib/tag'
-import Checkbox from 'antd/lib/checkbox'
-import {updateUserRequest} from "../../../actions/data/dataRequest";
-import {toggledefenseDocument} from "../../../actions/request/requestData";
+import {toggledefenseDocument, updateUserRequest} from "../../../actions/request/requestData";
 import Badge from 'antd/lib/badge'
 import Icon from 'antd/lib/icon'
 import {URL} from './../../../config'
@@ -22,7 +20,6 @@ export default class DocEach extends React.Component {
         super(props)
         const {defenseDocument, userRequest, currentUser, config, notYet} = props
         this.input = null
-        console.log('TRIGGERED')
         this.state = {
             path: defenseDocument.defense_document_path,
             file: null,

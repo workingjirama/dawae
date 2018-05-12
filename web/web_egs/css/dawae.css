@@ -1,7 +1,75 @@
+.small-card {
+    margin-bottom: 0 !important;
+}
+
+.margin-bottom-16 {
+    margin-bottom: 16px;
+}
+
+.small-card > .ant-card-body {
+    padding: 16px;
+}
+
+.ant-radio-wrapper {
+    white-space: initial;
+}
+
 .loading {
     font-size: 24px;
     color: #1890ff;
     width: 100%;
+}
+
+.table-col {
+    border: 1px solid #ddd;
+    padding: 4px;
+    margin-bottom: -0.5px;
+}
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+
+}
+
+.table > tbody > tr {
+    margin-bottom: 8px;
+}
+
+.table > thead > tr {
+    border: 2px solid #ddd;
+}
+
+.table > tbody {
+    border-top: 2px solid #ddd;
+    border-bottom: 2px solid #ddd;
+}
+
+.table > tbody > tr {
+    border-left: 2px solid #ddd;
+    border-right: 2px solid #ddd;
+}
+
+.table > tbody > tr > td, .table > thead > tr > th {
+    padding: 0 !important;
+    border: 1px solid #ddd !important;
+}
+
+@media screen and (min-width: 576px) {
+
+    .table-col {
+        padding: 8px;
+        margin-bottom: 0;
+    }
+
+    .table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    .table > tbody > tr {
+        margin-bottom: 0;
+    }
 }
 
 .ant-card {

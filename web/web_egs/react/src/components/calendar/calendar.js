@@ -2,20 +2,14 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {setHeader} from '../../actions/main'
 import {
-    activateCalendar,
-    getActiveActionItem,
-    getAllCalendarItem,
-    getAllLevel,
-    getAllSemester,
-    getCalendar,
-    resetCalendarLevel,
-    updateCalendarItem
+    activateCalendar, getActiveActionItem, getAllCalendarItem, getAllLevel,
+    getAllSemester, getCalendar, resetCalendarLevel, updateCalendarItem
 } from '../../actions/calendar/calendar'
 import DateRangePicker from 'react-bootstrap-daterangepicker'
-import CalendarInit from "./calendar-init"
 import {getTeacher, getPosition, getRoom} from "../../actions/request/requestAdd"
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
+import Tag from 'antd/lib/tag'
 
 @connect((store) => {
     return {
@@ -86,77 +80,105 @@ export default class Calendar extends React.Component {
         const {semesters, calendarItems, actionItems, levels, calendar, lang} = this.props
         return [
             levels === null ? null :
-                levels.map(level => [
-                    <div key={`head${level.level_id}`}>{level.level_name}</div>,
-                    <div key={`table${level.level_id}`} class='table-responsive padding-bottom-50'>
-                        <table class='table table-bordered nomargin'>
+                levels.map(level =>
+                    <div key={level.level_id}>
+                        <div>{level.level_name}</div>
+                        <table class='table'>
                             <thead>
                             <tr>
-                                <th>{lang.calendar.list}</th>
-                                {semesters === null ? null : semesters.map(semester =>
-                                    <th key={semester.semester_id}>{semester.semester_name}</th>
-                                )}
+                                <th>
+                                    <Col class='text-center table-col'
+                                         sm={6} span={24}>
+                                        {lang.calendar.list}
+                                    </Col>
+                                    {
+                                        semesters === null ? null : semesters.map(
+                                            semester =>
+                                                <Col key={semester.semester_id} class='text-center table-col'
+                                                     sm={6} span={24}>
+                                                    {semester.semester_name}
+                                                </Col>
+                                        )
+                                    }
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
-                            {actionItems === null || calendarItems === null || semesters === null ? null :
-                                actionItems.filter(actionItem => actionItem.level_id === level.level_id).map((actionItem, index) =>
-                                    <tr key={index}>
-                                        <td>{actionItem.action.action_name}</td>
-                                        {semesters.map(
-                                            (semester, index2) => {
-                                                let calendarItems_ = calendarItems.filter(_calendarItem =>
-                                                    _calendarItem.action_id === actionItem.action.action_id &&
-                                                    _calendarItem.semester_id === semester.semester_id &&
-                                                    _calendarItem.level_id === level.level_id)
-                                                return calendarItems_.length === 0 ?
-                                                    <td key='blank'></td> :
-                                                    <td key={`${index}${index2}`}>
-                                                        <div>
-                                                            {
-                                                                calendarItems_[0].calendar_item_date_start === null ? null :
-                                                                    `${moment(new Date(calendarItems_[0].calendar_item_date_start)).format('LL')} ${lang.calendar.to} ${moment(new Date(calendarItems_[0].calendar_item_date_end)).format('LL')}`
-                                                            }
-                                                            {
-                                                                <DateRangePicker
-                                                                    opens='left'
-                                                                    autoUpdateInput={false}
-                                                                    startDate={calendarItems_[0].calendar_item_date_start === null ? moment(new Date()) : moment(new Date(calendarItems_[0].calendar_item_date_start))}
-                                                                    endDate={calendarItems_[0].scalendar_item_date_end === null ? moment(new Date()) : moment(new Date(calendarItems_[0].calendar_item_date_end))}
-                                                                    onApply={(ev, picker) => this.dateRangeApply(ev, picker, calendarItems_[0])}
-                                                                    locale={this.locale}>
-                                                                    {
-                                                                        calendarItems_[0].calendar_item_date_start === null ?
-                                                                            <button class='btn btn-blue btn-xs'>
-                                                                                {lang.calendar.input}
-                                                                            </button> :
-                                                                            <button
-                                                                                class='btn btn-default btn-xs'>
-                                                                                <i class='fa fa-edit nopadding-right'/>
-                                                                            </button>
+                            {
+                                actionItems === null || calendarItems === null || semesters === null ? null :
+                                    actionItems.filter(actionItem => actionItem.level_id === level.level_id).map(
+                                        (actionItem, index) =>
+                                            <tr key={index}>
+                                                <td>
+                                                    <Row class='table-row' type='flex'>
+                                                        <Col class='text-center table-col'
+                                                             sm={6} span={24}>
+                                                            {actionItem.action.action_name}
+                                                        </Col>
+                                                        {
+                                                            semesters.map(
+                                                                (semester, index2) => {
+                                                                    let calendarItems_ = calendarItems.filter(_calendarItem =>
+                                                                        _calendarItem.action_id === actionItem.action.action_id &&
+                                                                        _calendarItem.semester_id === semester.semester_id &&
+                                                                        _calendarItem.level_id === level.level_id)
+                                                                    let calendarItem, start, end
+                                                                    if (calendarItems_.length !== 0) {
+                                                                        calendarItem = calendarItems_[0]
+                                                                        start = moment(new Date(calendarItem.calendar_item_date_start))
+                                                                        end = moment(new Date(calendarItem.calendar_item_date_end))
                                                                     }
-                                                                </DateRangePicker>
-                                                            }
-                                                        </div>
-                                                    </td>
-                                            }
-                                        )}
-                                    </tr>
-                                )
+                                                                    return (
+                                                                        <Col key={`${index}${index2}`}
+                                                                             class='text-center table-col' sm={6}
+                                                                             span={24}>
+                                                                            {
+                                                                                calendarItems_.length === 0 ?
+                                                                                    <div class='invisible'>XD</div> :
+                                                                                    <DateRangePicker
+                                                                                        opens='left'
+                                                                                        autoUpdateInput={false}
+                                                                                        startDate={calendarItem.calendar_item_date_start === null ? moment(new Date()) : start}
+                                                                                        endDate={calendarItem.scalendar_item_date_end === null ? moment(new Date()) : end}
+                                                                                        onApply={(ev, picker) => this.dateRangeApply(ev, picker, calendarItems_[0])}
+                                                                                        locale={this.locale}>
+                                                                                        {
+                                                                                            calendarItems_[0].calendar_item_date_start === null ?
+                                                                                                <Tag
+                                                                                                    class='tag-empty clickable'>
+                                                                                                    CLICK ME LUL
+                                                                                                </Tag> :
+                                                                                                <Tag
+                                                                                                    class='tag-default clickable'>
+                                                                                                    {
+                                                                                                        calendarItem.calendar_item_date_start === null ? null :
+                                                                                                            `${start.format('LL')} - ${end.format('LL')}`
+                                                                                                    }
+                                                                                                </Tag>
+                                                                                        }
+                                                                                    </DateRangePicker>
+                                                                            }
+                                                                        </Col>
+                                                                    )
+                                                                }
+                                                            )
+                                                        }
+                                                    </Row>
+                                                </td>
+                                            </tr>
+                                    )
                             }
                             </tbody>
                         </table>
                     </div>
-                ]),
+                ),
             calendar === null ? null :
                 calendar.calendar_active ?
                     <div key='activated' class='btn-lg btn-block btn-success' style={{textAlign: 'center'}}>
                         {lang.calendar.activated}
                     </div> :
                     <button key='btn' disabled={calendarItems === null ? true : !this.calendarItemAllSet()}
-                            onClick={() => {
-                                this.activateCalendar()
-                            }} class='btn btn-lg btn-block btn-success'>
+                            onClick={() => this.activateCalendar()} class='btn btn-lg btn-block btn-success'>
                         {lang.calendar.activate}
                     </button>
         ]

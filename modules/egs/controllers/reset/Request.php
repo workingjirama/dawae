@@ -11,11 +11,14 @@ use app\modules\egs\models\EgsCalendarItem;
 use app\modules\egs\models\EgsCalendarLevel;
 use app\modules\egs\models\EgsCommittee;
 use app\modules\egs\models\EgsDefense;
+use app\modules\egs\models\EgsDefenseAdvisor;
 use app\modules\egs\models\EgsDefenseDocument;
 use app\modules\egs\models\EgsDefenseStatus;
+use app\modules\egs\models\EgsDefenseSubject;
 use app\modules\egs\models\EgsLevel;
 use app\modules\egs\models\EgsPosition;
 use app\modules\egs\models\EgsPositionType;
+use app\modules\egs\models\EgsProject;
 use app\modules\egs\models\EgsRequestDefense;
 use app\modules\egs\models\EgsAction;
 use app\modules\egs\models\EgsRequestDocStatus;
@@ -36,8 +39,11 @@ class Request
     {
         EgsRequestDocument::deleteAll();
         EgsDefenseDocument::deleteAll();
+        EgsDefenseSubject::deleteAll();
         EgsCommittee::deleteAll();
+        EgsDefenseAdvisor::deleteAll();
         EgsDefense::deleteAll();
+        EgsProject::deleteAll();
         EgsAdvisor::deleteAll();
         EgsUserRequest::deleteAll();
         EgsPosition::deleteAll();

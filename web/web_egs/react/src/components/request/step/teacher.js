@@ -2,10 +2,10 @@ import React from 'react'
 import {connect} from 'react-redux'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
-import Select from 'antd/lib/select'
 import Loading from "../../loading"
 import Button from "../step/button"
 import {setPost} from "../../../actions/request/requestAdd"
+import Select from 'antd/lib/select'
 
 const {Option, OptGroup} = Select
 

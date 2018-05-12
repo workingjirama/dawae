@@ -1,304 +1,208 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {
-    getAllAction,
-    getAllFeeStatus,
-    getAllPetStatus,
-    getAllUserRequest,
-    resetDataRequest, toggleFee, togglePetition, updateUserRequest, getAllPostReqDocStatus
-} from '../../actions/data/dataRequest'
-import ReactTable from 'react-table'
 import {getAllLevel, getAllSemester} from '../../actions/calendar/calendar'
-import {Tooltip} from 'react-tippy'
-import {Uploader, UploadField} from '@navjobs/upload'
 import {URL} from './../../config'
 import {setHeader} from '../../actions/main'
-import moment from 'moment'
-import {getAllDocStatus} from "../../actions/data/dataDefense"
-import RequestOpen from "./request-open";
-import {getDefenseStatus} from "../../actions/request/requestData";
+import RequestOpen from './request-open'
+import {
+    getDefenseStatus, resetRequestData, getAllAction, getAllUserRequest,
+    updateUserRequest, UpdateUserRequestList
+} from '../../actions/request/requestData'
+import Tag from 'antd/lib/tag'
+import Row from 'antd/lib/row'
+import Col from 'antd/lib/col'
+import Loading from "../loading";
+import Select from 'antd/lib/select'
+import {getAllCalendar} from "../../actions/calendar/calendarList";
+
+const {Option} = Select
 
 @connect((store) => {
     return {
-        userRequests: store.dataRequest.userRequests,
-        actions: store.dataRequest.actions,
+        userRequests: store.requestData.userRequests,
+        actions: store.requestData.actions,
         semesters: store.calendar.semesters,
         levels: store.calendar.levels,
-        // petStatuses: store.dataRequest.petStatuses,
-        // docStatuses: store.dataDefense.docStatuses,
-        // feeStatuses: store.dataRequest.feeStatuses,
-        // postReqDocStatuses: store.dataRequest.postReqDocStatuses,
-        // currentUser: store.main.currentUser,
         lang: store.language.data,
-        status: store.requestData.status
+        status: store.requestData.status,
+        calendars: store.calendarList.all
     }
 })
 export default class RequestAll extends React.Component {
 
-    constructor(props) {
-        super(props)
-        const {lang} = props
-        moment.locale(lang.lang)
-    }
-
-    componentWillUpdate(props) {
-        // NOTE:  props is the updated this.props
+    constructor() {
+        super()
+        this.calendar = null
+        this.level = null
+        this.semester = null
+        this.action = null
+        this.state = {
+            loading: false
+        }
     }
 
     componentWillUnmount() {
         const {dispatch} = this.props
-        // dispatch(resetDataRequest())
+        dispatch(resetRequestData())
     }
 
     componentDidMount() {
         const {dispatch, userRequests, lang} = this.props
-        // NOTE: fetch needed data
         dispatch(setHeader(lang.dataRequest.head))
-        dispatch(getAllUserRequest())
+        dispatch(getAllCalendar())
+        dispatch(getAllUserRequest(this.calendar, this.level, this.semester, this.action))
         dispatch(getAllAction())
         dispatch(getAllSemester())
         dispatch(getAllLevel())
         dispatch(getDefenseStatus())
     }
 
+    calendarChange(value) {
+        this.calendar = value
+        this.updateUserRequest()
+    }
+
+    levelChange(value) {
+        this.level = value
+        this.updateUserRequest()
+    }
+
+    semesterChange(value) {
+        this.semester = value
+        this.updateUserRequest()
+    }
+
+    actionChange(value) {
+        this.action = value
+        this.updateUserRequest()
+    }
+
+    updateUserRequest() {
+        const {dispatch} = this.props
+        dispatch(UpdateUserRequestList(null))
+        console.log(this.calendar, this.level, this.semester, this.action)
+        dispatch(getAllUserRequest(this.calendar, this.level, this.semester, this.action))
+    }
+
+
     render() {
-        const {userRequests, actions, semesters, levels, lang, status} = this.props
+        const {userRequests, actions, semesters, levels, calendars, lang, status} = this.props
+        const {loading} = this.state
         return (
-            levels === null || semesters === null || actions === null ||
-            userRequests === null || status === null
-                // || petStatuses === null || docStatuses === null || feeStatuses === null || postReqDocStatuses === null
-                ? null :
-                <ReactTable
-                    noDataText={lang.nodata}
-                    data={userRequests}
-                    defaultPageSize={userRequests.length === 0 ? 5 : userRequests.length}
-                    showPaginationBottom={userRequests.length > 10}
-                    filterable
-                    defaultFilterMethod={(filter, row) =>
-                        String(row[filter.id]).includes(filter.value)}
-                    className='text-center'
-                    SubComponent={row => {
-                        return (
-                            <div style={{backgroundColor: '#f7f7f7'}}>
-                                {row.original.advisors.length === 0 ? null :
-                                    <ReactTable
-                                        style={{backgroundColor: 'white'}}
-                                        data={row.original.advisors}
-                                        showPaginationBottom={false}
-                                        defaultPageSize={row.original.advisors.length}
-                                        className='margin-15'
-                                        columns={[
-                                            {
-                                                Header: lang.data.advisor,
-                                                accessor: 'teacher',
-                                                Cell: row => (
-                                                    `${row.value.prefix} ${row.value.person_fname} \xa0${row.value.person_lname}`
-                                                )
-                                            },
-                                            {
-                                                Header: lang.data.position,
-                                                accessor: 'position.position_name',
-                                            }
-                                        ]}
-                                    />
-                                }
-                                {
-                                    row.original.defenses.length === 0 ? null :
-                                        <div>
-                                            <ReactTable
-                                                data={row.original.defenses}
-                                                showPaginationBottom={false}
-                                                defaultPageSize={row.original.defenses.length}
-                                                className='margin-15'
-                                                style={{backgroundColor: 'white'}}
-                                                columns={[
-                                                    {
-                                                        Header: lang.data.defenseName,
-                                                        accessor: 'defense_type.action_name',
-                                                        Cell: row => (
-                                                            <div style={{
-                                                                width: '100%', height: '100%', display: 'table'
-                                                            }}>
-                                                                <div style={{
-                                                                    display: 'table-cell',
-                                                                    verticalAlign: 'middle'
-                                                                }}>
-                                                                    {row.value}
-                                                                </div>
-                                                            </div>
-                                                        )
-                                                    },
-                                                    {
-                                                        Header: lang.data.date,
-                                                        accessor: '',
-                                                        Cell: row => (
-                                                            <div style={{
-                                                                width: '100%', height: '100%', display: 'table'
-                                                            }}>
-                                                                <div style={{
-                                                                    display: 'table-cell',
-                                                                    verticalAlign: 'middle'
-                                                                }}>
-                                                                    <div>
-                                                                        {moment(new Date(row.value.defense_date)).format('LL')}
-                                                                    </div>
-                                                                    <div>
-                                                                        {`${lang.data.from} ${moment(new Date(`1995-04-16T${row.value.defense_time_start}`)).format('LT')} ${lang.data.to} ${moment(new Date(`1995-04-16T${row.value.defense_time_end}`)).format('LT')}`}
-                                                                    </div>
-                                                                    <div>
-                                                                        {`${lang.data.at} ${row.value.room.room_name}`}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        )
-                                                    },
-                                                    {
-                                                        Header: lang.data.committee,
-                                                        accessor: 'committees',
-                                                        Cell: row => (
-                                                            <ReactTable
-                                                                data={row.value}
-                                                                showPaginationBottom={false}
-                                                                defaultPageSize={row.value.length}
-                                                                columns={[
-                                                                    {
-                                                                        Header: lang.data.teacher,
-                                                                        accessor: 'teacher',
-                                                                        Cell: row => (
-                                                                            `${row.value.prefix}${row.value.person_fname} ${row.value.person_lname}`
-                                                                        )
-                                                                    },
-                                                                    {
-                                                                        Header: lang.data.position,
-                                                                        accessor: 'position.position_name',
-                                                                    },
-                                                                ]}
-                                                            />
-                                                        )
-                                                    },
-                                                    {
-                                                        Header: lang.data.defStatus,
-                                                        accessor: 'defense_status',
-                                                        Cell: row => (
-                                                            <div style={{
-                                                                width: '100%', height: '100%', display: 'table'
-                                                            }}>
-                                                                <div style={{
-                                                                    display: 'table-cell',
-                                                                    verticalAlign: 'middle'
-                                                                }}>
-                                                                    <label
-                                                                        class={`label label-${row.value.status_label}`}>
-                                                                        {row.value.status_name}
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                        )
-                                                    },
-                                                    {
-                                                        Header: lang.data.paperStatus,
-                                                        accessor: 'document_status_id',
-                                                        Cell: row =>
-                                                            <div style={{
-                                                                width: '100%', height: '100%', display: 'table'
-                                                            }}>
-                                                                <div style={{
-                                                                    display: 'table-cell',
-                                                                    verticalAlign: 'middle'
-                                                                }}>
-                                                                    <label
-                                                                        class={`label label-${docStatuses.filter(docStatus => docStatus.status_id === row.value)[0].status_label}`}>
-                                                                        {docStatuses.filter(docStatus => docStatus.status_id === row.value)[0].status_name}
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                    }
-                                                ]}
-                                            />
-                                        </div>
-                                }
-                            </div>
-                        )
-                    }}
-                    columns={[
-                        {
-                            Header: lang.data.student,
-                            columns: [
-                                {
-                                    Header: lang.data.studentId,
-                                    accessor: 'student.user_id',
-                                },
-                                {
-                                    Header: lang.data.studentFname,
-                                    accessor: 'student.student_fname'
-                                },
-                                {
-                                    Header: lang.data.studentLname,
-                                    accessor: 'student.student_lname'
-                                },
-                                {
-                                    Header: lang.data.level,
-                                    accessor: 'calendar_item.level_id',
-                                    Cell: row =>
-                                        levels.filter(level => level.level_id === row.value)[0].level_name,
-                                    Filter: ({filter, onChange}) =>
-                                        <select onChange={event => onChange(event.target.value)}
-                                                style={{width: '100%', maxHeight: 31}}>
-                                            <option value=''>{lang.showall}</option>
-                                            {levels.map(level =>
-                                                <option key={level.level_id} value={level.level_id}>
+            levels === null || semesters === null || actions === null || status === null
+                ? <Loading/> :
+                <Row>
+                    <Col span={24}>
+                        <Row>
+                            <Col span={24}>
+                                <Select style={{width: '100%'}} disabled={loading}
+                                        onChange={(value) => this.calendarChange(value)}
+                                        defaultValue={calendars[calendars.findIndex(calendar => calendar.calendar_active === 1)].calendar_id}>
+                                    {
+                                        calendars.map(
+                                            (calendar, index) =>
+                                                <Option key={index} value={calendar.calendar_id}>
+                                                    {calendar.calendar_id}
+                                                </Option>
+                                        )
+                                    }
+                                </Select>
+                            </Col>
+                            <Col span={24}>
+                                <Select style={{width: '100%'}} defaultValue={levels[0].level_id}
+                                        onChange={(value) => this.levelChange(value)} disabled={loading}>
+                                    {
+                                        levels.map(
+                                            (level, index) =>
+                                                <Option key={index} value={level.level_id}>
                                                     {level.level_name}
-                                                </option>
-                                            )}
-                                        </select>
-                                },
-                            ],
-                        },
-                        {
-                            Header: lang.data.request,
-                            columns: [
-                                {
-                                    Header: lang.data.requestName,
-                                    accessor: 'calendar_item.action_id',
-                                    Cell: row =>
-                                        actions.filter(action => action.action_id === row.value)[0].action_name,
-                                    Filter: ({filter, onChange}) =>
-                                        <select onChange={event => onChange(event.target.value)}
-                                                style={{width: '100%', maxHeight: 31}}>
-                                            <option value=''>{lang.showall}</option>
-                                            {actions.map(action =>
-                                                <option key={action.action_id} value={action.action_id}>
-                                                    {action.action_name}
-                                                </option>
-                                            )}
-                                        </select>
-                                },
-                                {
-                                    Header: lang.data.semester,
-                                    accessor: 'calendar_item.semester_id',
-                                    Cell: row =>
-                                        semesters.filter(semester => semester.semester_id === row.value)[0].semester_name,
-                                    Filter: ({filter, onChange}) =>
-                                        <select onChange={event => onChange(event.target.value)}
-                                                style={{width: '100%', maxHeight: 31}}>
-                                            <option value=''>{lang.showall}</option>
-                                            {semesters.map(semester =>
-                                                <option key={semester.semester_id} value={semester.semester_id}>
+                                                </Option>
+                                        )
+                                    }
+                                </Select>
+                            </Col>
+                            <Col span={24}>
+                                <Select style={{width: '100%'}} defaultValue={semesters[0].semester_id}
+                                        onChange={(value) => this.semesterChange(value)} disabled={loading}>
+                                    {
+                                        semesters.map(
+                                            (semester, index) =>
+                                                <Option key={index} value={semester.semester_id}>
                                                     {semester.semester_name}
-                                                </option>
-                                            )}
-                                        </select>
-                                },
-                                {
-                                    Header: 'OMEGALUL',
-                                    accessor: 'calendar_item.semester_id',
-                                    filterable: false,
-                                    Cell: row => <RequestOpen index={row.index} userRequest={row.original}/>
-                                }
-                            ]
+                                                </Option>
+                                        )
+                                    }
+                                </Select>
+                            </Col>
+                            <Col span={24}>
+                                <Select style={{width: '100%'}} defaultValue={actions[0].action_id}
+                                        onChange={(value) => this.actionChange(value)} disabled={loading}>
+                                    {
+                                        actions.map(
+                                            (action, index) =>
+                                                <Option key={index} value={action.action_id}>
+                                                    {action.action_name}
+                                                </Option>
+                                        )
+                                    }
+                                </Select>
+                            </Col>
+                        </Row>
+                    </Col>
+                    <Col span={24}>
+                        {
+                            userRequests === null ? <Loading/> :
+                                <table class='table'>
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <Row class='table-row' type='flex'>
+                                                <Col class='text-center table-col'
+                                                     sm={24} span={24}>
+                                                    LUL
+                                                </Col>
+                                            </Row>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {
+                                        userRequests.map(
+                                            (userRequest, index) => {
+                                                const action = actions[actions.findIndex(action => action.action_id === userRequest.calendar_item.action_id)]
+                                                const step = userRequest.step
+                                                const current_step = step[step.findIndex(step => step.step.step_id === userRequest.current_step)]
+                                                console.log(current_step)
+                                                return (
+                                                    <tr key={index}>
+                                                        <td>
+                                                            <Row class='table-row' type='flex'>
+                                                                <Col class='text-center table-col' sm={7} span={24}>
+                                                                    <div>{userRequest.student.user_id}</div>
+                                                                    <div>{`${userRequest.student.prefix} ${userRequest.student.student_fname} ${userRequest.student.student_lname}`}</div>
+                                                                </Col>
+                                                                <Col class='text-center table-col' sm={7} span={24}>
+                                                                    {action.action_name}
+                                                                </Col>
+                                                                <Col class='text-center table-col' sm={5} span={24}>
+                                                                    {`${current_step.step.step_name} (${current_step.action_step_index + 1}/${userRequest.step.length})`}
+                                                                </Col>
+                                                                <Col class='text-center table-col' sm={5} span={24}>
+                                                                    <RequestOpen index={index}
+                                                                                 userRequest={userRequest}/>
+                                                                </Col>
+                                                            </Row>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            }
+                                        )
+                                    }
+                                    </tbody>
+                                </table>
                         }
-                    ]}
-                />
+                    </Col>
+                </Row>
         )
     }
 }

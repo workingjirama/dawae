@@ -3,8 +3,6 @@ import {URL, TYPE} from "../../config"
 const _URL = URL.CALENDAR.CALENDAR
 const _TYPE = TYPE.CALENDAR.CALENDAR
 
-const ACTIVE_CALENDAR = 1
-
 export function getAllCalendarItem(calendarId) {
     return dispatch => {
         fetch(_URL.GET_ALL_CALENDAR_ITEM(calendarId), {
@@ -106,7 +104,7 @@ export function activateCalendar(calendar) {
         }).then(function (json) {
             console.log(json)
             if (json === 1) {
-                let _calendar = Object.assign({}, calendar, {calendar_active: ACTIVE_CALENDAR})
+                let _calendar = Object.assign({}, calendar, {calendar_active: 1})
                 dispatch({
                     type: _TYPE.SET_CALENDAR,
                     payload: _calendar
