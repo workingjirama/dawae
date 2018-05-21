@@ -9,9 +9,9 @@ import Icon from 'antd/lib/icon'
 import JSZip from 'jszip'
 import Docxtemplater from 'docxtemplater'
 import JSZipUtils from 'jszip-utils'
-import FileSaver from 'file-saver'
 import {URL} from "../../config";
 import {insertEval} from "../../actions/evaluation/evaluation-add";
+import {setHeader} from "../../actions/main";
 
 @connect((store) => {
     return {
@@ -35,13 +35,9 @@ export default class EvaluationAdd extends React.Component {
         this.font = 'TH Sarabun New'
     }
 
-    componentWillUnmount() {
-        const {dispatch} = this.props
-        /* TODO : RESET */
-    }
-
     componentDidMount() {
-        const {dispatch} = this.props
+        const {dispatch, lang} = this.props
+        dispatch(setHeader(lang.evaluation_add.head))
     }
 
     addGroup() {
@@ -206,7 +202,6 @@ export default class EvaluationAdd extends React.Component {
             })
             let file = new File([out, out], "eval_template.docx")
             dispatch(insertEval(group, file, name, response => {
-                console.log(response)
                 window.location = URL.EVALUATION.EVALUATION_LIST.MAIN.LINK
             }))
         })
@@ -217,7 +212,9 @@ export default class EvaluationAdd extends React.Component {
         const {group, name} = this.state
         return (
             <Row>
-                <strong>EVAL NAME</strong>
+                <h5>
+                    {lang.evaluation_add.name}
+                </h5>
                 <Input class='margin-bottom-16' value={name}
                        onChange={(ev) => this.nameChange(ev.target.value)}
                        placeholder='name'/>
@@ -225,36 +222,40 @@ export default class EvaluationAdd extends React.Component {
                     group.map(
                         (group, index) =>
                             <Col class='margin-bottom-16' key={index}>
-                                <Card style={{textAlign: 'left'}} class='small-card'>
-                                    <strong>TOPIC GROUP</strong>
+                                <Card class='small-card'>
+                                    <h5 style={{textAlign: 'left'}}>
+                                        {lang.evaluation_add.topic_group}
+                                    </h5>
                                     <Row>
-                                        <Col sm={22} span={18}>
+                                        <Col sm={21} span={18}>
                                             <Input class='margin-bottom-16' value={group.name}
                                                    onChange={(ev) => this.groupChange(index, ev.target.value)}
                                                    placeholder='group'/>
                                         </Col>
-                                        <Col sm={2} span={6}>
+                                        <Col sm={3} span={6}>
                                             <Tag class='clickable tag-medium tag-error'
                                                  onClick={() => this.deleteGroup(index)}>
-                                                delete
+                                                {lang.evaluation_add.delete}
                                             </Tag>
                                         </Col>
                                     </Row>
-                                    <strong>TOPIC</strong>
+                                    <h5 style={{textAlign: 'left'}}>
+                                        {lang.evaluation_add.topic}
+                                    </h5>
                                     <Card class='small-card'>
                                         {
                                             group.topic.map(
                                                 (topic, index2) =>
                                                     <Row key={index2}>
-                                                        <Col sm={22} span={18}>
+                                                        <Col sm={21} span={18}>
                                                             <Input class='margin-bottom-16' value={topic.name}
                                                                    onChange={(ev) => this.topicChange(index, index2, ev.target.value)}
                                                                    placeholder='topic'/>
                                                         </Col>
-                                                        <Col sm={2} span={6}>
+                                                        <Col sm={3} span={6}>
                                                             <Tag class='clickable tag-medium tag-error'
                                                                  onClick={() => this.deleteTopic(index, index2)}>
-                                                                delete
+                                                                {lang.evaluation_add.delete}
                                                             </Tag>
                                                         </Col>
                                                     </Row>
@@ -263,23 +264,22 @@ export default class EvaluationAdd extends React.Component {
                                         <Tag class='clickable tag-medium tag-empty margin-0'
                                              onClick={() => this.addTopic(index)}
                                              style={{width: '100%', textAlign: 'center'}}>
-                                            <Icon type="plus"/> ADD TOPIC LUL
+                                            <Icon type="plus"/> {lang.evaluation_add.topic_add}
                                         </Tag>
                                     </Card>
                                 </Card>
                             </Col>
                     )
                 }
-                <Col>
+                <Col style={{textAlign: 'center', marginBottom: 16}}>
                     <Tag class='clickable tag-medium tag-empty margin-0'
-                         style={{width: '100%', textAlign: 'center', marginBottom: 16}}
-                         onClick={() => this.addGroup()}>
-                        <Icon type="plus"/> ADD GROUP LUL
+                         style={{width: '100%'}} onClick={() => this.addGroup()}>
+                        <Icon type="plus"/> {lang.evaluation_add.topic_group_add}
                     </Tag>
                 </Col>
                 <Col>
                     <Tag class='clickable tag-big tag-success margin-0' onClick={() => this.submit()}>
-                        SUBMIT ME PLS
+                        {lang.evaluation_add.submit}
                     </Tag>
                 </Col>
             </Row>

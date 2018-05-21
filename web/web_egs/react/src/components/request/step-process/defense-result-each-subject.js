@@ -49,11 +49,15 @@ export default class DefenseResultEachSubject extends React.Component {
         const checked = subject.subject_pass
         const is_default = defense.defense_status_id === config.DEFENSE_STATUS_DEFAULT
         const defense_subject_status = status[status.findIndex(status => status.status_id === subject.defense_subject_status_id)]
+        const defense_default_status = status[status.findIndex(status => status.status_id === config.DEFENSE_STATUS_DEFAULT)]
         return (
             <Col span={24}>
                 {subject.subject_name}
                 {
-                    is_default && !edit ? null :
+                    is_default && !edit ?
+                        <Tag class={`tag-default`}>
+                            ---
+                        </Tag> :
                         <Tag class={`tag-${defense_subject_status.status_label}`}>
                             {defense_subject_status.status_name}
                         </Tag>

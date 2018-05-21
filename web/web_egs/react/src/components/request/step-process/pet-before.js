@@ -46,11 +46,10 @@ export default class PetBefore extends React.Component {
         return (
             <div style={{marginTop: 8}}>
                 <div style={{marginBottom: 8}}>
-                    <label>AMOUNT</label>
                     {
                         userRequest.request_fee.amount === 0 ? null :
                             <label style={{marginLeft: 8}}>
-                                {userRequest.request_fee.amount}
+                                {lang.pet_before.amount}: {userRequest.request_fee.amount}
                             </label>
                     }
                     <Tag style={{marginLeft: 8}} class={`tag-${fee_status.status_label}`}>{fee_status.status_name}</Tag>

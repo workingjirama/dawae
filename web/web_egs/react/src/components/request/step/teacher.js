@@ -6,6 +6,8 @@ import Loading from "../../loading"
 import Button from "../step/button"
 import {setPost} from "../../../actions/request/requestAdd"
 import Select from 'antd/lib/select'
+import Tag from 'antd/lib/tag'
+import {URL} from "../../../config";
 
 const {Option, OptGroup} = Select
 
@@ -14,7 +16,9 @@ const {Option, OptGroup} = Select
         lang: store.language.data,
         positions: store.requestAdd.positions,
         teachers: store.requestAdd.teachers,
-        post: store.requestAdd.post
+        post: store.requestAdd.post,
+        calendarItem: store.requestAdd.calendarItem,
+        config: store.main.config
     }
 }, null, null, {withRef: true})
 export default class Teacher extends React.Component {
@@ -33,18 +37,16 @@ export default class Teacher extends React.Component {
 
     init() {
         const {post, positions} = this.props
-        const {teachers} = this.state
         let value = {}
         positions.map(position => {
-            let _teachers = post.teachers.filter(teacher => teacher.position === position.position_id)
+            let teachers = post.teachers.filter(teacher => teacher.position === position.position_id)
             let values = []
-            _teachers.map(teacher => {
+            teachers.map(teacher => {
                 values.push(teacher.teacher)
             })
             value[position.position_id] = values
         })
-        this.setState({value})
-        this.setState({teachers: post.teachers})
+        this.setState({value, teachers: post.teachers})
     }
 
     onChange(values, position) {
@@ -86,66 +88,92 @@ export default class Teacher extends React.Component {
         const {teachers} = this.state
         const {dispatch, post} = this.props
         let _post = Object.assign({}, post, {
-            ...post,
-            teachers
+            ...post, teachers
         })
         dispatch(setPost(_post))
     }
 
+    ex_committee() {
+        const {calendarItem, positions} = this.props
+        let teachers = []
+        calendarItem.ex_committee.map(
+            committee => {
+                const teacher = {
+                    teacher: committee.teacher_id,
+                    position: committee.position_id,
+                }
+                teachers.push(teacher)
+            }
+        )
+        let value = {}
+        positions.map(position => {
+            let _teachers = calendarItem.ex_committee.filter(teacher => teacher.position_id === position.position_id)
+            let values = []
+            _teachers.map(teacher => {
+                values.push(teacher.teacher_id)
+            })
+            value[position.position_id] = values
+        })
+        this.setState({teachers, value})
+    }
+
     render() {
-        const {lang, post, positions, teachers} = this.props
+        const {lang, post, positions, teachers, config, calendarItem} = this.props
         const {value} = this.state
         return (
             teachers === null || this.state.teachers === null || value === null ? <Loading/> :
-                <Row>
-                    <Row class='step'>
-                        {
-                            positions.map(
-                                (position, index) =>
-                                    <Row key={index} style={{marginBottom: positions.length - 1 !== index ? 10 : 0}}>
-                                        <Row>
-                                            <Col span={24}>
-                                                {position.position_name}
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col span={24}>
-                                                <Select
-                                                    mode="multiple"
-                                                    style={{minWidth: 250, maxWidth: 250}}
-                                                    placeholder="SELECT TEACHER PLS"
-                                                    value={value[position.position_id]}
-                                                    onChange={(value) => this.onChange(value, position)}
-                                                    filterOption={(input, option) => option.props.children.toLowerCase().includes(input.toLowerCase())}>
-                                                    <OptGroup label="Manager">
-                                                        {
-                                                            teachers.map(
-                                                                (teacher, index) => {
-                                                                    const remain = this.state.teachers.findIndex(_teacher => teacher.id === _teacher.teacher) === -1
-                                                                    return (
-                                                                        <Option
-                                                                            disabled={!remain}
-                                                                            key={index}
-                                                                            value={teacher.id}>
-                                                                            {`${teacher.prefix} ${teacher.person_fname} ${teacher.person_lname}`}
-                                                                        </Option>
-                                                                    )
-                                                                }
-                                                            )
-                                                        }
-                                                    </OptGroup>
-                                                </Select>
-                                            </Col>
-                                        </Row>
-                                    </Row>
-                            )
-                        }
-                    </Row>
+                <div>
                     {
-                        this.props.button === false ? null :
-                            <Button key='btn' validate={() => this.validate()}/>
+                        calendarItem.request_defense.length !== 0 ? null :
+                            <div class='text-center margin-bottom-16'>
+                                <a href={URL.ADVISOR.ADVISOR_LOAD.MAIN.LINK} target='_blank'>
+                                    <Tag class='clickable tag-default'>
+                                        {lang.teacher.teacher_load}
+                                    </Tag>
+                                </a>
+                            </div>
                     }
-                </Row>
+                    {
+                        calendarItem.ex_committee.length === 0 ? null :
+                            <div class='text-center margin-bottom-16'>
+                                <Tag class='clickable tag-default' onClick={() => this.ex_committee()}>
+                                    {lang.teacher.ex_committee}
+                                </Tag>
+                            </div>
+                    }
+                    {
+                        positions.map(
+                            (position, index) =>
+                                <Row key={index} type='flex' class='step text-center'>
+                                    <Col span={24}>
+                                        {position.position_name}
+                                    </Col>
+                                    <Col span={24} class='margin-bottom-16'>
+                                        <Select mode="multiple" style={{minWidth: 250, maxWidth: 250}}
+                                                placeholder="SELECT TEACHER PLS" value={value[position.position_id]}
+                                                onChange={(value) => this.onChange(value, position)}
+                                                filterOption={(input, option) => option.props.children.toLowerCase().includes(input.toLowerCase())}>
+                                            {
+                                                teachers.map(
+                                                    (teacher, index) => {
+                                                        const remain = this.state.teachers.findIndex(_teacher =>
+                                                            teacher.id === _teacher.teacher && _teacher.position !== position.position_id) === -1
+                                                        return (
+                                                            <Option disabled={teacher.load || !remain}
+                                                                    key={index} value={teacher.id}>
+                                                                {`${teacher.prefix} ${teacher.person_fname} ${teacher.person_lname}`}
+                                                            </Option>
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                        </Select>
+                                    </Col>
+                                </Row>
+                        )
+                    }
+                    <Button key='btn' validate={() => this.validate()}/>
+                </div>
         )
     }
 }

@@ -168,7 +168,7 @@ class Validation
                         if ($defense->defense_status_id === Config::$SUBJECT_STATUS_PASS_ALL) {
                             $defense_writing_passed = true;
                         }
-                    } else if ($defense->defense_type_id === Config::$REQUEST_ORAL) {
+                    } else if ($defense->defense_type_id === Config::$DEFENSE_ORAL) {
                         if ($defense->defense_status_id === Config::$DEFENSE_STATUS_PASS) {
                             $defense_oral_passed = true;
                         }
@@ -186,7 +186,14 @@ class Validation
 
     static public function evaluation_submitted()
     {
-        return false;
+        $student_id = Config::get_user_id();
+        $action_id = Config::$EVALUATION;
+        $user_requests = EgsUserRequest::find()->where([
+            'student_id' => $student_id,
+            'action_id' => $action_id
+        ])->all();
+
+        return !empty($user_requests);
     }
 
     static public function current_step($user_request)

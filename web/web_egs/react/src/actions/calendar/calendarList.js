@@ -3,7 +3,28 @@ import {URL, TYPE} from "../../config"
 const _URL = URL.CALENDAR.CALENDAR_LIST
 const _TYPE = TYPE.CALENDAR.CALENDAR_LIST
 
-export function getAllCalendar() {
+export function deleteCalendar(calendar_id, callback) {
+    return dispatch => {
+        fetch(_URL.DELETE_CALENDAR(calendar_id), {
+            credentials: 'same-origin'
+        }).then((response) => {
+            return response.json()
+        }).then(() => {
+            callback()
+        })
+    }
+}
+
+export function setCalendar(calendars) {
+    return function (dispatch) {
+        dispatch({
+            type: _TYPE.SET_ALL,
+            payload: calendars
+        })
+    }
+}
+
+export function getAllCalendar(callback = null) {
     return function (dispatch) {
         fetch(_URL.GET_ALL, {
             credentials: 'same-origin'
@@ -14,6 +35,8 @@ export function getAllCalendar() {
                 type: _TYPE.SET_ALL,
                 payload: json
             })
+            if (callback !== null)
+                callback(json)
         })
     }
 }

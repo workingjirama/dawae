@@ -18,7 +18,7 @@ export function getAllCalendarItem(calendarId) {
     }
 }
 
-export function getAllSemester() {
+export function getAllSemester(callback = null) {
     return dispatch => {
         fetch(_URL.GET_ALL_SEMESTER, {
             credentials: 'same-origin'
@@ -29,6 +29,8 @@ export function getAllSemester() {
                 type: _TYPE.SET_ALL_SEMESTER,
                 payload: json
             })
+            if (callback !== null)
+                callback(json)
         })
     }
 }

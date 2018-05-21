@@ -6,6 +6,7 @@ import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
 import Loading from "../loading"
 import {getTodo} from "../../actions/todo/todo-all";
+import {setHeader} from "../../actions/main";
 
 @connect((store) => {
     return {
@@ -18,6 +19,7 @@ export default class TodoAll extends React.Component {
 
     componentDidMount() {
         const {dispatch, lang} = this.props
+        dispatch(setHeader(lang.todo_all.head))
         dispatch(getTodo())
     }
 
@@ -32,9 +34,11 @@ export default class TodoAll extends React.Component {
                             <tr>
                                 <th>
                                     <Row class='table-row' type='flex'>
-                                        <Col class='text-center table-col'
-                                             sm={24} span={24}>
-                                            LUL
+                                        <Col class='text-center table-col' sm={16} span={24}>
+                                            {lang.todo_all.todo}
+                                        </Col>
+                                        <Col class='text-center table-col' sm={8} span={24}>
+                                            {lang.todo_all.status}
                                         </Col>
                                     </Row>
                                 </th>
@@ -47,11 +51,15 @@ export default class TodoAll extends React.Component {
                                         <tr key={index}>
                                             <td>
                                                 <Row class='table-row' type='flex'>
-                                                    <Col class='text-center table-col' sm={18} span={24}>
+                                                    <Col class='text-center table-col' sm={16} span={24}>
                                                         <div>{todo.todo_name}</div>
                                                     </Col>
-                                                    <Col class='text-center table-col' sm={6} span={24}>
-                                                        {todo.pass ? 'pass' : 'nope'}
+                                                    <Col class='text-center table-col' sm={8} span={24}>
+                                                        <Tag class={`tag-${todo.pass ? 'success' : 'error'}`}>
+                                                            {
+                                                                todo.pass ? lang.todo_all.pass : lang.todo_all.nope
+                                                            }
+                                                        </Tag>
                                                     </Col>
                                                 </Row>
                                             </td>

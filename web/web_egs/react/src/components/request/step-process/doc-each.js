@@ -66,7 +66,7 @@ export default class DocEach extends React.Component {
                         <a href={`${URL.BASE}/${defenseDocument.defense_document_path}`}
                            target='_blank'>
                             <Tag class='clickable tag-default'>
-                                <Icon type="file-pdf"/> OPEN ME LUL
+                                <Icon type="file-pdf"/> {lang.doc_each.open}
                             </Tag>
                         </a>
                 }
@@ -83,7 +83,7 @@ export default class DocEach extends React.Component {
                                    type='file' accept='Application/pdf'/>
                             <Tag onClick={() => this.input.click()}
                                  class={`clickable tag-empty ${file === null ? null : 'hidden'}`}>
-                                click me to upload LUL
+                                {lang.doc_each.to_upload}
                             </Tag>
                             <span class={`${file === null ? 'hidden' : null}`}>
                                 <Tag class='tag-default'>
@@ -104,13 +104,13 @@ export default class DocEach extends React.Component {
                                 file === null ? null :
                                     <Tag onClick={() => this.upload()}
                                          class='clickable tag-success'>
-                                        UPLOAD
+                                        {lang.doc_each.upload}
                                     </Tag>
                             }
                         </span> :
                         !editor ? null :
                             <Tag onClick={() => this.edit(true)} class='clickable tag-default'>
-                                EDIT
+                                {lang.doc_each.edit}
                             </Tag>
                 }
             </div>

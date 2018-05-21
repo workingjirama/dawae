@@ -1,5 +1,5 @@
 import React from 'react'
-import {HashRouter, Route} from 'react-router-dom'
+import {HashRouter, Route, BrowserRouter} from 'react-router-dom'
 import CalendarList from './calendar/calendar-list'
 import Calendar from './calendar/calendar'
 import Test from './test'
@@ -14,10 +14,20 @@ import EvaluationSubmit from "./evaluation/evaluation-submit";
 import EvaluationAll from "./evaluation/evaluation-all";
 import DefenseAll from "./defense/defense-all";
 import TodoAll from "./todo/todo-all";
+import AdvisorLoad from "./advisor/advisor-load";
+import RequestBypass from "./request/request-bypass";
+
 
 export default class Router extends React.Component {
 
     render() {
+        const current = window.location.pathname
+        const request = URL.EGS_BASE + URL.REQUEST.REQUEST_DATA.MAIN.PATH
+        /*
+
+        TODO: REMOVE REACT ROUTER AND CHANGE TO CONDITIONALLY SET PARAMS AS A GLOBAL VARIABLE
+
+        */
         return (
             <HashRouter history={null}>
                 <div>
@@ -28,7 +38,9 @@ export default class Router extends React.Component {
 
                     <Route path={URL.TODO.TODO_ALL.MAIN.PATH} exact render={({match}) => <TodoAll/>}/>
 
-                    <Route path={URL.TODO.TODO_ALL.MAIN.PATH} exact render={({match}) => <TodoAll/>}/>
+                    <Route path={URL.ADVISOR.ADVISOR_LOAD.MAIN.PATH} exact render={({match}) => <AdvisorLoad/>}/>
+
+                    <Route path={URL.REQUEST.REQUEST_BYPASS.MAIN.PATH} exact render={() => <RequestBypass/>}/>
 
                     <Route path={URL.REQUEST.REQUEST_LIST.MAIN.PATH} exact render={() => <RequestList/>}/>
                     <Route path={URL.REQUEST.REQUEST_ADD.MAIN.PATH} exact render={({match}) =>
@@ -45,7 +57,7 @@ export default class Router extends React.Component {
                     <Route path={URL.EVALUATION.EVALUATION_SUBMIT.MAIN.PATH} exact render={() => <EvaluationSubmit/>}/>
                     <Route path={URL.EVALUATION.EVALUATION_ALL.MAIN.PATH} exact render={() => <EvaluationAll/>}/>
 
-                    <Route path='/' exact render={() => <div>Nothing</div>}/>
+                    <Route path='/' exact render={() => <div>Nothing XD</div>}/>
                     <Route path='/test' exact render={() => <Test/>}/>
                 </div>
             </HashRouter>

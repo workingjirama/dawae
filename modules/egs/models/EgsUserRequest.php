@@ -21,6 +21,8 @@ use Yii;
  * @property EgsAction[] $defenseTypes
  * @property EgsRequestDocument[] $egsRequestDocuments
  * @property EgsDocument[] $documents
+ * @property EgsUserEvaluation[] $egsUserEvaluations
+ * @property EgsEvaluation[] $evaluations
  * @property EgsCalendarItem $calendar
  * @property EgsStatus $requestFeeStatus
  */
@@ -110,6 +112,22 @@ class EgsUserRequest extends \yii\db\ActiveRecord
     public function getDocuments()
     {
         return $this->hasMany(EgsDocument::className(), ['document_id' => 'document_id'])->viaTable('egs_request_document', ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsUserEvaluations()
+    {
+        return $this->hasMany(EgsUserEvaluation::className(), ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEvaluations()
+    {
+        return $this->hasMany(EgsEvaluation::className(), ['evaluation_id' => 'evaluation_id'])->viaTable('egs_user_evaluation', ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
     }
 
     /**

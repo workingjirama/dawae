@@ -3,6 +3,7 @@
 namespace app\modules\egs\controllers;
 
 use app\modules\egs\models\EgsAction;
+use app\modules\egs\models\EgsActionBypass;
 use app\modules\egs\models\EgsActionFor;
 use app\modules\egs\models\EgsActionItem;
 use app\modules\egs\models\EgsActionOnStatus;
@@ -45,6 +46,20 @@ use yii\helpers\ArrayHelper;
 
 class Format
 {
+
+    static public function action_bypass($action_bypasses)
+    {
+        return ArrayHelper::toArray($action_bypasses, ['app\modules\egs\models\EgsActionBypass' => [
+            'action_id',
+            'semester_id',
+            'student' => function ($action_bypass) {
+                /* @var $action_bypass EgsActionBypass */
+                $person = Config::get_one_user($action_bypass->student_id);
+                return Format::personNameOnly($person);
+            }
+        ]]);
+    }
+
     static public function branch($branchs)
     {
         return ArrayHelper::toArray($branchs, ['app\modules\egs\models\EgsBranch' => [
@@ -167,6 +182,10 @@ class Format
     {
         return ArrayHelper::toArray($user_evaluations, ['app\modules\egs\models\EgsUserEvaluation' => [
             'evaluation_id',
+            'evaluation' => function ($user_evaluation) {
+                /* @var $user_evaluation EgsUserEvaluation */
+                return Format::evaluation($user_evaluation->evaluation);
+            },
             'student' => function ($user_evaluation) {
                 /* @var $user_evaluation EgsUserEvaluation */
                 return Format::personNameOnly(Config::get_one_user($user_evaluation->student_id));
@@ -268,25 +287,25 @@ class Format
         ]]);
     }
 
-    static public function defenseTeacherEvent($datas)
-    {
-        /* @var $defense EgsDefense */
-        $events = [];
-        foreach ($datas as $temp) {
-            $defense = $temp['defense'];
-            $teacher = $temp['teacher'];
-            $event = [];
-            $event['type'] = 'teacher';
-            $event['backgroundColor'] = '#D68231';
-            $event['borderColor'] = '#D68231';
-            $event['title'] = $teacher['prefix'] . ' ' . $teacher['person_fname'] . $teacher['person_lname'];
-            $event['start'] = $defense->defense_date . 'T' . $defense->defense_time_start;
-            $event['end'] = $defense->defense_date . 'T' . $defense->defense_time_end;
-            $event['room'] = $defense->room_id;
-            array_push($events, $event);
-        }
-        return $events;
-    }
+//    static public function defenseTeacherEvent($datas)
+//    {
+//        /* @var $defense EgsDefense */
+//        $events = [];
+//        foreach ($datas as $temp) {
+//            $defense = $temp['defense'];
+//            $teacher = $temp['teacher'];
+//            $event = [];
+//            $event['type'] = 'teacher';
+//            $event['backgroundColor'] = '#D68231';
+//            $event['borderColor'] = '#D68231';
+//            $event['title'] = $teacher['prefix'] . ' ' . $teacher['person_fname'] . $teacher['person_lname'];
+//            $event['start'] = $defense->defense_date . 'T' . $defense->defense_time_start;
+//            $event['end'] = $defense->defense_date . 'T' . $defense->defense_time_end;
+//            $event['room'] = $defense->room_id;
+//            array_push($events, $event);
+//        }
+//        return $events;
+//    }
 
     static public function defenseEvent($defenses, $teachers)
     {
@@ -303,14 +322,13 @@ class Format
                     }
                 }
             }
-
             $event = [];
             $event['type'] = $defense->student_id === $user_id ? 'current' : 'defense';
             $event['className'] = $defense->student_id === $user_id ? 'selected-current' : 'selected-defense';
             $event['title'] = $defense->project_id === null ? $defense->defenseType['action_name_' . Config::get_language()] : $defense->project->project_name_th . ' (' . $defense->project->project_name_en . ')';
             $event['start'] = $defense->defense_date . 'T' . $defense->defense_time_start;
             $event['end'] = $defense->defense_date . 'T' . $defense->defense_time_end;
-            $event['teacher'] = $defense_have_teacher;
+            $event['teacher'] = $defense->student_id === $user_id ? [] : $defense_have_teacher;
             $event['room'] = $defense->room_id;
             array_push($events, $event);
         }
@@ -343,12 +361,23 @@ class Format
         return $person_;
     }
 
-    static public function personNameOnly($persons)
+    static public function personNameOnly($persons, $load = false)
     {
         $new_persons = [];
         if (array_key_exists(0, $persons)) {
             foreach ($persons as $person) {
                 $new_person = Format::setPerson($person);
+                if ($load) {
+                    $loaded = 0;
+                    /* TODO : STUDENT WHO SILL IN SYSTEM */
+                    $advisors = EgsAdvisor::find()->where(['teacher_id' => $new_person['id']])->all();
+                    foreach ($advisors as $advisor) {
+                        $loaded += $advisor->load->load_amount;
+                    }
+                    /* TODO : MAX LOADED CONDITIONALLY TO ACADEMIC POSITION */
+                    $max = 6;
+                    $new_person['load'] = $loaded >= $max;
+                }
                 array_push($new_persons, $new_person);
             }
         } else {
@@ -434,6 +463,25 @@ class Format
                 ]);
                 if (empty($user_request)) return null;
                 return Format::userRequest($user_request);
+            },
+            'ex_committee' => function ($calendar_item) {
+                /* @var $calendar_item EgsCalendarItem */
+                $student_id = Format::$user_type_id === Config::$PERSON_STAFF_TYPE ? Config::$SYSTEM_ID : Config::get_user_id();
+                $defense = EgsDefense::find()->where([
+                    'student_id' => $student_id,
+                    'calendar_id' => $calendar_item->calendar_id,
+                    'level_id' => $calendar_item->level_id,
+                    'semester_id' => $calendar_item->semester_id,
+                    'owner_id' => Config::$SYSTEM_ID
+                ])
+                    ->andWhere(['!=', 'action_id', $calendar_item->action_id])
+                    ->andWhere(['!=', 'defense_type_id', Config::$DEFENSE_WIRTE])
+                    ->andWhere(['!=', 'defense_type_id', Config::$DEFENSE_ORAL])
+                    ->one();
+                if (empty($defense)) {
+                    return [];
+                }
+                return $defense->egsCommittees;
             },
             'calendar_item_date_start',
             'calendar_item_date_end',
@@ -775,9 +823,7 @@ class Format
             'calendar_item_open' => function ($calendar_item) {
                 /* @var $calendar_item EgsCalendarItem */
                 if (Format::$user_type_id === Config::$PERSON_STAFF_TYPE) {
-                    return [
-                        'open' => true
-                    ];
+                    return ['open' => true];
                 }
                 $action_for = EgsActionFor::findAll([
                     'action_id' => $calendar_item->action_id,
@@ -812,16 +858,24 @@ class Format
                                 'status' => Format::status(EgsStatus::findOne(['status_id' => Config::$STATUS_ALREADY_PASSED]))
                             ];
                         } else {
+                            $student = Config::get_user_id();
+                            $ation_bypass = EgsActionBypass::findOne([
+                                'student_id' => $student,
+                                'semester_id' => $calendar_item->semester_id,
+                                'action_id' => $calendar_item->action_id
+                            ]);
+                            if (!empty($ation_bypass)) {
+                                return ['open' => true];
+                            }
                             $today = date('Y-m-d');
                             $calendar_item->calendar_item_date_start;
                             $calendar_item->calendar_item_date_end;
                             return $today >= $calendar_item->calendar_item_date_start &&
-                            $today <= $calendar_item->calendar_item_date_end ? [
-                                'open' => true
-                            ] : [
-                                'open' => false,
-                                'status' => Format::status(EgsStatus::findOne(['status_id' => Config::$STATUS_NOT_IN_TIME]))
-                            ];
+                            $today <= $calendar_item->calendar_item_date_end ? ['open' => true] :
+                                [
+                                    'open' => false,
+                                    'status' => Format::status(EgsStatus::findOne(['status_id' => Config::$STATUS_NOT_IN_TIME]))
+                                ];
                         }
                     }
                 }

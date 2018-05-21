@@ -72,10 +72,14 @@ class CalendarItemController extends Controller
             ->joinWith(['calendar c'])
             ->joinWith(['semester.action a'])
             ->where([
-                'a.action_type_id' => Config::$ACTION_REQUEST_TYPE,
+                'owner_id' => Config::$SYSTEM_ID,
                 'c.calendar_active' => 1,
                 'egs_calendar_item.level_id' => $level_id,
-            ])->all();
+            ])
+            ->orWhere(['owner_id' => $user['id']])
+            ->andWhere(['!=', 'a.action_type_id', Config::$ACTION_DEFENSE_TYPE])
+            ->andWhere(['!=', 'a.action_type_id', Config::$ACTION_INIT_TYPE])
+            ->all();
         return Json::encode(Format::calendarItemWithStatus($calendar_items, null, $program_id, $plan_id));
     }
 

@@ -7,7 +7,6 @@ import Loading from "../../loading";
 import {getDefenseEvent, setPost} from "../../../actions/request/requestAdd"
 import ReactDOMServer from 'react-dom/server';
 import Test from "../../test";
-import DefenseRoom from "./defense-room";
 import DefenseEach from "./defense-each";
 
 @connect((store) => {
@@ -42,17 +41,16 @@ export default class Defense extends React.Component {
                     }
                     defenses.push(defenseEach.defense)
                 }
-                return index === -1
+                return index !== -1
             }
         )
         if (validates) {
-            console.log(post, defenses)
             const _post = Object.assign({}, post, {
                 ...post, defenses
             })
             dispatch(setPost(_post))
         }
-        return validates
+        return validates.every(validate => validate)
     }
 
     render() {
@@ -63,8 +61,7 @@ export default class Defense extends React.Component {
                     calendarItem.request_defense.map(
                         (defense, index) =>
                             <DefenseEach ref={ref => ref === null ? [] : this.each.push(ref.getWrappedInstance())}
-                                         key={index} index={index}
-                                         defense={defense}/>
+                                         key={index} index={index} defense={defense}/>
                     )
                 }
             </Row>,

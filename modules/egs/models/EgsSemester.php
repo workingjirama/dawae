@@ -11,6 +11,7 @@ use Yii;
  * @property string $semester_name_th
  * @property string $semester_name_en
  *
+ * @property EgsActionBypass[] $egsActionBypasses
  * @property EgsActionItem[] $egsActionItems
  */
 class EgsSemester extends \yii\db\ActiveRecord
@@ -53,6 +54,14 @@ class EgsSemester extends \yii\db\ActiveRecord
             'semester_name_th' => 'Semester Name Th',
             'semester_name_en' => 'Semester Name En',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsActionBypasses()
+    {
+        return $this->hasMany(EgsActionBypass::className(), ['semester_id' => 'semester_id']);
     }
 
     /**

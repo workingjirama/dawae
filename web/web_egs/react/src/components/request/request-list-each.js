@@ -21,7 +21,7 @@ export default class RequestListEach extends React.Component {
                             {calendarItem.action.action_name}
                         </Col>
                         <Col class='text-center table-col' sm={8} span={24}>
-                            {`${moment(new Date(calendarItem.calendar_item_date_start)).format("LL")} ${lang.requestList.to} ${moment(new Date(calendarItem.calendar_item_date_end)).format("LL")}`}
+                            {`${moment(new Date(calendarItem.calendar_item_date_start)).format("LL")} ${lang.request_list_each.to} ${moment(new Date(calendarItem.calendar_item_date_end)).format("LL")}`}
                         </Col>
                         <Col class='text-center table-col' sm={8} span={24}>
                             {
@@ -29,7 +29,7 @@ export default class RequestListEach extends React.Component {
                                     <Tag onClick={() => {
                                         window.location = URL.REQUEST.REQUEST_ADD.MAIN.LINK(calendarItem)
                                     }} class='clickable tag-success'>
-                                        {calendarItem.calendar_item_added ? lang.requestList.edit : lang.requestList.add}
+                                        {calendarItem.calendar_item_added ? lang.request_list_each.edit : lang.request_list_each.add}
                                     </Tag> :
                                     <Tag class='tag-error'>
                                         {calendarItem.calendar_item_open.status.status_name}

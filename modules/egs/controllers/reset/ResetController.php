@@ -31,10 +31,10 @@ class ResetController extends Controller
 
     private function delete()
     {
+        $this->evaluation->delete();
         $this->request->delete();
         $this->fee->delete();
         $this->calendar->delete();
-        $this->evaluation->delete();
         $this->binder->delete();
     }
 

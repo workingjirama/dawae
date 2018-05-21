@@ -17,7 +17,7 @@ export default class Final extends React.Component {
         const {lang, calendarItem} = this.props
         return (
             <div>
-                FINAL
+                {lang.final.final}
             </div>
         )
     }

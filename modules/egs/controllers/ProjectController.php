@@ -24,6 +24,7 @@ class ProjectController extends Controller
         $user_id = Config::get_user_id();
         $project = EgsProject::find()->where([
             'student_id' => $user_id,
+            'project_active' => 1
         ])->one();
         return Json::encode(empty($project) ? null : Format::project($project));
     }
@@ -32,10 +33,14 @@ class ProjectController extends Controller
     {
         $user_id = Config::get_user_id();
         $post = Json::decode(Yii::$app->request->post('json'));
-        $project = EgsProject::find()->where(['student_id' => $user_id, 'project_active' => 1])->one();
-        if (!empty($project)) {
-            $project->project_active = false;
-            if (!$project->save()) return Json::encode($project->errors);
+        $projects = EgsProject::find()->where(['student_id' => $user_id])->all();
+        foreach ($projects as $project) {
+            if (empty($project->egsDefenses)) {
+                $project->delete();
+            } else {
+                $project->project_active = 0;
+                if (!$project->save()) return Json::encode($project->errors);
+            }
         }
         $project = new EgsProject();
         $project->student_id = $user_id;

@@ -96,9 +96,9 @@ export function getStep(actionId, callback) {
     }
 }
 
-export function getTeacher() {
+export function getTeacher(load) {
     return dispatch => {
-        fetch(_URL.GET_ALL_TEACHER, {
+        fetch(_URL.GET_ALL_TEACHER(load), {
             credentials: 'same-origin'
         }).then(response => {
             return response.json()

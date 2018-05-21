@@ -25,7 +25,8 @@ export default class CalendarInit extends React.Component {
     }
 
     componentDidMount() {
-        const {dispatch} = this.props
+        const {dispatch, lang} = this.props
+        dispatch(setHeader(lang.calendar_init.head))
         dispatch(getCalendarItemInit())
         dispatch(getAllSemester())
         dispatch(getAllLevel())
@@ -38,7 +39,9 @@ export default class CalendarInit extends React.Component {
                 levels.map(
                     (level, index) =>
                         <Row key={index}>
-                            <Col>{level.level_name}</Col>
+                            <Col class='text-center'>
+                                <h3>{level.level_name}</h3>
+                            </Col>
                             <Col>
                                 {
                                     semesters.map(
@@ -46,7 +49,7 @@ export default class CalendarInit extends React.Component {
                                             const calendarItems_ = calendarItems.filter(calendarItem => calendarItem.level_id === level.level_id && calendarItem.semester_id === semester.semester_id)
                                             return <Row key={`${index}${index2}`} type='flex' justify='center'>
                                                 <Col sm={22} span={24}>
-                                                    <h3>{semester.semester_name}</h3>
+                                                    <h4>{semester.semester_name}</h4>
                                                 </Col>
                                                 <Col sm={22} span={24}>
                                                     <table class='table table-bordered'>

@@ -21,7 +21,8 @@ const RadioGroup = Radio.Group
     return {
         lang: store.language.data,
         evaluation: store.evaluationSubmit.evaluation,
-        submitted: store.evaluationSubmit.submitted
+        submitted: store.evaluationSubmit.submitted,
+        calendarItem: store.requestAdd.calendarItem,
     }
 })
 export default class EvaluationSubmit extends React.Component {
@@ -127,12 +128,12 @@ export default class EvaluationSubmit extends React.Component {
     }
 
     submit() {
-        const {evaluation, dispatch} = this.props
+        const {evaluation, calendarItem, dispatch} = this.props
         let pass = true
         let data = {}
         data.comment = this.comment === null ? this.nothing : this.comment
         Object.keys(this.data).map(key => {
-            if (this.data[key] === null)
+            if (this.data[key] === null || this.data[key] === '')
                 pass = false
         })
         evaluation.evaluation_topic_group.map(
@@ -154,7 +155,7 @@ export default class EvaluationSubmit extends React.Component {
         }
         data = {...this.data, ...data}
         evaluation.data = JSON.stringify({data})
-        dispatch(insertUserEvaluation(evaluation))
+        dispatch(insertUserEvaluation(calendarItem, evaluation))
     }
 
     changeText(name, value) {
@@ -246,13 +247,13 @@ export default class EvaluationSubmit extends React.Component {
                                 )
                             }
                         </Col>
-                        <Col span={24}>
-                            <h5>COMMENT</h5>
+                        <Col span={24} style={{marginBottom: 16}}>
+                            <h5>{lang.evaluation_submit.comment}</h5>
                             <Input placeholder='comment' onChange={ev => this.commentChange(ev.target.value)}/>
                         </Col>
                         <Col span={24}>
                             <Tag class='clickable tag-success tag-big margin-0' onClick={() => this.submit()}>
-                                SUBMIT
+                                {lang.evaluation_submit.submit}
                             </Tag>
                         </Col>
                     </Row>

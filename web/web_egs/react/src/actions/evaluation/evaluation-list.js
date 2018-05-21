@@ -33,3 +33,20 @@ export function activeEvaluation(id) {
         })
     }
 }
+
+export function deleteEvaluation(evaluations, id) {
+    return function (dispatch) {
+        fetch(_URL.DELETE_EVALUATION(id), {
+            credentials: 'same-origin'
+        }).then(function (response) {
+            return response.json()
+        }).then(function (json) {
+            const _evaluations = evaluations.filter(evaluation => evaluation.evaluation_id !== id)
+            console.log(_evaluations)
+            dispatch({
+                type: _TYPE.SET_EVALUATION,
+                payload: _evaluations
+            })
+        })
+    }
+}

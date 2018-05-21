@@ -23,6 +23,7 @@ class AdvisorController extends Controller
             $loaded = 0;
             $advisors = EgsAdvisor::find()->where(['teacher_id' => $teacher['id']])->all();
             foreach ($advisors as $advisor) {
+                /* TODO : STUDENT WHO SILL IN SYSTEM */
                 $finish_process = Validation::advisor_added($advisor->calendar->student_id);
                 if ($finish_process) {
                     $loaded += $advisor->load->load_amount;
@@ -30,12 +31,11 @@ class AdvisorController extends Controller
                     $pre_loaded += $advisor->load->load_amount;
                 }
             }
-            /* TODO : MAX LOADED CONDITIONALLY TO ACADEMIC POSITION*/
+            /* TODO : MAX LOADED CONDITIONALLY TO ACADEMIC POSITION */
             $teacher['pre_loaded'] = $pre_loaded;
             $teacher['loaded'] = $loaded;
             $teacher['max'] = 6;
             array_push($teachers, $teacher);
-
         }
         return Json::encode($teachers);
     }

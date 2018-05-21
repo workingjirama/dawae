@@ -2,6 +2,7 @@
 
 namespace app\modules\egs\controllers\reset;
 
+use app\modules\egs\models\EgsActionBypass;
 use app\modules\egs\models\EgsActionCompleteStep;
 use app\modules\egs\models\EgsActionDocument;
 use app\modules\egs\models\EgsActionFor;
@@ -39,6 +40,7 @@ class Calendar
 {
     public function delete()
     {
+        EgsActionBypass::deleteAll();
         EgsSubjectFor::deleteAll();
         EgsSubject::deleteAll();
         EgsActionStep::deleteAll();
@@ -144,28 +146,28 @@ class Calendar
     {
         $step = new EgsStep();
         $step->step_id = 1;
-        $step->step_name_th = 'DETAIL[TH]';
+        $step->step_name_th = 'รายละเอียด';
         $step->step_name_en = 'DETAIL[EN]';
         $step->step_component = 'Detail';
         $step->step_icon = 'message';
         $step->save();
         $step = new EgsStep();
         $step->step_id = 2;
-        $step->step_name_th = 'TEACHER[TH]';
+        $step->step_name_th = 'เพิ่มข้อมูลอาจารย์';
         $step->step_name_en = 'TEACHER[EN]';
         $step->step_component = 'Teacher';
         $step->step_icon = 'usergroup-add';
         $step->save();
         $step = new EgsStep();
         $step->step_id = 3;
-        $step->step_name_th = 'DEFENSE[TH]';
+        $step->step_name_th = 'เพิ่มข้อมูลการสอบ';
         $step->step_name_en = 'DEFENSE[EN]';
         $step->step_component = 'Defense';
         $step->step_icon = 'calendar';
         $step->save();
         $step = new EgsStep();
         $step->step_id = 4;
-        $step->step_name_th = 'SUMMARY[TH]';
+        $step->step_name_th = 'สรุป';
         $step->step_name_en = 'SUMMARY[EN]';
         $step->step_component = 'Summary';
         $step->step_icon = 'profile';
@@ -173,7 +175,7 @@ class Calendar
 
         $step = new EgsStep();
         $step->step_id = 5;
-        $step->step_name_th = 'PETITION_BEFORE+FEE[TH]';
+        $step->step_name_th = 'ส่งคำร้องและจ่ายค่าธรรมเนียม';
         $step->step_name_en = 'PETITION_BEFORE+FEE[EN]';
         $step->step_component = 'PetBefore';
         $step->step_icon = 'file-text';
@@ -181,7 +183,7 @@ class Calendar
         $step->save();
         $step = new EgsStep();
         $step->step_id = 6;
-        $step->step_name_th = 'DOC_BEFORE[TH]';
+        $step->step_name_th = 'อัพโหลดเอกสารสอบ';
         $step->step_name_en = 'DOC_BEFORE[EN]';
         $step->step_component = 'DocBefore';
         $step->step_icon = 'cloud-upload-o';
@@ -189,7 +191,7 @@ class Calendar
         $step->save();
         $step = new EgsStep();
         $step->step_id = 7;
-        $step->step_name_th = 'DEFENSE[TH]';
+        $step->step_name_th = 'ผลสอบ';
         $step->step_name_en = 'DEFENSE[EN]';
         $step->step_component = 'DefenseResult';
         $step->step_icon = 'line-chart';
@@ -197,7 +199,7 @@ class Calendar
         $step->save();
         $step = new EgsStep();
         $step->step_id = 8;
-        $step->step_name_th = 'PETITION_AFTER[TH]';
+        $step->step_name_th = 'ส่งคำร้องหลังสอบ';
         $step->step_name_en = 'PETITION_AFTER[EN]';
         $step->step_component = 'PetAfter';
         $step->step_icon = 'file-text';
@@ -205,7 +207,7 @@ class Calendar
         $step->save();
         $step = new EgsStep();
         $step->step_id = 9;
-        $step->step_name_th = 'DOC_AFTER[TH]';
+        $step->step_name_th = 'อัพโหลดเอกสารสอบที่แก้ไขแล้ว';
         $step->step_name_en = 'DOC_AFTER[EN]';
         $step->step_component = 'DocAfter';
         $step->step_icon = 'cloud-upload-o';
@@ -213,11 +215,20 @@ class Calendar
         $step->save();
         $step = new EgsStep();
         $step->step_id = 10;
-        $step->step_name_th = 'FINAL[TH]';
+        $step->step_name_th = 'สิ้นสุด';
         $step->step_name_en = 'FINAL[EN]';
         $step->step_component = 'Final';
         $step->step_icon = 'check';
         $step->save();
+
+        $step = new EgsStep();
+        $step->step_id = 11;
+        $step->step_name_th = 'ประเมินภาควิชา';
+        $step->step_name_en = 'EVALUATION-ADD[EN]';
+        $step->step_component = 'EvaluationSubmit';
+        $step->step_icon = 'area-chart';
+        $step->save();
+
     }
 
     private function step_type()
@@ -257,8 +268,9 @@ class Calendar
         $step_type = 1;
         $this->action_step_insert([1], [1, 2, 4], $step_type);
         $this->action_step_insert([2, 4, 5, 8], [1, 2, 3, 4], $step_type);
-        $this->action_step_insert([13], [2, 3, 4], $step_type);
         $this->action_step_insert([10], [1, 4], $step_type);
+        $this->action_step_insert([13], [2, 3, 4], $step_type);
+        $this->action_step_insert([14], [11], $step_type);
 
         $step_type = 2;
         $this->action_step_insert([1], [5, 10], $step_type);
@@ -298,6 +310,7 @@ class Calendar
         $this->action_for_insert(10, [3, 4, 5, 6, 7], [1, 2, 3]);
         $this->action_for_insert(11, [3, 4, 5, 6, 7], [1, 2, 3]);
         $this->action_for_insert(12, [3], [1]);
+        $this->action_for_insert(14, [1, 2, 3, 4, 5, 6, 7], [1, 2, 3]);
     }
 
     private function todo_for_insert($todo_id, $plans, $programs)
@@ -707,6 +720,11 @@ class Calendar
         $action_type->action_type_name_th = 'INIT';
         $action_type->actiont_type_name_en = 'INIT';
         if (!$action_type->save()) return Json::encode($action_type->errors);
+        $action_type = new EgsActionType();
+        $action_type->action_type_id = 4;
+        $action_type->action_type_name_th = 'EVALUATION';
+        $action_type->actiont_type_name_en = 'EVALUATION';
+        if (!$action_type->save()) return Json::encode($action_type->errors);
     }
 
     private function action()
@@ -870,6 +888,19 @@ class Calendar
         $action->action_cond = 0;
         $action->action_score = 0;
         if (!$action->save()) return Json::encode($action->errors);
+
+        $action = new EgsAction();
+        $action->action_id = 14;
+        $action->action_name_th = 'ประเมินภาควิชา';
+        $action->action_name_en = 'EVALUATION';
+        $action->action_type_id = 4;
+        $action->action_project = 0;
+        $action->action_redo = 0;
+        $action->action_credit = 0;
+        $action->action_cond = 0;
+        $action->action_score = 0;
+        $action->todo_id = 7;
+        if (!$action->save()) return Json::encode($action->errors);
     }
 
     private function request_init()
@@ -923,34 +954,40 @@ class Calendar
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12, 13
+            10, 11, 12, 13,
+            14
         ]);
         $this->insert_action_item(1, 2, [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12, 13
+            10, 11, 12, 13,
+            14
         ]);
         $this->insert_action_item(1, 3, [
-            10, 11, 12, 13
+            10, 11, 12, 13,
+            14
         ]);
         $this->insert_action_item(2, 1, [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12, 13
+            10, 11, 12, 13,
+            14
         ]);
         $this->insert_action_item(2, 2, [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12, 13
+            10, 11, 12, 13,
+            14
         ]);
         $this->insert_action_item(2, 3, [
-            10, 11, 12, 13
+            10, 11, 12, 13,
+            14
         ]);
     }
 

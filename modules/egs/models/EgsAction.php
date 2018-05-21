@@ -21,6 +21,7 @@ use Yii;
  *
  * @property EgsTodo $todo
  * @property EgsActionType $actionType
+ * @property EgsActionBypass[] $egsActionBypasses
  * @property EgsActionDocument[] $egsActionDocuments
  * @property EgsDocument[] $documents
  * @property EgsActionFor[] $egsActionFors
@@ -108,6 +109,14 @@ class EgsAction extends \yii\db\ActiveRecord
     public function getActionType()
     {
         return $this->hasOne(EgsActionType::className(), ['action_type_id' => 'action_type_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEgsActionBypasses()
+    {
+        return $this->hasMany(EgsActionBypass::className(), ['action_id' => 'action_id']);
     }
 
     /**

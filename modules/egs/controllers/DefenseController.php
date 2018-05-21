@@ -50,6 +50,7 @@ class DefenseController extends Controller
     public function actionEvent()
     {
         $post = Json::decode(Yii::$app->request->post('json'));
+        $student_id = Config::get_user_id();
         $defenses = EgsDefense::find()->where([
             'calendar_id' => $post['calendarId'],
             'level_id' => $post['levelId'],
@@ -126,7 +127,6 @@ class DefenseController extends Controller
         } else if (!$defense->defenseType->action_score) {
             $defense->defense_status_id = $post['pass_check'] ? Config::$DEFENSE_STATUS_PASS : Config::$DEFENSE_STATUS_FAIL;
         }
-
 
         if (!$defense->save()) return Json::encode($defense->errors);
         $redo = $defense->defenseType->action_redo;

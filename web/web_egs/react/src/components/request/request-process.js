@@ -16,7 +16,6 @@ const Step = Steps.Step
 @connect((store) => {
     return {
         lang: store.language.data,
-        // steps: store.requestData.steps
     }
 })
 export default class RequestProcess extends React.Component {
@@ -27,12 +26,10 @@ export default class RequestProcess extends React.Component {
 
     componentWillUnmount() {
         const {dispatch} = this.props
-        // dispatch(unmount())
     }
 
     componentDidMount() {
         const {dispatch, userRequest, current} = this.props
-        // dispatch(getStep(userRequest.calendar_item.action_id))
     }
 
     render() {
@@ -40,24 +37,22 @@ export default class RequestProcess extends React.Component {
         const steps = userRequest.step
         const currentStep = steps === null ? null : steps[steps.findIndex(step => step.step.step_id === userRequest.current_step)]
         return (
-            // currentStep === null ? <Loading/> :
-                <Steps direction='vertical' size='small'
-                       current={currentStep.action_step_index}>
-                    {
-                        steps.map(
-                            (step, index_) => {
-                                const Component = this.component[step.step.step_component]
-                                const notYet = step.action_step_index > currentStep.action_step_index
-                                return <Step key={index_} style={{opacity: !notYet ? 1 : 0.5}}
-                                             icon={<Icon type={step.step.step_icon}/>}
-                                             title={<strong>{step.step.step_name}</strong>}
-                                             description={<Component index={index}
-                                                                     notYet={notYet}
-                                                                     userRequest={userRequest}/>}/>
-                            }
-                        )
-                    }
-                </Steps>
+            <Steps direction='vertical' size='small'
+                   current={currentStep.action_step_index}>
+                {
+                    steps.map(
+                        (step, index_) => {
+                            const Component = this.component[step.step.step_component]
+                            const notYet = step.action_step_index > currentStep.action_step_index
+                            return <Step key={index_} style={{opacity: !notYet ? 1 : 0.5}}
+                                         icon={<Icon type={step.step.step_icon}/>}
+                                         title={<strong>{step.step.step_name}</strong>}
+                                         description={<Component index={index} notYet={notYet}
+                                                                 userRequest={userRequest}/>}/>
+                        }
+                    )
+                }
+            </Steps>
         )
     }
 }

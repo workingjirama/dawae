@@ -2,9 +2,9 @@ import React from 'react'
 import {connect} from 'react-redux'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
+import Card from 'antd/lib/card'
 import Button from "./button"
 import {insert} from './../../../actions/request/requestAdd'
-import moment from 'moment'
 import {URL} from "../../../config";
 
 @connect((store) => {
@@ -22,7 +22,9 @@ export default class Summary extends React.Component {
 
     constructor(props) {
         super(props)
-        const {lang} = props
+        this.state = {
+            inserting: false
+        }
     }
 
     validate() {
@@ -32,8 +34,12 @@ export default class Summary extends React.Component {
 
     insert() {
         const {post, calendarItem, dispatch, config} = this.props
+        const {inserting} = this.state
+        this.setState({inserting: true})
         dispatch(insert(post, calendarItem, response => {
-            window.location = calendarItem.action.action_type_id === config.ACTION_INIT_TYPE ? `${URL.EGS_BASE}/#/calendar-init` : `${URL.EGS_BASE}/#/requestList`
+            this.setState({inserting: false})
+            window.location = calendarItem.action.action_type_id === config.ACTION_INIT_TYPE ?
+                URL.CALENDAR.CALENDAR_INIT.MAIN.LINK : URL.REQUEST.REQUEST_LIST.MAIN.LINK
         }))
     }
 
@@ -43,53 +49,72 @@ export default class Summary extends React.Component {
 
     render() {
         const {lang, post, positions, teachers, calendarItem, rooms} = this.props
+        const {inserting} = this.state
         return [
-            <Row key='step' class='step' type="flex" justify="space-between">
-                <Col class='text-center' span={24}>
-                    <h3>TEACHER LIST</h3>
+            <Row key='step' class='step' type="flex" justify="center">
+                <Col class='text-center' sm={18} span={24}>
+                    <h4 style={{width: '100%'}}>{lang.summary.teacher_list}</h4>
                 </Col>
-                {
-                    post.teachers.length === 0 ? <Col class='text-center' span={24}>{lang.nodata}</Col> :
-                        post.teachers.sort(this.sort).map(
-                            (teacher, index) => {
-                                const person = teachers[teachers.findIndex(_teacher => _teacher.id === teacher.teacher)]
-                                const position = positions[positions.findIndex(position => position.position_id === teacher.position)]
-                                return [
-                                    <Col class='text-center' key={`t${index}`} span={12}>
-                                        {`${person.prefix} ${person.person_fname} ${person.person_lname}`}
-                                    </Col>,
-                                    <Col class='text-center' key={`p${index}`} span={12}>
-                                        {position.position_name}
-                                    </Col>
-                                ]
-                            }
-                        )
-                }
+                <Col class='text-center' sm={18} span={24}>
+                    <Card>
+                        {
+                            post.teachers.length === 0 ? <Col class='text-center' span={24}>{lang.nodata}</Col> :
+                                post.teachers.sort(this.sort).map(
+                                    (teacher, index) => {
+                                        const person = teachers[teachers.findIndex(_teacher => _teacher.id === teacher.teacher)]
+                                        const position = positions[positions.findIndex(position => position.position_id === teacher.position)]
+                                        return [
+                                            <Col class='text-center' key={`t${index}`} span={12}>
+                                                {`${person.prefix} ${person.person_fname} ${person.person_lname}`}
+                                            </Col>,
+                                            <Col class='text-center' key={`p${index}`} span={12}>
+                                                {position.position_name}
+                                            </Col>
+                                        ]
+                                    }
+                                )
+                        }
+                    </Card>
+                </Col>
                 {
                     calendarItem.request_defense.map(
                         (defense, index) => [
-                            <Col key={`def${index}`} class='text-center' span={24}>
-                                <h3>{defense.action.action_name}</h3>
+                            <Col key={`def${index}`} class='text-center' sm={18} span={24}>
+                                <h4>{defense.action.action_name}</h4>
                             </Col>,
                             post.defenses.length === 0 ?
-                                <Col key={index} class='text-center' span={24}>
-                                    {lang.nodata}
-                                </Col> : [
-                                    <Col key={`date${index}`} class='text-center' span={24}>
-                                        {`${moment(new Date(post.defenses[index].date)).format('LL')}`}
-                                    </Col>,
-                                    <Col key={`time${index}`} class='text-center' span={24}>
-                                        {`${moment(new Date(`${post.defenses[index].date}T${post.defenses[index].start}`)).format('LT')} - ${moment(new Date(`${post.defenses[index].date}T${post.defenses[index].end}`)).format('LT')}`}
-                                    </Col>,
-                                    <Col key={`room${index}`} class='text-center' span={24}>
-                                        {rooms.filter(room => room.room_id === post.defenses[index].room)[0].room_name}
-                                    </Col>
-                                ]
+                                <Col key={index} class='text-center' sm={18} span={24}>
+                                    <Card>
+                                        {lang.nodata}
+                                    </Card>
+                                </Col> :
+                                <Col key={index} class='text-center' sm={18} span={24}>
+                                    <Card>
+                                        <Col class='text-center' span={12}>
+                                            {lang.summary.date}
+                                        </Col>
+                                        <Col class='text-center' span={12}>
+                                            {`${moment(new Date(post.defenses[index].date)).format('LL')}`}
+                                        </Col>
+                                        <Col class='text-center' span={12}>
+                                            {lang.summary.time}
+                                        </Col>
+                                        <Col class='text-center' span={12}>
+                                            {`${moment(new Date(`${post.defenses[index].date}T${post.defenses[index].start}`)).format('LT')} - ${moment(new Date(`${post.defenses[index].date}T${post.defenses[index].end}`)).format('LT')}`}
+                                        </Col>
+                                        <Col class='text-center' span={12}>
+                                            {lang.summary.room}
+                                        </Col>
+                                        <Col class='text-center' span={12}>
+                                            {rooms.filter(room => room.room_id === post.defenses[index].room)[0].room_name}
+                                        </Col>
+                                    </Card>
+                                </Col>
                         ]
                     )
                 }
             </Row>,
-            <Button key='btn' validate={() => this.validate()}/>
+            <Button key='btn' inserting={inserting} validate={() => this.validate()}/>
         ]
     }
 }

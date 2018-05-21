@@ -1,15 +1,22 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {getAllCalendar, insertCalendar, resetCalendarList,} from '../../actions/calendar/calendarList'
+import {
+    deleteCalendar,
+    getAllCalendar,
+    insertCalendar,
+    resetCalendarList,
+    setCalendar,
+} from '../../actions/calendar/calendarList'
 import {setHeader} from '../../actions/main'
 import {URL} from '../../config'
 import Popover from 'antd/lib/popover'
-import Card from 'antd/lib/card'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
 import Icon from 'antd/lib/icon'
-import Input from 'antd/lib/input'
+import InputNumber from 'antd/lib/input-number'
 import Tag from 'antd/lib/tag'
+import Loading from "../loading";
+import Popconfirm from 'antd/lib/popconfirm'
 
 @connect((store) => {
     return {
@@ -27,7 +34,8 @@ export default class CalendarList extends React.Component {
         this.state = {
             year: null,
             visible: false,
-            loading: false
+            loading: false,
+            deleting: false
         }
     }
 
@@ -38,36 +46,39 @@ export default class CalendarList extends React.Component {
 
     componentDidMount() {
         const {dispatch, lang} = this.props
-        dispatch(setHeader(lang.calendarList.head))
-        dispatch(getAllCalendar())
+        dispatch(setHeader(lang.calendar_list.head))
+        dispatch(getAllCalendar(response => {
+            this.setState({year: response[0].calendar_id + ''})
+        }))
     }
 
     changeYear(year) {
+        console.log(year)
+        year = year + ''
         this.setState({year})
     }
 
     submitYear() {
         const {post, dispatch, active, container} = this.props
         const {year, loading} = this.state
-        if (!loading) {
-            if (year === null || year === '')
-                alert('YEAR NULL', 'PLS TRY AGAIN')
-            else if (year.length !== 4)
-                alert('YEAR 4 CHAR', 'PLS TRY AGAIN')
-            else if (isNaN(year))
-                alert('NUMBER ONLY', 'PLS TRY AGAIN')
-            else {
-                this.setState({loading: true})
-                dispatch(insertCalendar(year, (resp) => {
-                    if (resp !== 1)
-                        alert('DUPLICATE', 'PLS TRY AGAIN')
-                    else {
-                        dispatch(getAllCalendar())
-                        this.setState({visible: false, year: null})
-                    }
-                    this.setState({loading: false})
-                }))
-            }
+        if (loading) return false
+        if (year === null || year === '')
+            alert('YEAR NULL', 'PLS TRY AGAIN')
+        else if (year.length !== 4)
+            alert('YEAR 4 CHAR', 'PLS TRY AGAIN')
+        else if (isNaN(year))
+            alert('NUMBER ONLY', 'PLS TRY AGAIN')
+        else {
+            this.setState({loading: true})
+            dispatch(insertCalendar(year, (resp) => {
+                if (resp !== 1)
+                    alert('DUPLICATE', 'PLS TRY AGAIN')
+                else {
+                    dispatch(getAllCalendar())
+                    this.setState({visible: false, year: null})
+                }
+                this.setState({loading: false})
+            }))
         }
     }
 
@@ -75,40 +86,123 @@ export default class CalendarList extends React.Component {
         this.setState({visible})
     }
 
+    delete(calendar_id) {
+        const {calendars, dispatch} = this.props
+        const {deleting} = this.state
+        if (deleting) return false
+        this.setState({deleting: true})
+        dispatch(deleteCalendar(calendar_id, () => {
+            const _calendars = calendars.filter(calendar => calendar.calendar_id !== calendar_id)
+            dispatch(setCalendar(_calendars))
+            this.setState({deleting: false})
+        }))
+    }
+
     render() {
         const {calendars, active, lang} = this.props
-        const {year, visible, loading} = this.state
+        const {year, visible, loading, deleting} = this.state
         return (
-            <Row gutter={8}>
-                <Col span={24} sm={6}>
-                    <Popover placement='right' trigger='click' visible={visible} content={
-                        <Row>
-                            <Input value={year} style={{width: 60}} placeholder='Year'
-                                   maxLength={4} onChange={(ev) => this.changeYear(ev.target.value)}/>
-                            <Tag class='clickable tag-medium tag-success' onClick={() => this.submitYear()}>
-                                {loading ? <Icon type='loading'/> : lang.calendarList.add}
+            calendars === null ? <Loading/> :
+                <Row>
+                    <Col span={24} style={{textAlign: 'right', marginBottom: 8}}>
+                        <Popover placement='right' trigger='click' visible={visible} content={
+                            <Row>
+                                <InputNumber class='text-center' value={year === null ? calendars[0].calendar_id : year}
+                                             style={{width: 100}} placeholder={lang.calendar_list.placeholder}
+                                             maxLength={4} onChange={(value) => this.changeYear(value)}/>
+                                <Tag class='clickable tag-medium tag-success' onClick={() => this.submitYear()}>
+                                    {loading ? <Icon type='loading'/> : lang.calendar_list.add}
+                                </Tag>
+                            </Row>
+                        }>
+                            <Tag class='tag-default tag-medium clickable' onClick={() => this.visible(!visible)}>
+                                <Icon style={{marginRight: 8}} type="plus-circle-o"/>
+                                {lang.calendar_list.add_calendar}
                             </Tag>
-                        </Row>
-                    }>
-                        <Card class='clickable' onClick={() => this.visible(!visible)}>
-                            <Icon type='plus'/>
-                            <span style={{marginLeft: 8}}>ADD</span>
-                        </Card>
-                    </Popover>
-                </Col>
-                {
-                    calendars === null ? null : calendars.map(
-                        calendar =>
-                            <Col key={calendar.calendar_id} span={24} sm={6} onClick={() => {
-                                window.location = `${URL.EGS_BASE}/#/calendar/${calendar.calendar_id}`
-                            }}>
-                                <Card class={`clickable ${!calendar.calendar_active ? '' : 'background-success'}`}>
-                                    {calendar.calendar_id}
-                                </Card>
-                            </Col>
-                    )
-                }
-            </Row>
+                        </Popover>
+                    </Col>
+                    <Col span={24}>
+                        <table class='table'>
+                            <thead>
+                            <tr>
+                                <th>
+                                    <Row class='table-row' type='flex'>
+                                        <Col class='text-center table-col' sm={6} span={24}>
+                                            {lang.calendar_list.year}
+                                        </Col>
+                                        <Col class='text-center table-col' sm={6} span={24}>
+                                            {lang.calendar_list.active_status}
+                                        </Col>
+                                        <Col class='text-center table-col' sm={12} span={24}>
+                                            {lang.calendar_list.manage}
+                                        </Col>
+                                    </Row>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                calendars.length === 0 ?
+                                    <tr>
+                                        <td>
+                                            <Row class='table-row' type='flex'>
+                                                <Col class='text-center table-col' span={24}>
+                                                    {lang.nodata}
+                                                </Col>
+                                            </Row>
+                                        </td>
+                                    </tr> :
+                                    calendars.map(
+                                        (calendar, index) =>
+                                            <tr key={index}>
+                                                <td>
+                                                    <Row class='table-row' type='flex'>
+                                                        <Col class='text-center table-col' sm={6} span={24}>
+                                                            {calendar.calendar_id}
+                                                        </Col>
+                                                        <Col class='text-center table-col' sm={6} span={24}>
+                                                            {
+                                                                calendar.calendar_active ?
+                                                                    <Tag class='tag-success'>
+                                                                        {lang.calendar_list.currnet_active}
+                                                                    </Tag> :
+                                                                    <Tag class='tag-default'>
+                                                                        {lang.calendar_list.inactive}
+                                                                    </Tag>
+                                                            }
+                                                        </Col>
+                                                        <Col class='text-center table-col' sm={6} span={24}>
+                                                            <a href={URL.CALENDAR.CALENDAR.MAIN.LINK(calendar.calendar_id)}>
+                                                                <Tag class='tag-default clickable'>
+                                                                    {lang.calendar_list.manage_calendar}
+                                                                </Tag>
+                                                            </a>
+                                                        </Col>
+                                                        <Col class='text-center table-col' sm={6} span={24}>
+                                                            {
+                                                                calendar.calendar_active ?
+                                                                    <Tag class='tag-default'>-</Tag> :
+                                                                    <Popconfirm title="ยืนยัน?"
+                                                                                onConfirm={() => this.delete(calendar.calendar_id)}
+                                                                                okText="ยืนยัน" cancelText="ยกเลิก">
+                                                                        <Tag class='tag-error clickable'>
+                                                                            {
+                                                                                deleting ? <Icon type='loading'/> :
+                                                                                    lang.calendar_list.delete
+                                                                            }
+                                                                        </Tag>
+                                                                    </Popconfirm>
+                                                            }
+                                                        </Col>
+                                                    </Row>
+                                                </td>
+                                            </tr>
+                                    )
+                            }
+                            </tbody>
+                        </table>
+                    </Col>
+                </Row>
         )
     }
 }

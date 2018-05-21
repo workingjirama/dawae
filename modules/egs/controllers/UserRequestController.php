@@ -98,7 +98,7 @@ class UserRequestController extends Controller
     {
         /* NOTE: INITIALIZE DATA */
         $post = Json::decode(Yii::$app->request->post('json'));
-        $calendar_item_ = $post['calendarItem'];
+        $calendar_item = $post['calendarItem'];
         $teachers = $post['teachers'];
         $defenses = $post['defenses'];
         $student = Config::get_current_user();
@@ -118,11 +118,11 @@ class UserRequestController extends Controller
         /* NOTE: FIND IF USER REQUEST EXIST */
         $user_request = EgsUserRequest::findOne([
             'student_id' => $student_id,
-            'calendar_id' => $calendar_item_['calendarId'],
-            'action_id' => $calendar_item_['actionId'],
-            'level_id' => $calendar_item_['levelId'],
-            'semester_id' => $calendar_item_['semesterId'],
-            'owner_id' => $calendar_item_['owner_id']
+            'calendar_id' => $calendar_item['calendarId'],
+            'action_id' => $calendar_item['actionId'],
+            'level_id' => $calendar_item['levelId'],
+            'semester_id' => $calendar_item['semesterId'],
+            'owner_id' => $calendar_item['owner_id']
         ]);
 
         $advisor = EgsAdvisor::find()->where([
@@ -133,18 +133,18 @@ class UserRequestController extends Controller
         $advisor_fee = EgsAdvisorFee::findOne([
             'plan_id' => $plan_id,
             'branch_id' => $branch_id,
-            'action_id' => $calendar_item_['actionId']
+            'action_id' => $calendar_item['actionId']
         ]);
 
         if (empty($user_request)) {
             /* NOTE: IF NOT INSERT */
             $user_request = new EgsUserRequest();
             $user_request->student_id = $student_id;
-            $user_request->calendar_id = $calendar_item_['calendarId'];
-            $user_request->action_id = $calendar_item_['actionId'];
-            $user_request->level_id = $calendar_item_['levelId'];
-            $user_request->semester_id = $calendar_item_['semesterId'];
-            $user_request->owner_id = $calendar_item_['owner_id'];
+            $user_request->calendar_id = $calendar_item['calendarId'];
+            $user_request->action_id = $calendar_item['actionId'];
+            $user_request->level_id = $calendar_item['levelId'];
+            $user_request->semester_id = $calendar_item['semesterId'];
+            $user_request->owner_id = $calendar_item['owner_id'];
         } else {
             /* NOTE: IF EXIST DELETE ALL CHILDS */
             foreach ($user_request->egsRequestDocuments as $request_document) $request_document->delete();
@@ -162,9 +162,9 @@ class UserRequestController extends Controller
             }
         }
         $request_fee = EgsRequestFee::findOne([
-            'plan_id' => empty($plan_type) ? null : $plan_type->plan_id,
+            'plan_id' => $plan_id,
             'branch_id' => $branch_id,
-            'action_id' => $calendar_item_['actionId']
+            'action_id' => $calendar_item['actionId']
         ]);
         $user_request->request_fee = empty($request_fee) ? 0 : $request_fee->request_fee_amount;
         $user_request->request_fee_status_id = $user_request->request_fee === 0 ? Config::$DONT_NEED_TO_PAY : Config::$FEE_STATUS_NOT_PAY;
@@ -305,6 +305,34 @@ class UserRequestController extends Controller
         } else {
             return Json::encode($user_request->errors);
         }
+        return Json::encode(null);
+    }
+
+    public function actionDelete()
+    {
+        $post = Json::decode(Yii::$app->request->post('json'));
+        $user_request = EgsUserRequest::findOne([
+            'student_id' => $post['student_id'],
+            'calendar_id' => $post['calendar_id'],
+            'action_id' => $post['action_id'],
+            'level_id' => $post['level_id'],
+            'semester_id' => $post['semester_id'],
+            'owner_id' => $post['owner_id']
+        ]);
+        foreach ($user_request->egsRequestDocuments as $request_document) $request_document->delete();
+        foreach ($user_request->egsAdvisors as $advisor) $advisor->delete();
+        foreach ($user_request->egsDefenses as $defense) {
+            foreach ($defense->egsDefenseDocuments as $defense_document)
+                $defense_document->delete();
+            foreach ($defense->egsCommittees as $committee)
+                $committee->delete();
+            foreach ($defense->egsDefenseSubjects as $defense_subject)
+                $defense_subject->delete();
+            foreach ($defense->egsDefenseAdvisors as $defense_advisor)
+                $defense_advisor->delete();
+            $defense->delete();
+        }
+        $user_request->delete();
         return Json::encode(null);
     }
 }

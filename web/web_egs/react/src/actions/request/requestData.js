@@ -3,6 +3,29 @@ import {URL, TYPE} from "../../config"
 const _URL = URL.REQUEST.REQUEST_DATA
 const _TYPE = TYPE.REQUEST.REQUEST_DATA
 
+export function deleteUserRequest(userRequest, callback) {
+    return dispatch => {
+        const data = new FormData()
+        data.append('json', JSON.stringify({
+            student_id: userRequest.student.id,
+            calendar_id: userRequest.calendar_item.calendar_id,
+            action_id: userRequest.calendar_item.action_id,
+            level_id: userRequest.calendar_item.level_id,
+            semester_id: userRequest.calendar_item.semester_id,
+            owner_id: userRequest.calendar_item.owner_id
+        }))
+        fetch(_URL.DELETE_USER_REQUEST, {
+            method: 'post',
+            body: data,
+            credentials: 'same-origin'
+        }).then(response => {
+            return response.json()
+        }).then(json => {
+            callback()
+        })
+    }
+}
+
 export function getAllUserRequest(calendar, level, semester, action) {
     return dispatch => {
         fetch(_URL.GET_ALL_USER_REQUEST(calendar, level, semester, action), {
@@ -27,7 +50,7 @@ export function UpdateUserRequestList(userRequests) {
     }
 }
 
-export function getAllAction() {
+export function getAllAction(callback = null) {
     return dispatch => {
         fetch(_URL.GET_ALL_ACTION, {
             credentials: 'same-origin'
@@ -38,6 +61,8 @@ export function getAllAction() {
                 type: _TYPE.SET_ALL_ACTION,
                 payload: json
             })
+            if (callback !== null)
+                callback(json)
         })
     }
 }

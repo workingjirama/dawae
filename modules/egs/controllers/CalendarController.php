@@ -18,7 +18,33 @@ class CalendarController extends Controller
 {
     public function actionFindAll()
     {
-        $calendar = EgsCalendar::find()->all();
+        $calendar = EgsCalendar::find()->orderBy(['calendar_id' => SORT_DESC])->all();
+        return Json::encode($calendar);
+    }
+
+    public function actionDelete($calendar_id)
+    {
+        $calendar = EgsCalendar::findOne(['calendar_id' => $calendar_id]);
+        foreach ($calendar->egsCalendarItems as $calendar_item) {
+            foreach ($calendar_item->egsUserRequests as $user_request) {
+                foreach ($user_request->egsRequestDocuments as $request_document) $request_document->delete();
+                foreach ($user_request->egsAdvisors as $advisor) $advisor->delete();
+                foreach ($user_request->egsDefenses as $defense) {
+                    foreach ($defense->egsDefenseDocuments as $defense_document)
+                        $defense_document->delete();
+                    foreach ($defense->egsCommittees as $committee)
+                        $committee->delete();
+                    foreach ($defense->egsDefenseSubjects as $defense_subject)
+                        $defense_subject->delete();
+                    foreach ($defense->egsDefenseAdvisors as $defense_advisor)
+                        $defense_advisor->delete();
+                    $defense->delete();
+                }
+                $user_request->delete();
+            }
+            $calendar_item->delete();
+        }
+        $calendar->delete();
         return Json::encode($calendar);
     }
 

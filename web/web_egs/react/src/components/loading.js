@@ -27,12 +27,16 @@ export default class Loading extends React.Component {
 
     render() {
         const {dot} = this.state
+        const {small} = this.props
         return (
             <Row ref={ref => this.content = ref} type='flex' justify='center' align='middle' style={{
-                height: '50vh', textAlign: 'center'
+                height: small ? 'initial' : '50vh', textAlign: 'center'
             }}>
-                <Col class='loading' span={24}>
-                    <Icon style={{marginRight: 8}} type="loading"/>
+                <Col class={small ? null : 'loading'} span={24}>
+                    {
+                        small ? null :
+                            <Icon style={{marginRight: 8}} type="loading"/>
+                    }
                     <span>Loading{Array(dot).fill('.').map(dot_ => dot_)}</span>
                 </Col>
             </Row>

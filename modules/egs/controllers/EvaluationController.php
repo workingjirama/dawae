@@ -16,7 +16,6 @@ use yii\web\Controller;
 
 class EvaluationController extends Controller
 {
-
     public function actionAll()
     {
         $evaluation = EgsEvaluation::find()->all();
@@ -45,6 +44,27 @@ class EvaluationController extends Controller
         return Json::encode(Format::evaluationFull($evaluation));
     }
 
+    public function actionDelete($eval_id)
+    {
+        $evaluation = EgsEvaluation::findOne(['evaluation_id' => $eval_id]);
+        foreach ($evaluation->egsUserEvaluations as $user_evaluation) {
+            foreach ($user_evaluation->egsUserEvaluationRates as $user_evaluation_rate) {
+                $user_evaluation_rate->delete();
+            }
+            $user_evaluation->delete();
+        }
+        foreach ($evaluation->egsEvaluationTopicGroups as $evaluation_topic_group) {
+            foreach ($evaluation_topic_group->egsEvaluationTopics as $evaluation_topic) {
+                $evaluation_topic->delete();
+            }
+            $evaluation_topic_group->delete();
+        }
+        $file = Yii::getAlias('@egswebdir/uploads/eval/eval_template_' . $evaluation->evaluation_id . '.docx');
+        if (file_exists($file)) unlink($file);
+        $evaluation->delete();
+        return Json::encode(null);
+    }
+
     public function actionInsert()
     {
         $post = Json::decode(Yii::$app->request->post('json'));
@@ -52,6 +72,7 @@ class EvaluationController extends Controller
         $evaluation = new EgsEvaluation();
         $evaluation->evaluation_name_th = $name['name'];
         $evaluation->evaluation_name_en = $name['name'];
+        $evaluation->evaluation_path = 'XD';
         $evaluation->evaluation_active = 0;
         if ($evaluation->save()) {
             $evaluation->evaluation_path = $this->upload($evaluation);
@@ -98,5 +119,4 @@ class EvaluationController extends Controller
         $path = Yii::getAlias('@egsweb/uploads/eval/');
         return $path . $file_name;
     }
-
 }

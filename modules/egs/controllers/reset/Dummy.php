@@ -46,34 +46,34 @@ class Dummy
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12, 13
+            10, 11, 12, 13, 14
         ]);
         $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 1, 2, '2018-01-01', '2018-12-31', [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12, 13
+            10, 11, 12, 13, 14
         ]);
         $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 1, 3, '2018-01-01', '2018-12-31', [
-            10, 11, 12, 13
+            10, 11, 12, 13, 14
         ]);
-        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 1, '2018-01-01', '2018-12-31', [
+        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 1, '2018-02-01', '2018-12-31', [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12, 13
+            10, 11, 12, 13, 14
         ]);
-        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 2, '2018-01-01', '2018-12-31', [
+        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 2, '2018-02-01', '2018-12-31', [
             1,
             2, 3,
             4, 5, 6, 7,
             8, 9,
-            10, 11, 12, 13
+            10, 11, 12, 13, 14
         ]);
-        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 3, '2018-01-01', '2018-12-31', [
-            10, 11, 12, 13
+        $this->INIT_CALENDAR_ITEM_DELETE_THIS_IN_PRODUCTION($calendar->calendar_id, 2, 3, '2018-02-01', '2018-12-31', [
+            10, 11, 12, 13, 14
         ]);
     }
 
@@ -164,6 +164,7 @@ class Dummy
         $evaluation = new EgsEvaluation();
         $evaluation->evaluation_name_th = 'ประเมิน LOLLLLLLL';
         $evaluation->evaluation_name_en = 'EVAL LOLLLLLLL';
+        $evaluation->evaluation_path = 'XD';
         $evaluation->evaluation_active = 1;
         if (!$evaluation->save()) {
             echo Json::encode($evaluation->errors);

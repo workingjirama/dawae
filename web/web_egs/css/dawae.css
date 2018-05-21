@@ -1,3 +1,9 @@
+.select {
+    min-width: 80%;
+    height: 32px;
+    padding: 0
+}
+
 .small-card {
     margin-bottom: 0 !important;
 }
@@ -7,7 +13,7 @@
 }
 
 .small-card > .ant-card-body {
-    padding: 16px;
+    padding: 8px;
 }
 
 .ant-radio-wrapper {
@@ -20,17 +26,16 @@
     width: 100%;
 }
 
-.table-col {
-    border: 1px solid #ddd;
-    padding: 4px;
-    margin-bottom: -0.5px;
-}
+/*.table-col {*/
+/*border: 1px solid #ddd;*/
+/*padding: 4px;*/
+/*margin-bottom: -0.5px;*/
+/*}*/
 
-.table {
-    border-collapse: separate;
-    border-spacing: 0 8px;
-
-}
+/*.table {*/
+/*border-collapse: separate;*/
+/*border-spacing: 0 8px;*/
+/*}*/
 
 .table > tbody > tr {
     margin-bottom: 8px;
@@ -55,6 +60,12 @@
     border: 1px solid #ddd !important;
 }
 
+.table-col {
+    padding: 4px;
+    margin-bottom: 0;
+    word-wrap: break-word;
+}
+
 @media screen and (min-width: 576px) {
 
     .table-col {
@@ -62,11 +73,10 @@
         margin-bottom: 0;
     }
 
-    .table {
-        border-collapse: collapse;
-        border-spacing: 0;
-    }
-
+    /*.table {*/
+    /*border-collapse: collapse;*/
+    /*border-spacing: 0;*/
+    /*}*/
     .table > tbody > tr {
         margin-bottom: 0;
     }
@@ -132,12 +142,16 @@
 
 @media screen and (min-width: 768px) {
     .fc {
-        width: 60%;
+        width: 54%;
     }
 }
 
 .fc {
     margin: 0 auto;
+}
+
+.fc {
+    cursor: pointer;
 }
 
 .margin-0 {

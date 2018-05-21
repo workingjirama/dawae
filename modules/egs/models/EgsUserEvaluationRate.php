@@ -7,10 +7,15 @@ use Yii;
 /**
  * This is the model class for table "egs_user_evaluation_rate".
  *
- * @property integer $evaluation_id
- * @property integer $student_id
- * @property integer $evaluation_topic_id
  * @property integer $evaluation_rate
+ * @property integer $evaluation_topic_id
+ * @property integer $evaluation_id
+ * @property integer $calendar_id
+ * @property integer $action_id
+ * @property integer $level_id
+ * @property integer $semester_id
+ * @property integer $owner_id
+ * @property integer $student_id
  *
  * @property EgsEvaluationTopic $evaluationTopic
  * @property EgsUserEvaluation $evaluation
@@ -39,10 +44,10 @@ class EgsUserEvaluationRate extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['evaluation_id', 'student_id', 'evaluation_topic_id', 'evaluation_rate'], 'required'],
-            [['evaluation_id', 'student_id', 'evaluation_topic_id', 'evaluation_rate'], 'integer'],
+            [['evaluation_rate', 'evaluation_topic_id', 'evaluation_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'required'],
+            [['evaluation_rate', 'evaluation_topic_id', 'evaluation_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'integer'],
             [['evaluation_topic_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsEvaluationTopic::className(), 'targetAttribute' => ['evaluation_topic_id' => 'evaluation_topic_id']],
-            [['evaluation_id', 'student_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsUserEvaluation::className(), 'targetAttribute' => ['evaluation_id' => 'evaluation_id', 'student_id' => 'student_id']],
+            [['evaluation_id', 'calendar_id', 'action_id', 'level_id', 'semester_id', 'owner_id', 'student_id'], 'exist', 'skipOnError' => true, 'targetClass' => EgsUserEvaluation::className(), 'targetAttribute' => ['evaluation_id' => 'evaluation_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']],
         ];
     }
 
@@ -52,10 +57,15 @@ class EgsUserEvaluationRate extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'evaluation_id' => 'Evaluation ID',
-            'student_id' => 'Student ID',
-            'evaluation_topic_id' => 'Evaluation Topic ID',
             'evaluation_rate' => 'Evaluation Rate',
+            'evaluation_topic_id' => 'Evaluation Topic ID',
+            'evaluation_id' => 'Evaluation ID',
+            'calendar_id' => 'Calendar ID',
+            'action_id' => 'Action ID',
+            'level_id' => 'Level ID',
+            'semester_id' => 'Semester ID',
+            'owner_id' => 'Owner ID',
+            'student_id' => 'Student ID',
         ];
     }
 
@@ -72,6 +82,6 @@ class EgsUserEvaluationRate extends \yii\db\ActiveRecord
      */
     public function getEvaluation()
     {
-        return $this->hasOne(EgsUserEvaluation::className(), ['evaluation_id' => 'evaluation_id', 'student_id' => 'student_id']);
+        return $this->hasOne(EgsUserEvaluation::className(), ['evaluation_id' => 'evaluation_id', 'calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id']);
     }
 }

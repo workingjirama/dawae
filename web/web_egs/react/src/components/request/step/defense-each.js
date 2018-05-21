@@ -7,7 +7,6 @@ import Loading from "../../loading";
 import {getDefenseEvent, setPost} from "../../../actions/request/requestAdd"
 import ReactDOMServer from 'react-dom/server';
 import Test from "../../test";
-import DefenseRoom from "./defense-room";
 import Select from 'antd/lib/select'
 
 const Option = Select.Option;
@@ -78,7 +77,6 @@ export default class DefenseEach extends React.Component {
         $(this.calendar).fullCalendar('removeEvents')
         $(this.calendar).fullCalendar('addEventSource', this.events)
         $(this.calendar).fullCalendar('rerenderEvents')
-
     }
 
     unselect() {
@@ -89,7 +87,7 @@ export default class DefenseEach extends React.Component {
     }
 
     fullCalendarInit() {
-        const {calendarItem} = this.props
+        const {calendarItem, lang} = this.props
         const defaultStart = calendarItem.request_defense[this.index].calendar_item_date_start
         const defaultEnd = calendarItem.request_defense[this.index].calendar_item_date_end
         $(this.calendar).fullCalendar({
@@ -99,6 +97,7 @@ export default class DefenseEach extends React.Component {
                 center: 'title',
                 right: 'month,agendaDay'
             },
+            locale: lang.lang,
             eventOverlap: false,
             slotEventOverlap: false,
             defaultDate: defaultStart === null ? new Date() : defaultStart,
@@ -106,7 +105,7 @@ export default class DefenseEach extends React.Component {
             selectHelper: true,
             allDaySlot: false,
             minTime: '08:00',
-            maxTime: '17:00',
+            maxTime: '20:00',
             slotLabelFormat: 'HH:mm',
             events: this.events,
             selectLongPressDelay: 50,
@@ -184,6 +183,7 @@ export default class DefenseEach extends React.Component {
     }
 
     roomChange(room) {
+        room = parseInt(room)
         if (room !== this.defense.room) {
             this.defense.room = room
             this.reEvent(room)
@@ -201,22 +201,24 @@ export default class DefenseEach extends React.Component {
     }
 
     render() {
-        const {lang, calendarItem, rooms} = this.props
+        const {lang, calendarItem, index, rooms, defense} = this.props
         return (
-            <Row type='flex' justify='center'>
-                <Col>
-                    <Select defaultValue={rooms[0].room_id} style={{width: 250}} onChange={(room) => {
-                        this.roomChange(room)
-                    }}>
+            <Row type='flex' justify='center' class='margin-bottom-16'>
+                <Col span={24} class='text-center margin-bottom-16'>
+                    <h3>{calendarItem.request_defense[index].action.action_name}</h3>
+                </Col>
+                <Col span={24} class='text-center margin-bottom-16'>
+                    <select class='select' defaultValue={rooms[0].room_id}
+                            onChange={(ev) => this.roomChange(ev.target.value)}>
                         {
                             rooms.map(
                                 (room, index) =>
-                                    <Option key={index} value={room.room_id}>{room.room_name}</Option>
+                                    <option key={index} value={room.room_id}>{room.room_name}</option>
                             )
                         }
-                    </Select>
+                    </select>
                 </Col>
-                <Col>
+                <Col span={24}>
                     <div ref={elm => {
                         this.calendar = elm
                     }}/>

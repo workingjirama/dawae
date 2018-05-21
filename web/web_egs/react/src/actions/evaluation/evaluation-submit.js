@@ -43,10 +43,19 @@ export function getSubmittied() {
     }
 }
 
-export function insertUserEvaluation(evaluation) {
+export function insertUserEvaluation(calendarItem, evaluation) {
     return function (dispatch) {
         const data = new FormData()
-        data.append('json', JSON.stringify({evaluation}))
+        data.append('json', JSON.stringify({
+            evaluation,
+            calendar_item: {
+                calendar_id: calendarItem.calendar.calendar_id,
+                action_id: calendarItem.action.action_id,
+                level_id: calendarItem.level.level_id,
+                semester_id: calendarItem.semester.semester_id,
+                owner_id: calendarItem.owner_id,
+            }
+        }))
         fetch(_URL.INSERT, {
             method: 'post',
             body: data,
@@ -54,10 +63,7 @@ export function insertUserEvaluation(evaluation) {
         }).then(function (response) {
             return response.json()
         }).then(function (json) {
-            dispatch({
-                type: _TYPE.SET_SUBMITTED,
-                payload: json
-            })
+            window.location = URL.REQUEST.REQUEST_LIST.MAIN.LINK
         })
     }
 }

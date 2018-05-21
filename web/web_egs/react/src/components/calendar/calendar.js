@@ -2,11 +2,16 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {setHeader} from '../../actions/main'
 import {
-    activateCalendar, getActiveActionItem, getAllCalendarItem, getAllLevel,
-    getAllSemester, getCalendar, resetCalendarLevel, updateCalendarItem
+    activateCalendar, deleteCalendar,
+    getActiveActionItem,
+    getAllCalendarItem,
+    getAllLevel,
+    getAllSemester,
+    getCalendar,
+    resetCalendarLevel,
+    updateCalendarItem
 } from '../../actions/calendar/calendar'
 import DateRangePicker from 'react-bootstrap-daterangepicker'
-import {getTeacher, getPosition, getRoom} from "../../actions/request/requestAdd"
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
 import Tag from 'antd/lib/tag'
@@ -26,9 +31,16 @@ export default class Calendar extends React.Component {
     constructor(props) {
         super(props)
         const {lang} = props
-        this.locale = {
-            'applyLabel': lang.calendar.confirm,
-            'cancelLabel': lang.calendar.cancel,
+        this.locale_en = {}
+        this.locale_th = {
+            "applyLabel": 'ยืนยัน',
+            "cancelLabel": 'ยกเลิก',
+            "daysOfWeek": ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
+            "monthNames": [
+                "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+            ],
+            "firstDay": 1
         }
     }
 
@@ -39,9 +51,6 @@ export default class Calendar extends React.Component {
 
     componentDidMount() {
         const {dispatch, calendarId, lang} = this.props
-        dispatch(getTeacher())
-        dispatch(getRoom())
-        dispatch(getPosition('DEFENSE-XD'))
         dispatch(setHeader(`${lang.calendar.head} ${calendarId}`))
         dispatch(getAllCalendarItem(calendarId))
         dispatch(getAllSemester())
@@ -64,8 +73,7 @@ export default class Calendar extends React.Component {
         const {calendarItems} = this.props
         let allSet = true
         calendarItems.map(calendarItem => {
-            if (calendarItem.calendar_item_date_start === null ||
-                calendarItem.calendar_item_date_start === null)
+            if (calendarItem.calendar_item_date_start === null || calendarItem.calendar_item_date_start === null)
                 allSet = false
         })
         return allSet
@@ -76,13 +84,20 @@ export default class Calendar extends React.Component {
         dispatch(activateCalendar(calendar))
     }
 
+    delete() {
+        const {calendar, dispatch} = this.props
+        dispatch(deleteCalendar(calendar.calendar_id))
+    }
+
     render() {
         const {semesters, calendarItems, actionItems, levels, calendar, lang} = this.props
-        return [
-            levels === null ? null :
+        return calendar === null || levels === null ? null :
+            [
                 levels.map(level =>
                     <div key={level.level_id}>
-                        <div>{level.level_name}</div>
+                        <div>
+                            <h4>{`${lang.calendar.calendar} ${level.level_name}`}</h4>
+                        </div>
                         <table class='table'>
                             <thead>
                             <tr>
@@ -111,8 +126,7 @@ export default class Calendar extends React.Component {
                                             <tr key={index}>
                                                 <td>
                                                     <Row class='table-row' type='flex'>
-                                                        <Col class='text-center table-col'
-                                                             sm={6} span={24}>
+                                                        <Col class='text-center table-col' sm={6} span={24}>
                                                             {actionItem.action.action_name}
                                                         </Col>
                                                         {
@@ -134,29 +148,26 @@ export default class Calendar extends React.Component {
                                                                              span={24}>
                                                                             {
                                                                                 calendarItems_.length === 0 ?
-                                                                                    <div class='invisible'>XD</div> :
-                                                                                    <DateRangePicker
-                                                                                        opens='left'
-                                                                                        autoUpdateInput={false}
-                                                                                        startDate={calendarItem.calendar_item_date_start === null ? moment(new Date()) : start}
-                                                                                        endDate={calendarItem.scalendar_item_date_end === null ? moment(new Date()) : end}
-                                                                                        onApply={(ev, picker) => this.dateRangeApply(ev, picker, calendarItems_[0])}
-                                                                                        locale={this.locale}>
+                                                                                    <div class='invisible'>.</div> :
+                                                                                    <div>
                                                                                         {
-                                                                                            calendarItems_[0].calendar_item_date_start === null ?
-                                                                                                <Tag
-                                                                                                    class='tag-empty clickable'>
-                                                                                                    CLICK ME LUL
-                                                                                                </Tag> :
-                                                                                                <Tag
-                                                                                                    class='tag-default clickable'>
-                                                                                                    {
-                                                                                                        calendarItem.calendar_item_date_start === null ? null :
-                                                                                                            `${start.format('LL')} - ${end.format('LL')}`
-                                                                                                    }
-                                                                                                </Tag>
+                                                                                            calendarItem.calendar_item_date_start === null ? '-' :
+                                                                                                `${start.format('LL')} - ${end.format('LL')}`
+
                                                                                         }
-                                                                                    </DateRangePicker>
+                                                                                        <DateRangePicker opens='left'
+                                                                                                         autoUpdateInput={false}
+                                                                                                         startDate={calendarItem.calendar_item_date_start === null ? moment(new Date()) : start}
+                                                                                                         endDate={calendarItem.scalendar_item_date_end === null ? moment(new Date()) : end}
+                                                                                                         onApply={(ev, picker) => this.dateRangeApply(ev, picker, calendarItems_[0])}
+                                                                                                         locale={lang.lang === 'en' ? null : this.locale_th}>
+                                                                                            <Tag
+                                                                                                class='tag-default clickable'>
+                                                                                                {lang.calendar.edit}
+                                                                                            </Tag>
+                                                                                        </DateRangePicker>
+                                                                                    </div>
+
                                                                             }
                                                                         </Col>
                                                                     )
@@ -172,15 +183,15 @@ export default class Calendar extends React.Component {
                         </table>
                     </div>
                 ),
-            calendar === null ? null :
                 calendar.calendar_active ?
-                    <div key='activated' class='btn-lg btn-block btn-success' style={{textAlign: 'center'}}>
+                    <Tag class='tag-success tag-big margin-0'>
                         {lang.calendar.activated}
-                    </div> :
-                    <button key='btn' disabled={calendarItems === null ? true : !this.calendarItemAllSet()}
-                            onClick={() => this.activateCalendar()} class='btn btn-lg btn-block btn-success'>
+                    </Tag> :
+                    <button disabled={calendarItems === null ? true : !this.calendarItemAllSet()}
+                            onClick={() => this.activateCalendar()}
+                            class='btn btn-lg btn-block btn-success'>
                         {lang.calendar.activate}
                     </button>
-        ]
+            ]
     }
 }

@@ -18,6 +18,9 @@ export const URL = {
             },
             GET_ALL: `${egs_base}/calendar/find-all`,
             INSERT_CALENDAR: `${egs_base}/calendar/calendar-insert`,
+            DELETE_CALENDAR: (calendarId) => {
+                return `${egs_base}/calendar/delete?calendar_id=${calendarId}`
+            }
         },
         CALENDAR_INIT: {
             MAIN: {
@@ -30,7 +33,7 @@ export const URL = {
             MAIN: {
                 PATH: `/calendar/:calendarId`,
                 LINK: (calendarId) => {
-                    return `${egs_base}/#/calendar-${calendarId}`
+                    return `${egs_base}/#/calendar/${calendarId}`
                 }
             },
             GET_ALL_SEMESTER: `${egs_base}/semester/all`,
@@ -48,6 +51,20 @@ export const URL = {
         }
     },
     REQUEST: {
+        REQUEST_BYPASS: {
+            MAIN: {
+                PATH: `/request-bypass`,
+                LINK: `${egs_base}/#/request-bypass`
+            },
+            GET_REQUEST_BYPASS: `${egs_base}/action-bypass/all`,
+            GET_STUDENT: `${egs_base}/person/student`,
+            INSERT_REQUEST_BYPASS: (semester, action, student) => {
+                return `${egs_base}/action-bypass/insert?semester=${semester}&action=${action}&student=${student}`
+            },
+            DELETE_REQUEST_BYPASS: (semester, action, student) => {
+                return `${egs_base}/action-bypass/delete?semester=${semester}&action=${action}&student=${student}`
+            }
+        },
         REQUEST_LIST: {
             MAIN: {
                 PATH: `/requestList`,
@@ -69,7 +86,9 @@ export const URL = {
             GET_CALENDAR_ITEM: (ownerId, calendarId, levelId, semesterId, actionId) => {
                 return `${egs_base}/calendar-item/find-one?calendar_id=${calendarId}&semester_id=${semesterId}&action_id=${actionId}&owner_id=${ownerId}&level_id=${levelId}`
             },
-            GET_ALL_TEACHER: `${egs_base}/person/find-teacher`,
+            GET_ALL_TEACHER: (load) => {
+                return `${egs_base}/person/find-teacher?load=${load}`
+            },
             GET_ALL_POSITION: (actionId) => {
                 return `${egs_base}/position/find?action_id=${actionId}`
             },
@@ -96,6 +115,7 @@ export const URL = {
             UPDATE_REQUEST_DOCUMENT: `${egs_base}/request-document/update`,
             UPDATE_REQUEST_FEE: `${egs_base}/user-request/update-fee`,
             UPDATE_DEFENSE_DOCUMENT: `${egs_base}/defense-document/update`,
+            DELETE_USER_REQUEST: `${egs_base}/user-request/delete`
         }
     },
     EVALUATION: {
@@ -114,6 +134,9 @@ export const URL = {
             GET_EVALUATION: `${egs_base}/evaluation/all`,
             ACTIVE_EVALUATION: (id) => {
                 return `${egs_base}/evaluation/active?eval_id=${id}`
+            },
+            DELETE_EVALUATION: (id) => {
+                return `${egs_base}/evaluation/delete?eval_id=${id}`
             }
         },
         EVALUATION_SUBMIT: {
@@ -130,7 +153,9 @@ export const URL = {
                 PATH: `/evaluation-all`,
                 LINK: `${egs_base}/#/evaluation-all`
             },
-            GET_USER_EVALUATION: `${egs_base}/user-evaluation/all`
+            GET_USER_EVALUATION: (calendar, semester) => {
+                return `${egs_base}/user-evaluation/all?calendar=${calendar}&semester=${semester}`
+            }
         }
     },
     DEFENSE: {
@@ -157,10 +182,10 @@ export const URL = {
     ADVISOR: {
         ADVISOR_LOAD: {
             MAIN: {
-                LINK: `/advisor/load`,
-                PATH: `${egs_base}/#/advisor/load`
+                PATH: `/advisor-load`,
+                LINK: `${egs_base}/#/advisor-load`
             },
-            GET_TEACHER: `${egs_base}/advisor/load`
+            GET_ADVISOR: `${egs_base}/advisor/load`
         }
     }
 }
@@ -197,6 +222,10 @@ export const TYPE = {
         }
     },
     REQUEST: {
+        REQUEST_BYPASS: {
+            SET_REQUEST_BYPASS: 'SET_REQUEST_BYPASS_REQUEST_BYPASS',
+            SET_STUDENT: 'SET_REQUEST_BYPASS_STUDENT'
+        },
         REQUEST_LIST: {
             SET_CALENDAR_ITEM_WITH_STATUS: 'SET_REQUEST_LIST_CALEDNAR_ITEM_WTIH_STATUS',
             SET_ALL_SEMESTER: 'SET_REQUEST_LIST_ALL_SEMESTER',
@@ -253,7 +282,7 @@ export const TYPE = {
     },
     ADVISOR: {
         ADVISOR_LOAD: {
-            SET_TEACHER: 'SET_ADVISOR_LOAD_TEACHER'
+            SET_ADVISOR: 'SET_ADVISOR_LOAD_TEACHER'
         }
     }
 }

@@ -29,7 +29,6 @@ class Config
     static public $STATUS_NOT_CONDITION = 17;
     static public $STATUS_DONT_NEED_TODO = 18;
 
-
     static public $DEFAULT_LANGUAGE = 'th';
     static public $SYSTEM_ID = -99;
 
@@ -41,6 +40,7 @@ class Config
     static public $ACTION_REQUEST_TYPE = 1;
     static public $ACTION_DEFENSE_TYPE = 2;
     static public $ACTION_INIT_TYPE = 3;
+    static public $ACTION_EVAL_TYPE = 4;
 
     static public $DOCUMENT_PETITION_TYPE = 1;
     static public $DOCUMENT_PAPER_TYPE = 2;
@@ -69,9 +69,10 @@ class Config
     static public $REQUEST_FINAL_2 = 5;
     static public $REQUEST_PROGRESS = 8;
     static public $REQUEST_COMPRE_QE = 10;
+    static public $EVALUATION = 14;
 
     static public $DEFENSE_WIRTE = 11;
-    static public $REQUEST_ORAL = 12;
+    static public $DEFENSE_ORAL = 12;
 
     static public function get_language()
     {
@@ -105,5 +106,10 @@ class Config
     static public function get_all_teacher()
     {
         return Yii::$app->getDb()->createCommand('SELECT * FROM view_pis_user WHERE user_type_id = ' . Config::$PERSON_TEACHER_TYPE)->queryAll();
+    }
+
+    static public function get_all_student()
+    {
+        return Yii::$app->getDb()->createCommand('SELECT * FROM view_pis_user WHERE user_type_id = ' . Config::$PERSON_STUDENT_TYPE)->queryAll();
     }
 }

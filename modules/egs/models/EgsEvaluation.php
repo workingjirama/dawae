@@ -15,6 +15,7 @@ use Yii;
  *
  * @property EgsEvaluationTopicGroup[] $egsEvaluationTopicGroups
  * @property EgsUserEvaluation[] $egsUserEvaluations
+ * @property EgsUserRequest[] $calendars
  */
 class EgsEvaluation extends \yii\db\ActiveRecord
 {
@@ -40,7 +41,7 @@ class EgsEvaluation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['evaluation_name_th', 'evaluation_name_en', 'evaluation_active'], 'required'],
+            [['evaluation_name_th', 'evaluation_name_en', 'evaluation_path', 'evaluation_active'], 'required'],
             [['evaluation_active'], 'integer'],
             [['evaluation_name_th', 'evaluation_name_en', 'evaluation_path'], 'string', 'max' => 255],
         ];
@@ -74,5 +75,13 @@ class EgsEvaluation extends \yii\db\ActiveRecord
     public function getEgsUserEvaluations()
     {
         return $this->hasMany(EgsUserEvaluation::className(), ['evaluation_id' => 'evaluation_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCalendars()
+    {
+        return $this->hasMany(EgsUserRequest::className(), ['calendar_id' => 'calendar_id', 'action_id' => 'action_id', 'level_id' => 'level_id', 'semester_id' => 'semester_id', 'owner_id' => 'owner_id', 'student_id' => 'student_id'])->viaTable('egs_user_evaluation', ['evaluation_id' => 'evaluation_id']);
     }
 }

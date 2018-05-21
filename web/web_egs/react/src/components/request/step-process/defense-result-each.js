@@ -117,9 +117,12 @@ export default class DefenseResultEach extends React.Component {
         return (
             <Row>
                 <Row style={{marginBottom: 8}}>
+                    <h5>
+                        {defense.defense_type.action_name}
+                    </h5>
                     <Row style={{marginBottom: 8}}>
                         <Col span={6}>
-                            STATUS
+                            {lang.defense_result_each.status}
                         </Col>
                         <Col span={12}>
                             <Tag class={`tag-${defense_status.status_label} margin-0`}>
@@ -131,19 +134,17 @@ export default class DefenseResultEach extends React.Component {
                         defense_subject ?
                             <Row>
                                 <Col span={6}>
-                                    PROJECT LIST XD
+                                    {lang.defense_result_each.subject}
                                 </Col>
                                 <Col span={12}>
                                     <Row>
                                         {
                                             defense.subject.map(
-                                                (subject, index_) => <DefenseResultEachSubject key={index_} edit={edit}
-                                                                                               subject={subject}
-                                                                                               index_={index_}
-                                                                                               index={index}
-                                                                                               mainIndex={mainIndex}
-                                                                                               userRequest={userRequest}
-                                                                                               defense={defense}/>
+                                                (subject, index_) =>
+                                                    <DefenseResultEachSubject
+                                                        key={index_} edit={edit} subject={subject}
+                                                        index_={index_} index={index} mainIndex={mainIndex}
+                                                        userRequest={userRequest} defense={defense}/>
                                             )
                                         }
                                     </Row>
@@ -154,7 +155,7 @@ export default class DefenseResultEach extends React.Component {
                                     defense.score ?
                                         <Row style={{marginBottom: 8}}>
                                             <Col span={6}>
-                                                SCORE
+                                                {lang.defense_result_each.score}
                                             </Col>
                                             <Col span={18}>
                                                 {
@@ -171,14 +172,14 @@ export default class DefenseResultEach extends React.Component {
                                                             !pass ? null :
                                                                 <Checkbox style={{marginLeft: 8}} checked={cond}
                                                                           onChange={(ev) => this.condChange(ev.target.checked)}>
-                                                                    COND ?
+                                                                    {lang.defense_result_each.cond}
                                                                 </Checkbox>
                                                 }
                                             </Col>
                                         </Row> :
                                         <Row>
                                             <Col span={6}>
-                                                PASS
+                                                {lang.defense_result_each.pass}
                                             </Col>
                                             <Col span={18}>
                                                 <Checkbox onChange={(ev) => this.passChange(ev.target.checked)}
@@ -190,7 +191,7 @@ export default class DefenseResultEach extends React.Component {
                                     !defense.credit ? null :
                                         <Row style={{marginBottom: 8}}>
                                             <Col span={6}>
-                                                CREDIT
+                                                {lang.defense_result_each.credit}
                                             </Col>
                                             <Col span={18}>
                                                 {
@@ -206,15 +207,14 @@ export default class DefenseResultEach extends React.Component {
                                 }
                                 <Row style={{marginBottom: 8}}>
                                     <Col span={6}>
-                                        COMMENT
+                                        {lang.defense_result_each.comment}
                                     </Col>
                                     <Col span={18}>
                                         {
                                             edit ?
                                                 <TextArea
                                                     defaultValue={comment === null ? null : comment.replace(/<br\/>/g, '\n')}
-                                                    rows={4}
-                                                    onChange={(ev) => this.commnetChange(ev.target.value)}/> :
+                                                    rows={4} onChange={(ev) => this.commnetChange(ev.target.value)}/> :
                                                 <Tag class='tag-default margin-0'
                                                      style={{maxWidth: '100%', height: 'initial'}}>
                                                     {
@@ -243,10 +243,10 @@ export default class DefenseResultEach extends React.Component {
                                     edit ?
                                         <Tag class='clickable tag-big tag-success margin-0'
                                              disabled={disabled} onClick={() => this.update()}>
-                                            INSERT
+                                            {lang.defense_result_each.insert}
                                         </Tag> :
                                         <Tag class='clickable tag-big tag-default margin-0' onClick={() => this.edit()}>
-                                            EDIT
+                                            {lang.defense_result_each.edit}
                                         </Tag>
                                 }
                             </Col>

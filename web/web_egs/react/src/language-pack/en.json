@@ -1,89 +1,167 @@
 {
   "lang": "en",
-  "nodata": "No Data",
-  "showall": "Show All",
-  "calendarList": {
-    "head": "Calendar List",
-    "active": "active",
-    "add": "add"
+  "nodata": "ไม่มีข้อมูล",
+  "advisor_load": {
+    "head": "ภาระงานอาจารย์",
+    "name": "ชื่ออาจารย์",
+    "pre_load": "ภาระงาน(กำลังดำเนินการ)",
+    "loaded": "ภาระงาน(จริง)",
+    "total": "ภาระงาน(ทั้งหมด)"
+  },
+  "calendar_list": {
+    "head": "รายการปฏิทินการศึกษา",
+    "placeholder": "ปีพุทธศักราช",
+    "add_calendar": "เพิ่มปฏิทินใหม่",
+    "add": "เพิ่ม",
+    "year": "ปี",
+    "active_status": "สถานะการเปิดใช้งาน",
+    "manage": "การจัดการ",
+    "currnet_active": "กำลังเปิดใช้งาน",
+    "inactive": "ไม่ได้เปิดใช้งาน",
+    "manage_calendar": "จัดการข้อมูลปฎิทิน",
+    "delete": "ลบปฏิทิน"
   },
   "calendar": {
-    "head": "Calendar Year",
-    "list": "List",
-    "input": "input data",
-    "to": "to",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
-    "activate": "Activate",
-    "activated": "Activated"
+    "head": "ข้อมูลปฏิทินการศึกษาปี",
+    "calendar": "ข้อมูลปฏิทินการศึกษา",
+    "list": "รายการ",
+    "edit": "แก้ไข",
+    "activated": "ปฏิทินการศึกษากำลังเปิดใช้งาน",
+    "activate": "เปิดใช้งานปฏิทินการศึกษา"
   },
-  "requestList": {
-    "head": "Request List",
-    "to": "to",
-    "list": "List",
-    "date": "Date",
-    "status": "Status",
-    "add": "Add request",
-    "edit": "Edit request",
-    "not": "Not in date range"
+  "calendar_init": {
+    "head": "ตั้งค่าเริ่มต้นของการสอบ"
   },
-  "requestAdd": {
-    "head": "Add Request",
-    "headEdit": "Edit Request",
-    "year": "Year",
-    "date": "Date",
-    "time": "Time",
-    "room": "Room",
-    "advisor": "Advisor",
-    "committee": "Committee",
-    "defense": "",
-    "add": "Click here to add/edit data",
-    "addAdvisor": "Add advisor data",
-    "addCommittee": "Add committee data",
-    "addDefense": "Add defense data",
-    "chooseRoom": "Choose room",
-    "teacherList": "Teacher list"
+  "request_list_each": {
+    "to": "ถึง",
+    "edit": "แก้ไข",
+    "add": "เพิ่มข้อมูล"
   },
-  "dataRequest": {
-    "head": "Request List"
+  "request_list": {
+    "head": "ขอยื่นคำร้อง",
+    "special": "คำร้องแก้สอบไม่ผ่าน",
+    "list": "รายการ",
+    "range": "ช่วงเวลาการยื่นคำร้อง",
+    "status": "สถานะการยื่นคำร้อง"
   },
-  "dataDefense": {
-    "head": "Defense List"
+  "detail": {
+    "action": "ข้อมูลคำร้อง",
+    "action_name": "ประเภทคำร้อง",
+    "year": "ปีปฏิทินการศึกษา",
+    "semester": "ภาคการศึกษา",
+    "level": "ระดับการศึกษา",
+    "project": "หัวข้อโครงงาน",
+    "project_name_th": "ชื่อหัวข้อภาษาไทย",
+    "project_name_en": "ชื่อหัวข้อภาษาอังกฤษ",
+    "edit": "แก้ไข",
+    "submit": "ตกลง"
   },
-  "data": {
-    "student": "Student",
-    "request": "Request",
-    "studentId": "ID",
-    "studentFname": "First Name",
-    "studentLname": "Last Name",
-    "level": "Degree",
-    "requestName": "Request Name",
-    "semester": "Semester",
-    "petStatus": "Petition Status",
-    "petStatusAfter": "Petition Status (Post Defense)",
-    "paperStatus": "Paper Status",
-    "paperStatusAfter": "Paper Status (Post Defense)",
-    "teacher": "Teacher Name",
-    "advisor": "Advisor",
-    "committee": "Committee",
-    "position": "Position",
-    "defense": "Defense",
-    "defenseName": "Defense Name",
-    "date": "Defense Date",
-    "defStatus": "Defense Status",
-    "from": "From",
-    "to": "to",
-    "at": "At",
-    "upload": "upload",
-    "reUpload": "reupload",
-    "edit": "edit",
-    "open": "open",
-    "noUpload": "no upload file",
-    "confirm": "confirm",
-    "cancel": "cancel",
-    "score": "Score",
-    "credit": "Credit",
-    "comment": "Comment",
-    "cond": "Submit Corrected Paper (Pass Case)"
+  "request_add": {
+    "head": "ยื่นคำร้อง"
+  },
+  "teacher": {
+    "teacher_load": "ตรวจสอบภาระงานอาจารย์",
+    "ex_committee": "ใช้กรรมการชุดล่าสุด"
+  },
+  "summary": {
+    "teacher_list": "รายการอาจารย์",
+    "date": "วันสอบ",
+    "time": "ช่วงเวลาสอบ",
+    "room": "สถานที่"
+  },
+  "button": {
+    "previous": "ย้อนกลับ",
+    "next": "ต่อไป",
+    "insert": "บันทึก"
+  },
+  "request_all": {
+    "head": "รายการคำร้อง",
+    "mine": "แสดงเฉพาะของฉัน",
+    "search": "ค้นหา",
+    "student": "ข้อมูลนักศึกษา",
+    "action": "ประเภทคำร้อง",
+    "status": "สถานะคำร้อง",
+    "delete": "ลบ"
+  },
+  "request_open": {
+    "head": "รายละเอียดคำร้อง",
+    "btn": "รายละเอียด",
+    "detail": "ข้อมูลรายละเอียด",
+    "process": "การดำเนินการ",
+    "advisor": "อาจารย์ที่ปรึกษา",
+    "defense": "ข้อมูลการ",
+    "date": "วันสอบ",
+    "time": "ช่วงเวลาสอบ",
+    "place": "สถานที่สอบ",
+    "committee": "กรรมการสอบ"
+  },
+  "doc_each": {
+    "open": "เปิด",
+    "to_upload": "คลิกเพิ่ออัพโหลด",
+    "upload": "อัพโหลด",
+    "edit": "แก้ไข"
+  },
+  "defense_result_each": {
+    "status": "สถานะการสอบ",
+    "score": "คะแนนสอบ",
+    "credit": "หน่วยกิจ",
+    "comment": "ความคิดเห็น",
+    "insert": "เพิ่มข้อมูล",
+    "edit": "แก้ไข",
+    "pass": "สอบผ่าน",
+    "cond": "ต้องแก้ไข",
+    "subject": "รายวิชาที่สอบ"
+  },
+  "final": {
+    "final": "สิ้นสุด"
+  },
+  "defense_all": {
+    "head": "รายการสอบ",
+    "student_id": "รหัสนักศึกษา",
+    "student_name": "ชื่อนักศึกษา",
+    "defense_type": "ประเภทการสอบ",
+    "print_defense": "เอกสารรายการสอบ",
+    "print_fee": "เอกสารรายการค่าตอบแทน"
+  },
+  "request_bypass": {
+    "head": "ให้สิทธ์ยื่นคำร้องนอกเวลา",
+    "add": "เพิ่ม",
+    "name": "ชื่อนักศึกษา",
+    "action": "ประเภทคำร้อง",
+    "semester": "ภาคการศึกษา",
+    "delete": "ลบ"
+  },
+  "evaluation_list": {
+    "head": "รายการเอกสารประเมิน",
+    "add": "เพิ่มเอกสารประเมิน",
+    "name": "ชื่อเอกสารประเมิน",
+    "active": "สถานะ",
+    "detail": "รายละเอียด",
+    "delete": "ลบ",
+    "activate": "เปิดใช้งาน",
+    "currnet_active": "กำลังเปิดใช้งาน"
+  },
+  "evaluation_add": {
+    "head": "เพิ่มเอกสารประเมิน",
+    "name": "ชื่อเอกสารประเมิน",
+    "topic_group": "ประเภท",
+    "topic": "หัสข้อ",
+    "topic_group_add": "เพิ่มประเภท",
+    "topic_add": "เพิ่มหัวข้อ",
+    "delete": "ลบ",
+    "submit": "เพิ่มข้อมูล"
+  },
+  "evaluation_all": {
+    "head": "พิมพ์เอกสารประเมิน",
+    "student": "นักศึกษา",
+    "name": "ชื่อเอกสารประเมิน",
+    "print": "เอกสารประเมิน"
+  },
+  "todo_all": {
+    "head": "รายการที่ต้องทำ",
+    "todo": "สิ่งที่ต้องทำ",
+    "status": "สถานะ",
+    "pass": "ผ่าน",
+    "nope": "ยังไม่ผ่าน"
   }
 }

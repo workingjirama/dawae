@@ -6,7 +6,6 @@ import {setHeader} from '../../actions/main'
 import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
 import RequestListEach from './request-list-each'
-import Affix from 'antd/lib/affix'
 import Loading from "../loading";
 
 @connect((store) => {
@@ -25,7 +24,7 @@ export default class RequestList extends React.Component {
 
     componentDidMount() {
         const {dispatch, lang} = this.props
-        dispatch(setHeader(lang.requestList.head))
+        dispatch(setHeader(lang.request_list.head))
         dispatch(getCalendarItemWithStatus())
         dispatch(getAllSemester())
     }
@@ -40,10 +39,25 @@ export default class RequestList extends React.Component {
                         calendarItemRedo.length === 0 ? null :
                             <Row type='flex' justify='center'>
                                 <Col sm={22} span={24}>
-                                    <h3>******REDO******</h3>
+                                    <h3>{lang.request_list.special}</h3>
                                 </Col>
                                 <Col sm={22} span={24}>
                                     <table class='table'>
+                                        <thead>
+                                        <tr>
+                                            <th>
+                                                <Col class='text-center table-col' sm={8} span={24}>
+                                                    {lang.request_list.list}
+                                                </Col>
+                                                <Col class='text-center table-col' sm={8} span={24}>
+                                                    {lang.request_list.range}
+                                                </Col>
+                                                <Col class='text-center table-col' sm={8} span={24}>
+                                                    {lang.request_list.status}
+                                                </Col>
+                                            </th>
+                                        </tr>
+                                        </thead>
                                         <tbody>
                                         {
                                             calendarItemRedo.map(
@@ -63,46 +77,45 @@ export default class RequestList extends React.Component {
                                 return (
                                     <Row key={index} type='flex' justify='center'>
                                         <Col sm={22} span={24}>
-                                            <h3>{semester.semester_name}</h3>
-                                        </Col>
-                                        <Col sm={22} span={24}>
-                                            <table class='table'>
-                                                <thead>
-                                                <tr>
-                                                    <th>
-                                                        <Affix>
-                                                            <Col class='text-center table-col'
-                                                                 sm={8} span={24} style={{backgroundColor: 'white'}}>
-                                                                {lang.calendar.list}
-                                                            </Col>
-                                                            <Col class='text-center table-col'
-                                                                 sm={8} span={24} style={{backgroundColor: 'white'}}>
-                                                                {lang.calendar.list}
-                                                            </Col>
-                                                            <Col class='text-center table-col'
-                                                                 sm={8} span={24} style={{backgroundColor: 'white'}}>
-                                                                {lang.calendar.list}
-                                                            </Col>
-                                                        </Affix>
-                                                    </th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {
-                                                    _calendarItem.length === 0 ?
+                                            <Row type='flex' justify='center'>
+                                                <Col span={24}>
+                                                    <h3>{semester.semester_name}</h3>
+                                                </Col>
+                                                <Col span={24}>
+                                                    <table class='table'>
+                                                        <thead>
                                                         <tr>
-                                                            <td>
-                                                                {lang.nodata}
-                                                            </td>
-                                                        </tr> :
-                                                        _calendarItem.map(
-                                                            (calendarItem, index) =>
-                                                                <RequestListEach key={index}
-                                                                                 calendarItem={calendarItem}/>
-                                                        )
-                                                }
-                                                </tbody>
-                                            </table>
+                                                            <th>
+                                                                <Col class='text-center table-col' sm={8} span={24}>
+                                                                    {lang.request_list.list}
+                                                                </Col>
+                                                                <Col class='text-center table-col' sm={8} span={24}>
+                                                                    {lang.request_list.range}
+                                                                </Col>
+                                                                <Col class='text-center table-col' sm={8} span={24}>
+                                                                    {lang.request_list.status}
+                                                                </Col>
+                                                            </th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {
+                                                            _calendarItem.length === 0 ?
+                                                                <tr>
+                                                                    <td>
+                                                                        {lang.nodata}
+                                                                    </td>
+                                                                </tr> :
+                                                                _calendarItem.map(
+                                                                    (calendarItem, index) =>
+                                                                        <RequestListEach key={index}
+                                                                                         calendarItem={calendarItem}/>
+                                                                )
+                                                        }
+                                                        </tbody>
+                                                    </table>
+                                                </Col>
+                                            </Row>
                                         </Col>
                                     </Row>
                                 )

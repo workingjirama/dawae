@@ -5,12 +5,8 @@ import Row from 'antd/lib/row'
 import Col from 'antd/lib/col'
 import Icon from 'antd/lib/icon'
 import {
-    getStep,
-    setComponent,
-    getCalendarItem,
-    getTeacher,
-    getPosition,
-    setPost,
+    getStep, setComponent, getCalendarItem,
+    getTeacher, getPosition, setPost,
     getRoom, resetRequestAdd, getProject
 } from '../../actions/request/requestAdd'
 import Teacher from './step/teacher'
@@ -19,6 +15,8 @@ import Detail from './step/detail'
 import Summary from './step/Summary'
 import Button from "./step/button";
 import Loading from "../loading";
+import EvaluationSubmit from './../evaluation/evaluation-submit'
+import {setHeader} from "../../actions/main";
 
 const Step = Steps.Step
 
@@ -36,7 +34,7 @@ const Step = Steps.Step
 export default class RequestAdd extends React.Component {
     constructor() {
         super()
-        this.component = {Teacher, Defense, Detail, Summary}
+        this.component = {Teacher, Defense, Detail, Summary, EvaluationSubmit}
     }
 
     componentWillUnmount() {
@@ -45,12 +43,13 @@ export default class RequestAdd extends React.Component {
     }
 
     componentDidMount() {
-        const {dispatch, calendarId, levelId, semesterId, actionId, ownerId, component, current} = this.props
-        // NOTE: fetch needed data
+        const {dispatch, lang, calendarId, levelId, semesterId, actionId, ownerId, component, current} = this.props
+        dispatch(setHeader(lang.request_add.head))
         dispatch(getStep(actionId, response => {
             dispatch(setComponent(response[current].step.step_component))
         }))
         dispatch(getCalendarItem(ownerId, calendarId, levelId, semesterId, actionId, calendarItem => {
+                dispatch(getTeacher(calendarItem.request_defense.length === 0))
                 this.edit = calendarItem.user_request !== null && !calendarItem.action.action_default
                 if (calendarItem.user_request !== null)
                     this.initPost(calendarItem)
@@ -58,7 +57,6 @@ export default class RequestAdd extends React.Component {
         ))
         dispatch(getProject())
         dispatch(getPosition(actionId))
-        dispatch(getTeacher())
         dispatch(getRoom())
     }
 
@@ -81,19 +79,6 @@ export default class RequestAdd extends React.Component {
 
                 }
             )
-        // userRequest.defenses === undefined ? null :
-        // userRequest.defenses.map(
-        //     defense => {
-        //         const defense_ = {
-        //             date: defense.defense_date,
-        //             end: defense.defense_time_end,
-        //             room: defense.room.room_id,
-        //             start: defense.defense_time_start,
-        //             type: defense.defense_type.action_id
-        //         }
-        //         defenses.push(defense_)
-        //     }
-        // )
         const teachers_ = userRequest.advisors.length !== 0 ? userRequest.advisors :
             userRequest.defenses.length === 0 ? [] : userRequest.defenses[0].committees
         let teachers = []
@@ -120,7 +105,7 @@ export default class RequestAdd extends React.Component {
                     <Col span={20}>
                         <Row>
                             <Col span={24}>
-                                <Steps style={{marginBottom: 32}} current={current}>
+                                <Steps size='small' style={{marginBottom: 32}} current={current}>
                                     {
                                         steps.map(
                                             (step, index) =>

@@ -33,7 +33,7 @@
                 <li>
                     <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/') ?>'>
                         <i class='main-icon fa fa-home'></i>
-                        <span>Home</span>
+                        <span>หน้าแรก</span>
                     </a>
                 </li>
                 <?php if (!Yii::$app->session->has('id')) { ?>
@@ -47,25 +47,25 @@
                             <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/todo') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>TODO</span>
+                                    <span>รายการที่ต้องทำ</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/advisor-load') ?>'>
+                                    <i class='main-icon fa fa-slack'></i>
+                                    <span>ภาระงานอาจารย์</span>
                                 </a>
                             </li>
                             <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/requestList') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>เพิ่มคำร้อง</span>
+                                    <span>ขอยื่นคำร้อง</span>
                                 </a>
                             </li>
                             <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/request') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>คำร้อง</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/evaluation-submit') ?>'>
-                                    <i class='main-icon fa fa-slack'></i>
-                                    <span>EVALUATION SUBMIT</span>
+                                    <span>รายการคำร้อง</span>
                                 </a>
                             </li>
                             <?php break;
@@ -74,13 +74,20 @@
                             <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/request') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>คำร้อง</span>
+                                    <span>รายการคำร้อง</span>
                                 </a>
                             </li>
                             <?php break;
                         /* THIS IS STAFF */
                         case 2:
                         case 3: ?>
+                            <li>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/advisor-load') ?>'>
+                                    <i class='main-icon fa fa-slack'></i>
+                                    <span>ภาระงานอาจารย์</span>
+                                </a>
+                            </li>
+
                             <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/calendarList') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
@@ -90,31 +97,37 @@
                             <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/calendar-init') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>CALENDAR_ITEM_INITIAL</span>
+                                    <span>ตั้งค่าเริ่มต้นของการสอบ</span>
                                 </a>
                             </li>
                             <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/defense') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>DEFENSE XD</span>
+                                    <span>รายการสอบ</span>
                                 </a>
                             </li>
                             <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/request') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>คำร้อง</span>
+                                    <span>รายการคำร้อง</span>
                                 </a>
                             </li>
                             <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/evaluation-list') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>EVALUATION</span>
+                                    <span>รายการเอกสารประเมิน</span>
                                 </a>
                             </li>
                             <li>
                                 <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/evaluation-all') ?>'>
                                     <i class='main-icon fa fa-slack'></i>
-                                    <span>PRINT_EVALUATION</span>
+                                    <span>พิมพ์เอกสารประเมิน</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class='dashboard' href='<?= Yii::getAlias('@web/egs/#/request-bypass') ?>'>
+                                    <i class='main-icon fa fa-slack'></i>
+                                    <span>ให้สิทธ์ยื่นคำร้องนอกเวลา</span>
                                 </a>
                             </li>
                             <?php break;
